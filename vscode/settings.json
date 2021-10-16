@@ -8,8 +8,13 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": false
     },
+    "screencastMode.verticalOffset": 5,
+    "screencastMode.fontSize": 24,
     "workbench.colorTheme": "Tomorrow Night Blue",
     // "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "vscode-neovim.logOutputToConsole": true,
+    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
     "rust-client.channel": "nightly",
     "dart.flutterSdkPaths": [
        "~/.asdf/installs/flutter/2.5.0-stable",
@@ -40,6 +45,7 @@
         },
         "editor.suggest.insertMode": "replace"
     },
+    "java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
     "cSpell.enabledLanguageIds": [
         "asciidoc",
         "c",
@@ -76,9 +82,10 @@
         "yml",
         "dart"
     ],
-    "vscode-neovim.logOutputToConsole": true,
-    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
-    "screencastMode.verticalOffset": 5,
-    "screencastMode.fontSize": 24,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
 }

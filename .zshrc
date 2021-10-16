@@ -36,6 +36,10 @@ setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 export XDG_CONFIG_HOME="$HOME/.config"
 set clipboard=unnamed,autoselect
 
+# fzf
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
