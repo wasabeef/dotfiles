@@ -52,7 +52,7 @@
       <shortcut-conflict owner="vim">
         <text encoding="base64">Y3RybCBwcmVzc2VkIEQ=</text>
       </shortcut-conflict>
-      <shortcut-conflict owner="vim">
+      <shortcut-conflict owner="ide">
         <text encoding="base64">Y3RybCBwcmVzc2VkIEc=</text>
       </shortcut-conflict>
       <shortcut-conflict owner="ide">
