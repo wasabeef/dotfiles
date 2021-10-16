@@ -14,12 +14,12 @@ let g:loaded_zipPlugin = 1
 
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tommcdo/vim-exchange'
 Plug 'haya14busa/is.vim'
 " 検索
+Plug 'phaazon/hop.nvim'
 Plug 'markonm/traces.vim'
 
 " ファイルツリー
@@ -56,11 +56,15 @@ Plug 'whatyouhide/vim-gotham'
 
 call plug#end()
 
-" easymotion
-let g:EasyMotion_do_mapping = 0
-let g:EasyMotion_smartcase  = 0
-nmap f <Plug>(easymotion-overwin-f2)
-nmap fw <Plug>(easymotion-overwin-w)
+" hop.vim
+map f :HopChar2<enter>
+omap f :HopChar2<enter>
+map F :HopLine<enter>
+lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
+hi HopNextKey guifg=#E06C75
+hi HopNextKey1 guifg=#E06C75
+hi HopNextKey2 guifg=#E06C75
+hi HopUnmatched guifg=#4B5263
 
 " Ctrl + / でコメントアウト
 nnoremap <c-_> :Commentary<CR>
