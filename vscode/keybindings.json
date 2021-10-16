@@ -1,0 +1,21 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "ctrl+o",
+        "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "workbench.action.findInFiles"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "workbench.view.explorer",
+        "when": "viewContainer.workbench.view.explorer.enabled"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "!editorFocus"
+      }
+]

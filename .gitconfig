@@ -1,0 +1,17 @@
+[user]
+    name = wasabeef
+    email = dadadada.chop@gmail.com
+[core]
+    editor = nvim
+    attributesfile = ~/.gitattributes
+[color]
+    ui = auto
+[push]
+  default = simple
+[pull]
+  rebase = false
+[fetch]
+  prune = true
+[github]
+  user = wasabeef
+

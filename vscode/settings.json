@@ -1,0 +1,84 @@
+{
+    "window.zoomLevel": 0,
+    "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
+    "editor.wordWrap": "on",
+    "editor.suggestSelection": "first",
+    "editor.fontFamily": "'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": false
+    },
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    // "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "rust-client.channel": "nightly",
+    "dart.flutterSdkPaths": [
+       "~/.asdf/installs/flutter/2.5.0-stable",
+    ],
+    "dart.sdkPaths": [
+        "~/.asdf/installs/dart/2.14.1/dart-sdk",
+    ],
+    // "dart.debugExternalLibraries": false,
+    // "dart.debugSdkLibraries": false,
+    "[dart]": {
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.rulers": [
+            80
+        ],
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.selectionHighlight": false,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.suggestSelection": "first",
+        "editor.tabCompletion": "onlySnippets",
+        "editor.wordBasedSuggestions": false
+    },
+    "[json]": {
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.suggest.insertMode": "replace"
+    },
+    "cSpell.enabledLanguageIds": [
+        "asciidoc",
+        "c",
+        "cpp",
+        "csharp",
+        "css",
+        "git-commit",
+        "go",
+        "graphql",
+        "handlebars",
+        "haskell",
+        "html",
+        "jade",
+        "java",
+        "javascript",
+        "javascriptreact",
+        "json",
+        "jsonc",
+        "latex",
+        "less",
+        "markdjwn",
+        "php",
+        "plaintext",
+        "python",
+        "pug",
+        "restructuredtext",
+        "rust",
+        "scala",
+        "scss",
+        "text",
+        "typescript",
+        "typescriptreact",
+        "yaml",
+        "yml",
+        "dart"
+    ],
+    "vscode-neovim.logOutputToConsole": true,
+    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
+    "screencastMode.verticalOffset": 5,
+    "screencastMode.fontSize": 24,
+}
