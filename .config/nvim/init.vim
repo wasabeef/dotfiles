@@ -58,8 +58,9 @@ call plug#end()
 
 " hop.vim
 map f :HopChar2<enter>
-map F :HopWord<enter>
+map fw :HopWord<enter>
 map fl :HopLine<enter>
+map fp :HopPattern<enter>
 lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
