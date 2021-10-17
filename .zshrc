@@ -30,11 +30,10 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
 # HomeBrew
- eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
-set clipboard=unnamed,autoselect
 
 # fzf
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'

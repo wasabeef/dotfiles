@@ -1,8 +1,4 @@
-set enc=utf-8
-set fenc=utf-8
-set encoding=utf-8
-set termencoding=utf-8
-set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
+syntax on
 
 " <Leader>を`<Space>`に設定
 let mapleader = "\<Space>"
@@ -17,7 +13,11 @@ vnoremap j gj
 nnoremap k gk
 vnoremap k gk
 
-syntax on
+" ESC連打でハイライト解除
+map <Esc><Esc> :nohlsearch<CR><Esc>
+
+" w!!でsudoを忘れても保存
+cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
 set nobackup
 set noswapfile
@@ -26,6 +26,11 @@ set hidden
 set showcmd
 set clipboard=unnamed
 set mouse=a
+set enc=utf-8
+set fenc=utf-8
+set encoding=utf-8
+set termencoding=utf-8
+set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
 
 " // 見た目系
 set number
@@ -71,6 +76,7 @@ nmap so <C-w>_<C-w><Bar>
 nmap sO <C-w>=
 nmap sN :<C-u>bn<CR>
 nmap sP :<C-u>bp<CR>
+nmap st :<C-u>tabnew<CR>
 nmap ss :<C-u>sp<CR>
 nmap sv :<C-u>vs<CR>
 nmap sq :<C-u>q<CR>
@@ -82,8 +88,6 @@ set smartcase
 set incsearch
 set wrapscan
 set hlsearch
-" ESC連打でハイライト解除
-map <Esc><Esc> :nohlsearch<CR><Esc>
 
 " // 編集系
 " 入力モード中のカーソル移動 
@@ -99,7 +103,4 @@ vnoremap <C-Up> "zx<Up>"zP`[V`]
 vnoremap <C-Down> "zx"zp`[V`]
 " Spaceを押した後にrを押すと :%s/// が自動で入力される
 nnoremap <Leader>r :%s///g<Left><Left><Left>
-
-" w!!でsudoを忘れても保存
-cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
