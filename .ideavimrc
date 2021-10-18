@@ -1,8 +1,6 @@
 " 共通設定
 source ~/.config/nvim/commons.vim
 
-sethandler <C-;> a:vim
-sethandler <C-S-;> a:vim
 sethandler <C-B> a:vim
 sethandler <C-D> a:vim
 sethandler <C-E> a:vim
@@ -10,15 +8,16 @@ sethandler <C-F> a:vim
 sethandler <C-G> a:ide
 sethandler <C-H> a:vim
 sethandler <C-I> a:ide
-sethandler <C-J> a:ide
 sethandler <C-K> a:vim
 sethandler <C-L> a:vim
 sethandler <C-N> a:vim
 sethandler <C-O> a:ide
 sethandler <C-P> a:ide
-sethandler <C-R> a:vim
+sethandler <C-Q> a:ide
 sethandler <C-S> a:vim
+sethandler <C-T> a:vim
 sethandler <C-V> a:vim
+sethandler <C-W> a:vim
 
 set surround
 set easymotion

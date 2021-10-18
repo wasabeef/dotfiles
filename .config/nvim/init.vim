@@ -33,7 +33,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " スクロール
-Plug 'yuttie/comfortable-motion.vim'
+Plug 'karb94/neoscroll.nvim'
 
 " キーマップチートシート
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
@@ -88,7 +88,7 @@ if !exists('g:vscode')
   let g:fern#renderer = "nerdfont"
 
   " ツリーを開く
-  nnoremap <silent> <Leader>j :Fern . -width=40 -drawer -reveal=% -toggle<cr>
+  nnoremap <silent> <c-q> :Fern . -width=40 -drawer -reveal=% -toggle<cr>
 
   " アイコンにカラーをつける
   augroup my-glyph-palette
@@ -133,8 +133,8 @@ if !exists('g:vscode')
   " ステータスバー
   let g:airline_theme='monochrome'
 
-  " スクロールバー
-  let g:comfortable_motion_interval = 1000 / 120
+  " スクロール
+  lua require('neoscroll').setup()
   
   " // coc
   nnoremap <silent> ,c :<C-u>CocList<CR>

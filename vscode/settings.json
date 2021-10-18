@@ -85,42 +85,10 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
-    // "vscode-neovim.logOutputToConsole": true,
-    // "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
-    // "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
-    "vim.enableNeovim": true,
-    "vim.neovimPath": "/opt/homebrew/bin/nvim",
-    "vim.neovimConfigPath": "$HOME/.config/nvim/init.vim",
-    "vim.leader": "<space>",
     "kite.showWelcomeNotificationOnStartup": false,
-    "vim.normalModeKeyBindings": [
-        {
-            "before": [
-                "<C-n>"
-            ],
-            "commands": [
-                ":nohl",
-            ]
-        },
-        {
-            "before": [
-                "leader",
-                "j"
-            ],
-            "commands": [
-                "workbench.view.explorer",
-            ],
-            "when": "viewContainer.workbench.view.explorer.enabled"
-        },
-        {
-            "before": [
-                "leader",
-                "j"
-            ],
-            "commands": [
-                "workbench.action.toggleSidebarVisibility",
-            ],
-            "when": "!editorFocus"
-        }
-    ]
+    "vscode-neovim.logOutputToConsole": true,
+    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
+    "vscode-neovim.useCtrlKeysForInsertMode": true,
+    "vscode-neovim.useCtrlKeysForNormalMode": true,
 }

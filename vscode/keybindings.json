@@ -21,11 +21,15 @@
         "when": "dart-code:anyProjectLoaded && dart-code:hasLastDebugConfig && !inDebugMode"
     },
     {
-        "key": "ctrl+o",
-        "command": "workbench.action.quickOpen"
-    },
-    {
         "key": "ctrl+g",
         "command": "workbench.action.findInFiles"
     },
+    {
+        "key": "ctrl+q",
+        "command": "workbench.action.toggleSidebarVisibility",
+    },
+    {
+        "key": "ctrl+shift+q",
+        "command": "workbench.action.quickOpenView"
+      }
 ]
