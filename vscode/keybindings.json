@@ -28,19 +28,4 @@
         "key": "ctrl+g",
         "command": "workbench.action.findInFiles"
     },
-    {
-        "key": "ctrl+j",
-        "command": "workbench.view.explorer",
-        "when": "viewContainer.workbench.view.explorer.enabled"
-    },
-    {
-        "key": "ctrl+j",
-        "command": "workbench.action.toggleSidebarVisibility",
-        "when": "!editorFocus"
-    },
-    {
-        "key": "ctrl+shift+r",
-        "command": "-editor.action.refactor",
-        "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
-    }
 ]

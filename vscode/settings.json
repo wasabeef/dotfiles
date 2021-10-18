@@ -12,12 +12,9 @@
     "screencastMode.fontSize": 24,
     "workbench.colorTheme": "Tomorrow Night Blue",
     // "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "vscode-neovim.logOutputToConsole": true,
-    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
     "rust-client.channel": "nightly",
     "dart.flutterSdkPaths": [
-       "~/.asdf/installs/flutter/2.5.0-stable",
+        "~/.asdf/installs/flutter/2.5.0-stable",
     ],
     "dart.sdkPaths": [
         "~/.asdf/installs/dart/2.14.1/dart-sdk",
@@ -88,4 +85,42 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
+    // "vscode-neovim.logOutputToConsole": true,
+    // "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+    // "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
+    "vim.enableNeovim": true,
+    "vim.neovimPath": "/opt/homebrew/bin/nvim",
+    "vim.neovimConfigPath": "$HOME/.config/nvim/init.vim",
+    "vim.leader": "<space>",
+    "kite.showWelcomeNotificationOnStartup": false,
+    "vim.normalModeKeyBindings": [
+        {
+            "before": [
+                "<C-n>"
+            ],
+            "commands": [
+                ":nohl",
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "j"
+            ],
+            "commands": [
+                "workbench.view.explorer",
+            ],
+            "when": "viewContainer.workbench.view.explorer.enabled"
+        },
+        {
+            "before": [
+                "leader",
+                "j"
+            ],
+            "commands": [
+                "workbench.action.toggleSidebarVisibility",
+            ],
+            "when": "!editorFocus"
+        }
+    ]
 }

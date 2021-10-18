@@ -88,7 +88,7 @@ if !exists('g:vscode')
   let g:fern#renderer = "nerdfont"
 
   " ツリーを開く
-  nnoremap <silent> <C-j> :Fern . -width=40 -drawer -reveal=% -toggle<cr>
+  nnoremap <silent> <Leader>j :Fern . -width=40 -drawer -reveal=% -toggle<cr>
 
   " アイコンにカラーをつける
   augroup my-glyph-palette
@@ -103,7 +103,6 @@ if !exists('g:vscode')
 
     " ツリーを閉じる
     nnoremap <silent><buffer><nowait> q :<C-u>quit<CR>
-    nnoremap <silent><buffer><nowait> <C-j> :<C-u>quit<CR>
   endfunction
 
   augroup fern-custom
