@@ -1,6 +1,26 @@
 // Place your key bindings in this file to override the defaults
 [
     {
+        "key": "ctrl+shift+r",
+        "command": "workbench.action.debug.continue",
+        "when": "debugState == 'stopped'"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "workbench.action.debug.start",
+        "when": "debuggersAvailable && debugState == 'inactive'"
+    },
+    {
+        "key": "ctrl+shift+d",
+        "command": "workbench.action.debug.run",
+        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "dart.rerunLastDebugSession",
+        "when": "dart-code:anyProjectLoaded && dart-code:hasLastDebugConfig && !inDebugMode"
+    },
+    {
         "key": "ctrl+o",
         "command": "workbench.action.quickOpen"
     },
@@ -17,5 +37,10 @@
         "key": "ctrl+j",
         "command": "workbench.action.toggleSidebarVisibility",
         "when": "!editorFocus"
-      }
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "-editor.action.refactor",
+        "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
+    }
 ]
