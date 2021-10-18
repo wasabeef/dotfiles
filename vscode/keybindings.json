@@ -1,24 +1,8 @@
 // Place your key bindings in this file to override the defaults
 [
     {
-        "key": "ctrl+shift+r",
-        "command": "workbench.action.debug.continue",
-        "when": "debugState == 'stopped'"
-    },
-    {
-        "key": "ctrl+shift+r",
-        "command": "workbench.action.debug.start",
-        "when": "debuggersAvailable && debugState == 'inactive'"
-    },
-    {
-        "key": "ctrl+shift+d",
-        "command": "workbench.action.debug.run",
-        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
-    },
-    {
-        "key": "ctrl+shift+r",
-        "command": "dart.rerunLastDebugSession",
-        "when": "dart-code:anyProjectLoaded && dart-code:hasLastDebugConfig && !inDebugMode"
+        "key": "ctrl+o",
+        "command": "workbench.action.quickOpen"
     },
     {
         "key": "ctrl+g",
@@ -31,5 +15,45 @@
     {
         "key": "ctrl+shift+q",
         "command": "workbench.action.quickOpenView"
-      }
+    },
+    {
+        "key": "ctrl+d",
+        "command": "workbench.action.debug.continue",
+        "when": "debugState == 'stopped'"
+    },
+    {
+        "key": "f5",
+        "command": "-workbench.action.debug.continue",
+        "when": "debugState == 'stopped'"
+    },
+    {
+        "key": "ctrl+d",
+        "command": "workbench.action.debug.start",
+        "when": "debuggersAvailable && debugState == 'inactive'"
+    },
+    {
+        "key": "f5",
+        "command": "-workbench.action.debug.start",
+        "when": "debuggersAvailable && debugState == 'inactive'"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "workbench.action.debug.run",
+        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
+    },
+    {
+        "key": "ctrl+d",
+        "command": "-workbench.action.debug.run",
+        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "workbench.action.debug.run",
+        "when": "debuggersAvailable && debugState != 'initializing'"
+    },
+    {
+        "key": "ctrl+f5",
+        "command": "-workbench.action.debug.run",
+        "when": "debuggersAvailable && debugState != 'initializing'"
+    },
 ]
