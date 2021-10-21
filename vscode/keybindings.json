@@ -17,7 +17,7 @@
         "command": "workbench.action.quickOpenView"
     },
     {
-        "key": "ctrl+d",
+        "key": "ctrl+shift+d",
         "command": "workbench.action.debug.continue",
         "when": "debugState == 'stopped'"
     },
@@ -27,7 +27,7 @@
         "when": "debugState == 'stopped'"
     },
     {
-        "key": "ctrl+d",
+        "key": "ctrl+shift+d",
         "command": "workbench.action.debug.start",
         "when": "debuggersAvailable && debugState == 'inactive'"
     },

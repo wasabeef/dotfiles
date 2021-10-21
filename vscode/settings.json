@@ -91,4 +91,7 @@
     "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
     "vscode-neovim.useCtrlKeysForInsertMode": true,
     "vscode-neovim.useCtrlKeysForNormalMode": true,
+    "cSpell.userWords": [
+        "fluttergen"
+    ],
 }

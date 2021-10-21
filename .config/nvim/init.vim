@@ -121,7 +121,7 @@ if !exists('g:vscode')
       set grepprg=rg\ --vimgrep\ --smart-case\ --follow
       " make the Rg command only search for text and not the file name
       command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-      nnoremap <silent> <c-g> :Rg<CR>
+      nnoremap <silent> <c-o>g :Rg<CR>
     endif
 
   endif
