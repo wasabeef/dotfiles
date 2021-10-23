@@ -20,7 +20,7 @@ map <Esc><Esc> :nohlsearch<CR><Esc>
 cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
 " Ctrl+s で保存
-nnoremap <c-s> :update<cr>
+nnoremap <C-s> :update<CR>
 
 set nobackup
 set noswapfile
@@ -52,13 +52,13 @@ set expandtab
 set tabstop=2
 set shiftwidth=2
 " 移動
-nmap tf :tabfirst<cr>
-nmap tl :tablast<cr>
-nmap tt :tabnext<cr>
-nmap T :tabprevious<cr>
-nmap tc :tabclose<cr>
-nmap to :tabonly<cr>
-nmap tn :tabnew<cr>
+nmap tf :tabfirst<CR>
+nmap tl :tablast<CR>
+nmap tt :tabnext<CR>
+nmap T :tabprevious<CR>
+nmap tc :tabclose<CR>
+nmap to :tabonly<CR>
+nmap tn :tabnew<CR>
 
 " // 画面分割
 " s を無効
@@ -94,10 +94,10 @@ set hlsearch
 
 " // 編集系
 " 入力モード中のカーソル移動 
-:imap <c-h> <Left>
-:imap <c-j> <Down>
-:imap <c-k> <Up>
-:imap <c-l> <Right>
+:imap <C-h> <Left>
+:imap <C-j> <Down>
+:imap <C-k> <Up>
+:imap <C-l> <Right>
 " 対象の行を移動
 nnoremap <C-Up> "zdd<Up>"zP
 nnoremap <C-Down> "zdd"zp

@@ -85,8 +85,8 @@ hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
 
 " Ctrl + / でコメントアウト
-nnoremap <c-_> :Commentary<CR>
-vnoremap <c-_> :Commentary<CR>
+nnoremap <C-_> :Commentary<CR>
+vnoremap <C-_> :Commentary<CR>
 
 " Exchange 
 " nmap cx <Plug>(Exchange)
@@ -128,7 +128,7 @@ if !exists('g:vscode')
   let g:fern#renderer = "nerdfont"
 
   " ツリーを開く
-  nnoremap <silent> <c-q> :Fern . -width=40 -drawer -reveal=% -toggle<cr>
+  nnoremap <silent> <C-q> :Fern . -width=40 -drawer -reveal=% -toggle<CR>
 
   " アイコンにカラーをつける
   augroup my-glyph-palette
@@ -151,14 +151,14 @@ if !exists('g:vscode')
   augroup END
 
   " Telescope
-  nnoremap <silent> <c-o> :Telescope find_files<cr>
-  nnoremap <silent> <c-g> :Telescope live_grep<cr>
-  nnoremap <leader>fb :Telescope buffers<cr>
-  nnoremap <leader>fh :Telescope help_tags<cr>
+  nnoremap <silent> <C-o> :Telescope find_files<CR>
+  nnoremap <silent> <C-g> :Telescope live_grep<CR>
+  nnoremap <Leader>fb :Telescope buffers<CR>
+  nnoremap <Leader>fh :Telescope help_tags<CR>
 
   " キーマップチートシート
-  nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
-  nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
+  nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
+  nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 
   " ステータスバー
   let g:airline_theme='monochrome'
@@ -167,8 +167,8 @@ if !exists('g:vscode')
   lua require('neoscroll').setup()
   
   " // coc
-  nnoremap <silent> <leader>c :<C-u>CocList<CR>
-  nmap <silent> <c-k> <Plug>(coc-definition)
+  nnoremap <silent> <Leader>c :<C-u>CocList<CR>
+  nmap <silent> <C-k> <Plug>(coc-definition)
   nmap <silent> gy <Plug>(coc-type-definition)
   nmap <silent> gi <Plug>(coc-implementation)
   nmap <silent> gr <Plug>(coc-references)
@@ -181,7 +181,7 @@ if !exists('g:vscode')
   xnoremap <Leader>a :lua vim.lsp.buf.range_code_action()<CR>
 
   " Dart
-  nnoremap <leader>tf :Telescope flutter commands<cr>
+  nnoremap <Leader>tf :Telescope flutter commands<CR>
   let g:dart_format_on_save = 1
   augroup dart_settings
     autocmd!
@@ -199,7 +199,7 @@ if !exists('g:vscode')
   command! FlutterHotReload call s:trigger_hot_reload()
   command! FlutterHotRestart call s:trigger_hot_restart()
   
-  nnoremap <leader><leader> :FlutterRestart<cr>
+  nnoremap <Leader><Leader> :FlutterRestart<CR>
   
 lua << EOF
 -- Flutter
