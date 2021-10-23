@@ -41,13 +41,16 @@ Plug 'simeji/winresizer'
 " スクロール
 Plug 'karb94/neoscroll.nvim'
 
+" Colorschema
+Plug 'whatyouhide/vim-gotham'
+
 " キーマップチートシート
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 
 " Editor
 " instaled coc-json, coc-kotlin
 " 多様なファイル形式に対応
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neoclide/coc-json', {'do': 'yarn --frozen-lockfile'}
@@ -64,8 +67,9 @@ Plug 'dart-lang/dart-vim-plugin'
 " Plug 'reisub0/hot-reload.vim'
 Plug 'akinsho/flutter-tools.nvim'
 
-" Colorschema
-Plug 'whatyouhide/vim-gotham'
+" Debugging
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
 
 call plug#end()
 
@@ -164,6 +168,17 @@ if !exists('g:vscode')
   
   " // coc
   nnoremap <silent> <leader>c :<C-u>CocList<CR>
+  nmap <silent> <c-k> <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+  nmap <s-F6> <Plug>(coc-rename)
+  nnoremap K :lua vim.lsp.buf.hover()<CR>
+  " nmap <silent> <Leader>a <Plug>(coc-codeaction)
+  " nmap <silent> <Leader>r <Plug>(coc-refactor)
+  " nnoremap gd :lua vim.lsp.buf.definition()<CR>
+  nnoremap <Leader>a :lua vim.lsp.buf.code_action()<CR>
+  xnoremap <Leader>a :lua vim.lsp.buf.range_code_action()<CR>
 
   " Dart
   nnoremap <leader>tf :Telescope flutter commands<cr>
@@ -185,8 +200,6 @@ if !exists('g:vscode')
   command! FlutterHotRestart call s:trigger_hot_restart()
   
   nnoremap <leader><leader> :FlutterRestart<cr>
-  " nnoremap <silent> <leader>l :CocCommand flutter.emulators<cr>
-  " nnoremap <silent> <leader><cr> :call languages#dart#coffeebreak()<cr>
   
 lua << EOF
 -- Flutter
@@ -207,7 +220,11 @@ require("flutter-tools").setup {
   outline = {
     auto_open = false
   },
+  debugger = {
+    enabled = false,
+  },
 }
+require("dapui").setup()
 EOF
 
 endif
