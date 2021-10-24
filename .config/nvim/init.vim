@@ -19,6 +19,8 @@ Plug 'tommcdo/vim-exchange'
 Plug 'haya14busa/is.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'mhinz/vim-startify'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'machakann/vim-highlightedyank'
 
 " 検索
 Plug 'phaazon/hop.nvim'
@@ -52,6 +54,9 @@ Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 " 多様なファイル形式に対応
 " Plug 'sheerun/vim-polyglot'
 
+" e.g. :TSInstall <language_to_install>
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neoclide/coc-json', {'do': 'yarn --frozen-lockfile'}
 Plug 'neoclide/coc-yaml', {'do': 'yarn --frozen-lockfile'}
@@ -59,17 +64,22 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 " Kotlin
-Plug 'udalov/kotlin-vim'
+" Plug 'udalov/kotlin-vim'
+Plug 'weirongxu/coc-kotlin'
 
 " Dart, Flutter
+" Autocompleted 
 Plug 'iamcco/coc-flutter', {'do': 'yarn --frozen-lockfile'}
+" DartFormat
 Plug 'dart-lang/dart-vim-plugin'
 " Plug 'reisub0/hot-reload.vim'
+" Toolchain
 Plug 'akinsho/flutter-tools.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-telescope/telescope-dap.nvim'
 
 call plug#end()
 
@@ -169,14 +179,15 @@ if !exists('g:vscode')
   " // coc
   nnoremap <silent> <Leader>c :<C-u>CocList<CR>
   nmap <silent> <C-k> <Plug>(coc-definition)
+  nnoremap gd :lua vim.lsp.buf.definition()<CR>
   nmap <silent> gy <Plug>(coc-type-definition)
   nmap <silent> gi <Plug>(coc-implementation)
   nmap <silent> gr <Plug>(coc-references)
   nmap <s-F6> <Plug>(coc-rename)
   nnoremap K :lua vim.lsp.buf.hover()<CR>
+  nmap <silent> gA :CocAction<CR>
   " nmap <silent> <Leader>a <Plug>(coc-codeaction)
   " nmap <silent> <Leader>r <Plug>(coc-refactor)
-  " nnoremap gd :lua vim.lsp.buf.definition()<CR>
   nnoremap <Leader>a :lua vim.lsp.buf.code_action()<CR>
   xnoremap <Leader>a :lua vim.lsp.buf.range_code_action()<CR>
 
@@ -199,11 +210,11 @@ if !exists('g:vscode')
   command! FlutterHotReload call s:trigger_hot_reload()
   command! FlutterHotRestart call s:trigger_hot_restart()
   
-  nnoremap <Leader><Leader> :FlutterRestart<CR>
-  
 lua << EOF
 -- Flutter
+require("dapui").setup()
 require("telescope").load_extension("flutter")
+require('telescope').load_extension('dap')
 require("flutter-tools").setup {
   flutter_lookup_cmd = "asdf where flutter",
   fvm = true, 
@@ -224,7 +235,11 @@ require("flutter-tools").setup {
     enabled = false,
   },
 }
-require("dapui").setup()
+require("nvim-treesitter.configs").setup {
+  highlight = {
+    enable = true,
+  }
+}
 EOF
 
 endif

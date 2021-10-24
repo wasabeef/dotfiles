@@ -16,12 +16,6 @@ vnoremap k gk
 " ESC連打でハイライト解除
 map <Esc><Esc> :nohlsearch<CR><Esc>
 
-" w!!でsudoを忘れても保存
-cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
-
-" Ctrl+s で保存
-nnoremap <C-s> :update<CR>
-
 set nobackup
 set noswapfile
 set autoread
@@ -106,4 +100,22 @@ vnoremap <C-Up> "zx<Up>"zP`[V`]
 vnoremap <C-Down> "zx"zp`[V`]
 " Spaceを押した後にrを押すと :%s/// が自動で入力される
 nnoremap <Leader>r :%s///g<Left><Left><Left>
+
+" // コマンドラインウィンドウ (:~)
+" 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
+cnoremap <expr> <C-n> wildmenumode() ? "\<c-n>" : "\<down>"
+cnoremap <expr> <C-p> wildmenumode() ? "\<c-p>" : "\<up>"
+
+" 保存・終了時のタイポ修正
+cnoremap Q q
+cnoremap Q! q!
+cnoremap W w
+cnoremap W! w!
+cnoremap WQ! wq!
+
+" Ctrl+s で保存
+nnoremap <C-s> :update<CR>
+
+" w!!でsudoを忘れても保存
+cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
