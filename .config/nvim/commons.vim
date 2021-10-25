@@ -55,6 +55,7 @@ nmap to :tabonly<CR>
 nmap tn :tabnew<CR>
 
 " // 画面分割
+" https://tamata78.hatenablog.com/entry/2015/10/15/214921
 " s を無効
 nmap s <Nop>
 nmap sj <C-w>j

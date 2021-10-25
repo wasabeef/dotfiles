@@ -171,7 +171,7 @@ if !exists('g:vscode')
   nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 
   " ステータスバー
-  let g:airline_theme='monochrome'
+  let g:gotham_airline_emphasised_insert = 0
 
   " スクロール
   lua require('neoscroll').setup()

@@ -92,6 +92,7 @@
     "vscode-neovim.useCtrlKeysForInsertMode": true,
     "vscode-neovim.useCtrlKeysForNormalMode": true,
     "cSpell.userWords": [
-        "fluttergen"
+        "fluttergen",
+        "pubspec"
     ],
 }
