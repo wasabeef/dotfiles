@@ -190,6 +190,7 @@ if !exists('g:vscode')
   " nmap <silent> <Leader>r <Plug>(coc-refactor)
   nnoremap <Leader>a :lua vim.lsp.buf.code_action()<CR>
   xnoremap <Leader>a :lua vim.lsp.buf.range_code_action()<CR>
+  let g:coc_node_path = '$HOME/.asdf/shims/node'
 
   " Dart
   nnoremap <Leader>tf :Telescope flutter commands<CR>
