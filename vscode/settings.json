@@ -11,14 +11,10 @@
     "screencastMode.verticalOffset": 5,
     "screencastMode.fontSize": 24,
     "workbench.colorTheme": "Tomorrow Night Blue",
-    // "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "rust-client.channel": "nightly",
-    "dart.flutterSdkPaths": [
-        "~/.asdf/installs/flutter/2.5.0-stable",
-    ],
-    "dart.sdkPaths": [
-        "~/.asdf/installs/dart/2.14.1/dart-sdk",
-    ],
+    // "dart.flutterSdkPaths": [
+    // ],
+    // "dart.sdkPaths": [
+    //],
     // "dart.debugExternalLibraries": false,
     // "dart.debugSdkLibraries": false,
     "[dart]": {
@@ -42,7 +38,7 @@
         },
         "editor.suggest.insertMode": "replace"
     },
-    "java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
+    "java.jdt.ls.java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
     "cSpell.enabledLanguageIds": [
         "asciidoc",
         "c",
@@ -95,4 +91,9 @@
         "fluttergen",
         "pubspec"
     ],
+    "terminal.integrated.env.osx": {
+        "FIG_NEW_SESSION": "1"
+    },
+    "editor.inlineSuggest.enabled": true,
+    "editor.accessibilitySupport": "off",
 }

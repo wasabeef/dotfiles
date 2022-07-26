@@ -16,3 +16,7 @@
   user = wasabeef
 [credential]
   helper = store
+[alias]
+  pr = "!pr() { \
+         git fetch origin pull/$1/head:$2; \
+       }; pr"
