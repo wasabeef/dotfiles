@@ -81,7 +81,6 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
-    "kite.showWelcomeNotificationOnStartup": false,
     "vscode-neovim.logOutputToConsole": true,
     "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
     "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
