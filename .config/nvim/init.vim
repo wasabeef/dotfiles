@@ -14,7 +14,7 @@ let g:loaded_zipPlugin = 1
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
+Plug 'numToStr/Comment.nvim'
 Plug 'tommcdo/vim-exchange'
 Plug 'haya14busa/is.vim'
 Plug 'jiangmiao/auto-pairs'
@@ -67,19 +67,18 @@ Plug 'nvim-telescope/telescope-dap.nvim'
 call plug#end()
 
 " hop.vim
+lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 map f :HopChar2<enter>
 map fw :HopWord<enter>
 map fl :HopLine<enter>
 map fp :HopPattern<enter>
-lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
 
-" Ctrl + / でコメントアウト
-nnoremap <C-_> :Commentary<CR>
-vnoremap <C-_> :Commentary<CR>
+" gcc でコメントアウト
+lua require('Comment').setup()
 
 " Exchange 
 " nmap cx <Plug>(Exchange)
