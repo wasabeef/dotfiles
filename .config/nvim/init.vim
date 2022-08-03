@@ -14,13 +14,14 @@ let g:loaded_zipPlugin = 1
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
+Plug 'numToStr/Comment.nvim'
 Plug 'tommcdo/vim-exchange'
 Plug 'haya14busa/is.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'mhinz/vim-startify'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'machakann/vim-highlightedyank'
+Plug 'nvim-lua/plenary.nvim'
 
 " 検索
 Plug 'phaazon/hop.nvim'
@@ -49,32 +50,18 @@ Plug 'whatyouhide/vim-gotham'
 " キーマップチートシート
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 
-" Editor
-" instaled coc-json, coc-kotlin
-" 多様なファイル形式に対応
-" Plug 'sheerun/vim-polyglot'
-
+" コードハイライト
 " e.g. :TSInstall <language_to_install>
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neoclide/coc-json', {'do': 'yarn --frozen-lockfile'}
-Plug 'neoclide/coc-yaml', {'do': 'yarn --frozen-lockfile'}
-Plug 'nvim-lua/plenary.nvim'
+" ファイル・テキスト検索(Fuzzy Finder)
 Plug 'nvim-telescope/telescope.nvim'
 
-" Kotlin
-" Plug 'udalov/kotlin-vim'
-Plug 'weirongxu/coc-kotlin'
-
-" Dart, Flutter
-" Autocompleted 
-Plug 'iamcco/coc-flutter', {'do': 'yarn --frozen-lockfile'}
-" DartFormat
-Plug 'dart-lang/dart-vim-plugin'
-" Plug 'reisub0/hot-reload.vim'
-" Toolchain
-Plug 'akinsho/flutter-tools.nvim'
+" LSP
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -84,19 +71,15 @@ Plug 'nvim-telescope/telescope-dap.nvim'
 call plug#end()
 
 " hop.vim
+lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 map f :HopChar2<enter>
 map fw :HopWord<enter>
 map fl :HopLine<enter>
 map fp :HopPattern<enter>
-lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
-
-" Ctrl + / でコメントアウト
-nnoremap <C-_> :Commentary<CR>
-vnoremap <C-_> :Commentary<CR>
 
 " Exchange 
 " nmap cx <Plug>(Exchange)
@@ -161,10 +144,14 @@ if !exists('g:vscode')
   augroup END
 
   " Telescope
-  nnoremap <silent> <C-o> :Telescope find_files<CR>
-  nnoremap <silent> <C-g> :Telescope live_grep<CR>
-  nnoremap <Leader>fb :Telescope buffers<CR>
-  nnoremap <Leader>fh :Telescope help_tags<CR>
+  " nnoremap <silent> <C-o> :Telescope find_files<CR>
+  " nnoremap <silent> <C-g> :Telescope live_grep<CR>
+  " nnoremap <Leader>fb :Telescope buffers<CR>
+  " nnoremap <Leader>fh :Telescope help_tags<CR>
+  nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files()<cr>
+  nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
+  nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+  nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
   " キーマップチートシート
   nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
@@ -173,77 +160,38 @@ if !exists('g:vscode')
   " ステータスバー
   let g:gotham_airline_emphasised_insert = 0
 
-  " スクロール
-  lua require('neoscroll').setup()
-  
-  " // coc
-  nnoremap <silent> <Leader>c :<C-u>CocList<CR>
-  nmap <silent> <C-k> <Plug>(coc-definition)
-  nnoremap gd :lua vim.lsp.buf.definition()<CR>
-  nmap <silent> gy <Plug>(coc-type-definition)
-  nmap <silent> gi <Plug>(coc-implementation)
-  nmap <silent> gr <Plug>(coc-references)
-  nmap <s-F6> <Plug>(coc-rename)
-  nnoremap K :lua vim.lsp.buf.hover()<CR>
-  nmap <silent> gA :CocAction<CR>
-  " nmap <silent> <Leader>a <Plug>(coc-codeaction)
-  " nmap <silent> <Leader>r <Plug>(coc-refactor)
-  nnoremap <Leader>a :lua vim.lsp.buf.code_action()<CR>
-  xnoremap <Leader>a :lua vim.lsp.buf.range_code_action()<CR>
-  let g:coc_node_path = '$HOME/.asdf/shims/node'
 
-  " Dart
-  nnoremap <Leader>tf :Telescope flutter commands<CR>
-  let g:dart_format_on_save = 1
-  augroup dart_settings
-    autocmd!
-    autocmd FileType dart nnoremap <silent> <buffer> <Leader>l :DartFmt<CR>
-  augroup END
 
-  function! s:trigger_hot_reload() abort
-      silent exec '!kill -SIGUSR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
-  endfunction
-  
-  function! s:trigger_hot_restart() abort
-      silent exec '!kill -SIGUSR2 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
-  endfunction
-  
-  command! FlutterHotReload call s:trigger_hot_reload()
-  command! FlutterHotRestart call s:trigger_hot_restart()
-  
 lua << EOF
--- Flutter
+-- スクロール
+require('neoscroll').setup()
+
+-- gcc でコメントアウト
+require('Comment').setup()
+
+-- LSP
+-- 1. Management
+require("mason").setup()
+require("mason-lspconfig").setup()
+
+-- Debugging
 require("dapui").setup()
-require("telescope").load_extension("flutter")
 require('telescope').load_extension('dap')
-require("flutter-tools").setup {
-  flutter_lookup_cmd = "asdf where flutter",
-  fvm = true, 
-  ui = {
-    border = "rounded",
-  },
-  widget_guides = {
-    enabled = true,
-  },
-  dev_tools = {
-    autostart = true,
-    auto_open_browser = false,
-  },
-  outline = {
-    auto_open = false
-  },
-  debugger = {
-    enabled = false,
-  },
-}
 require("nvim-treesitter.configs").setup {
   highlight = {
     enable = true,
   }
 }
+
+-- for windows
+if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
+  vim.opt.shellcmdflag = "-c"
+end
+
+-- lua end
 EOF
 
-endif
+endif " VSCode では無効
 
 colorscheme gotham256
 
