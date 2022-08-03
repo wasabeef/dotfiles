@@ -10,7 +10,6 @@ end)()
 
 local function default_prog()
   if os == "macOS" then
-  return {}
   elseif os == "windows" then
     return { 'msys2.cmd', '-defterm', '-no-start', '-full-path', '-shell', 'zsh' }
   end
