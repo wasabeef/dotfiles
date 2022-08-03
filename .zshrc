@@ -1,5 +1,8 @@
 # zsh
 
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
+
 ## Auto complete
 autoload -U compinit
 compinit
@@ -98,6 +101,14 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/Cellar/go/1.15.2/libexec/bin/bitcomplete bit
 
+
+## Clang/LLVM
+export LLVM_PATH="$(brew --prefix llvm)"
+export PATH="$LLVM_PATH/bin:${PATH}"
+
+export LDFLAGS="-L$LLVM_PATH/lib"
+export CPPFLAGS="-I$LLVM_PATH/include"
+
 ## Aliases
 alias vi='nvim'
 alias vim='nvim'
@@ -109,3 +120,5 @@ alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias .....="cd ../../../../.."
 
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
