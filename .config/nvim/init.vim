@@ -170,6 +170,11 @@ require("nvim-treesitter.configs").setup {
     enable = true,
   }
 }
+
+-- for windows
+if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
+    vim.opt.shellcmdflag = "-c"
+end
 EOF
 
 endif
