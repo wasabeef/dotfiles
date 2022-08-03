@@ -1,7 +1,5 @@
 # zsh
 
-[[ -z "$TMUX" && ! -z "$PS1" ]] &&   /opt/homebrew/bin/tmux
-
 ## Auto complete
 autoload -U compinit
 compinit
