@@ -119,4 +119,3 @@ nnoremap <C-s> :update<CR>
 
 " w!!でsudoを忘れても保存
 cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
-

@@ -21,6 +21,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'mhinz/vim-startify'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'machakann/vim-highlightedyank'
+Plug 'nvim-lua/plenary.nvim'
 
 " 検索
 Plug 'phaazon/hop.nvim'
@@ -49,15 +50,18 @@ Plug 'whatyouhide/vim-gotham'
 " キーマップチートシート
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 
-" Editor
-" 多様なファイル形式に対応
-" Plug 'sheerun/vim-polyglot'
-
+" コードハイライト
 " e.g. :TSInstall <language_to_install>
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-Plug 'nvim-lua/plenary.nvim'
+" ファイル・テキスト検索(Fuzzy Finder)
 Plug 'nvim-telescope/telescope.nvim'
+
+" LSP
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -76,9 +80,6 @@ hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
-
-" gcc でコメントアウト
-lua require('Comment').setup()
 
 " Exchange 
 " nmap cx <Plug>(Exchange)
@@ -159,10 +160,21 @@ if !exists('g:vscode')
   " ステータスバー
   let g:gotham_airline_emphasised_insert = 0
 
-  " スクロール
-  lua require('neoscroll').setup()
-  
+
+
 lua << EOF
+-- スクロール
+require('neoscroll').setup()
+
+-- gcc でコメントアウト
+require('Comment').setup()
+
+-- LSP
+-- 1. Management
+require("mason").setup()
+require("mason-lspconfig").setup()
+
+-- Debugging
 require("dapui").setup()
 require('telescope').load_extension('dap')
 require("nvim-treesitter.configs").setup {
@@ -173,11 +185,13 @@ require("nvim-treesitter.configs").setup {
 
 -- for windows
 if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
-    vim.opt.shellcmdflag = "-c"
+  vim.opt.shellcmdflag = "-c"
 end
+
+-- lua end
 EOF
 
-endif
+endif " VSCode では無効
 
 colorscheme gotham256
 
