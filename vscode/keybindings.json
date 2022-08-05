@@ -56,4 +56,25 @@
         "command": "-workbench.action.debug.run",
         "when": "debuggersAvailable && debugState != 'initializing'"
     },
+    // Insert Modeでのカーソル移動
+    {
+        "key": "ctrl+l",
+        "command": "cursorRight",
+        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "cursorDown",
+        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "cursorUp",
+        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+    },
+    {
+        "key": "ctrl+h",
+        "command": "cursorLeft",
+        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+    },
 ]

@@ -32,7 +32,7 @@ set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
 " // 見た目系
 set number
 set cursorline
-set cursorcolumn
+" set cursorcolumn
 set virtualedit=onemore
 set smartindent
 set visualbell

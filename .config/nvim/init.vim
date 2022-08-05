@@ -62,6 +62,15 @@ Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+" LSP スニペット
+Plug 'hrsh7th/vim-vsnip'
+" LSP status 表示
+Plug 'j-hui/fidget.nvim'
+" LSP アイコンを表示
+Plug 'onsails/lspkind-nvim'
+" LSP Flutter
+Plug 'akinsho/flutter-tools.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -87,80 +96,75 @@ hi HopUnmatched guifg=#4B5263
 " nmap cxc <Plug>(ExchangeClear)
 " nmap cxx <Plug>(ExchangeLine)
 
-" VSCode では無効
-if !exists('g:vscode')
+" スタート画面
+let g:startify_files_number = 10
+let g:startify_bookmarks = [
+          \ { 'i': '~/.config/nvim/init.vim' },
+          \ { 'x': '~/.config/nvim/' },
+          \ { 'z': '~/.zshrc' },
+          \ ]
+function! s:gitModified()
+    let files = systemlist('git ls-files -m 2>/dev/null')
+    return map(files, "{'line': v:val, 'path': v:val}")
+endfunction
+function! s:gitUntracked()
+    let files = systemlist('git ls-files -o --exclude-standard 2>/dev/null')
+    return map(files, "{'line': v:val, 'path': v:val}")
+endfunction
+let g:startify_lists = [
+          \ { 'type': function('s:gitModified'),  'header': ['   git modified']},
+          \ { 'type': function('s:gitUntracked'), 'header': ['   git untracked']},
+          \ { 'type': 'files',     'header': ['   Last Opened Files'] },
+          \ { 'type': 'bookmarks', 'header': ['   Bookmarks'] },
+          \ { 'type': 'sessions',  'header': ['   Sessions'] },
+                  \ ]
 
-  " スタート画面
-  let g:startify_files_number = 10
-  let g:startify_bookmarks = [
-            \ { 'i': '~/.config/nvim/init.vim' },
-            \ { 'x': '~/.config/nvim/' },
-            \ { 'z': '~/.zshrc' },
-            \ ]
-  function! s:gitModified()
-      let files = systemlist('git ls-files -m 2>/dev/null')
-      return map(files, "{'line': v:val, 'path': v:val}")
-  endfunction
-  function! s:gitUntracked()
-      let files = systemlist('git ls-files -o --exclude-standard 2>/dev/null')
-      return map(files, "{'line': v:val, 'path': v:val}")
-  endfunction
-  let g:startify_lists = [
-            \ { 'type': function('s:gitModified'),  'header': ['   git modified']},
-            \ { 'type': function('s:gitUntracked'), 'header': ['   git untracked']},
-            \ { 'type': 'files',     'header': ['   Last Opened Files'] },
-            \ { 'type': 'bookmarks', 'header': ['   Bookmarks'] },
-            \ { 'type': 'sessions',  'header': ['   Sessions'] },
-                    \ ]
+" // fern.vim
+" ドットファイル表示
+let g:fern#default_hidden=1
 
-  " // fern.vim
-  " ドットファイル表示
-  let g:fern#default_hidden=1
+" アイコンを表示（iTerm2 のフォントを変更する必要がある）
+let g:fern#renderer = "nerdfont"
 
-  " アイコンを表示（iTerm2 のフォントを変更する必要がある）
-  let g:fern#renderer = "nerdfont"
+" ツリーを開く
+nnoremap <silent> <C-q> :Fern . -width=40 -drawer -reveal=% -toggle<CR>
 
-  " ツリーを開く
-  nnoremap <silent> <C-q> :Fern . -width=40 -drawer -reveal=% -toggle<CR>
+" アイコンにカラーをつける
+augroup my-glyph-palette
+  autocmd! *
+  autocmd FileType fern call glyph_palette#apply()
+  autocmd FileType nerdtree,startify call glyph_palette#apply()
+augroup END
+function! s:init_fern() abort
 
-  " アイコンにカラーをつける
-  augroup my-glyph-palette
-    autocmd! *
-    autocmd FileType fern call glyph_palette#apply()
-    autocmd FileType nerdtree,startify call glyph_palette#apply()
-  augroup END
-  function! s:init_fern() abort
+  " ツリーは行番号非表示
+  set nonumber
 
-    " ツリーは行番号非表示
-    set nonumber
+  " ツリーを閉じる
+  nnoremap <silent><buffer><nowait> q :<C-u>quit<CR>
+endfunction
 
-    " ツリーを閉じる
-    nnoremap <silent><buffer><nowait> q :<C-u>quit<CR>
-  endfunction
+augroup fern-custom
+  autocmd! *
+  autocmd FileType fern call s:init_fern()
+augroup END
 
-  augroup fern-custom
-    autocmd! *
-    autocmd FileType fern call s:init_fern()
-  augroup END
+" Telescope
+" nnoremap <silent> <C-o> :Telescope find_files<CR>
+" nnoremap <silent> <C-g> :Telescope live_grep<CR>
+" nnoremap <Leader>fb :Telescope buffers<CR>
+" nnoremap <Leader>fh :Telescope help_tags<CR>
+nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files()<cr>
+nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
+nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
-  " Telescope
-  " nnoremap <silent> <C-o> :Telescope find_files<CR>
-  " nnoremap <silent> <C-g> :Telescope live_grep<CR>
-  " nnoremap <Leader>fb :Telescope buffers<CR>
-  " nnoremap <Leader>fh :Telescope help_tags<CR>
-  nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files()<cr>
-  nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
-  nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-  nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+" キーマップチートシート
+nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
+nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 
-  " キーマップチートシート
-  nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
-  nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
-
-  " ステータスバー
-  let g:gotham_airline_emphasised_insert = 0
-
-
+" ステータスバー
+let g:gotham_airline_emphasised_insert = 0
 
 lua << EOF
 -- スクロール
@@ -170,9 +174,90 @@ require('neoscroll').setup()
 require('Comment').setup()
 
 -- LSP
+require('fidget').setup{}
+-- https://zenn.dev/botamotch/articles/21073d78bc68bf
+vim.opt.completeopt = "menu,menuone,noselect"
 -- 1. Management
-require("mason").setup()
-require("mason-lspconfig").setup()
+require('mason').setup()
+require('mason-lspconfig').setup_handlers({ function(server)
+  local opt = {
+    -- -- Function executed when the LSP server startup
+    on_attach = function(client, bufnr)
+      local opts = { noremap=true, silent=true }
+      -- vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+      -- vim.cmd 'autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 1000)'
+
+      -- keyboard shortcut
+      vim.keymap.set('n', 'K',  '<cmd>lua vim.lsp.buf.hover()<CR>')
+      vim.keymap.set('n', 'gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+      vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
+      vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
+      vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>')
+      vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
+      vim.keymap.set('n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+      vim.keymap.set('n', 'gn', '<cmd>lua vim.lsp.buf.rename()<CR>')
+      vim.keymap.set('n', 'ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
+      vim.keymap.set('n', 'ge', '<cmd>lua vim.diagnostic.open_float()<CR>')
+      vim.keymap.set('n', 'g]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
+      vim.keymap.set('n', 'g[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
+      -- LSP handlers
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+        vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
+      )
+
+    end,
+    capabilities = require('cmp_nvim_lsp').update_capabilities(
+      vim.lsp.protocol.make_client_capabilities()
+    )
+  }
+  require('lspconfig')[server].setup(opt)
+end })
+-- 3. completion (hrsh7th/nvim-cmp)
+local cmp = require("cmp")
+local lspkind = require('lspkind')
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = 'symbol',
+      maxwidth = 50,
+      before = function (entry, vim_item)
+        return vim_item
+      end
+    })
+  },
+  sources = {
+    { name = "nvim_lsp" },
+    { name = "vsnip" },
+    -- { name = "buffer" },
+    -- { name = "path" },
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-p>"] = cmp.mapping.select_prev_item(),
+    ["<C-n>"] = cmp.mapping.select_next_item(),
+    ['<C-l>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm { select = true },
+  }),
+  experimental = {
+    ghost_text = true,
+  },
+})
+require('flutter-tools').setup{
+  flutter_lookup_cmd = 'asdf where flutter',
+  lsp = {
+    settings = {
+      analysisExcludedFolders = {
+        vim.fn.expand("$HOME/.pub-cache"),
+        vim.fn.expand("$HOME/.pub-cache"),
+      }
+    }
+  }
+}
 
 -- Debugging
 require("dapui").setup()
@@ -191,7 +276,4 @@ end
 -- lua end
 EOF
 
-endif " VSCode では無効
-
 colorscheme gotham256
-

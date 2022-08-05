@@ -1,98 +1,108 @@
 {
-    "window.zoomLevel": 0,
-    "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
-    "editor.wordWrap": "on",
+  /// Windows ///////////////////////////////////////////
+  "window.zoomLevel": 0,
+  "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
+  /// Editor ////////////////////////////////////////////
+  "editor.wordWrap": "on",
+  "editor.suggestSelection": "first",
+  "editor.fontFamily": "'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": false
+  },
+  "editor.inlineSuggest.enabled": true,
+  "editor.accessibilitySupport": "off",
+  "editor.experimental.stickyScroll.enabled": true,
+  /// Theme ////////////////////////////////////////////
+  "screencastMode.verticalOffset": 5,
+  "screencastMode.fontSize": 24,
+  "workbench.colorTheme": "Tomorrow Night Blue",
+  /// Terminal ////////////////////////////////////////////
+  "terminal.integrated.env.windows": {
+    "PATH": "${workspaceRoot}\\node_modules\\.bin;${env:PATH}"
+  },
+  "terminal.integrated.env.osx": {
+    "FIG_NEW_SESSION": "1",
+    "PATH": "${workspaceRoot}/node_modules/.bin:${env:PATH}"
+  },
+  /// Dart //////////////////////////////////////////////
+  // "dart.debugExternalLibraries": false,
+  // "dart.debugSdkLibraries": false,
+  "[dart]": {
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": false,
+    "editor.formatOnType": true,
+    "editor.rulers": [80],
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
     "editor.suggestSelection": "first",
-    "editor.fontFamily": "'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
-    "editor.fontLigatures": true,
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": false
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false
+  },
+  "[json]": {
+    "editor.quickSuggestions": {
+      "strings": true
     },
-    "screencastMode.verticalOffset": 5,
-    "screencastMode.fontSize": 24,
-    "workbench.colorTheme": "Tomorrow Night Blue",
-    // "dart.flutterSdkPaths": [
-    // ],
-    // "dart.sdkPaths": [
-    //],
-    // "dart.debugExternalLibraries": false,
-    // "dart.debugSdkLibraries": false,
-    "[dart]": {
-        "editor.formatOnPaste": true,
-        "editor.formatOnSave": false,
-        "editor.formatOnType": true,
-        "editor.rulers": [
-            80
-        ],
-        "editor.tabSize": 2,
-        "editor.insertSpaces": true,
-        "editor.selectionHighlight": false,
-        "editor.suggest.snippetsPreventQuickSuggestions": false,
-        "editor.suggestSelection": "first",
-        "editor.tabCompletion": "onlySnippets",
-        "editor.wordBasedSuggestions": false
-    },
-    "[json]": {
-        "editor.quickSuggestions": {
-            "strings": true
-        },
-        "editor.suggest.insertMode": "replace"
-    },
-    "java.jdt.ls.java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
-    "cSpell.enabledLanguageIds": [
-        "asciidoc",
-        "c",
-        "cpp",
-        "csharp",
-        "css",
-        "git-commit",
-        "go",
-        "graphql",
-        "handlebars",
-        "haskell",
-        "html",
-        "jade",
-        "java",
-        "javascript",
-        "javascriptreact",
-        "json",
-        "jsonc",
-        "latex",
-        "less",
-        "markdjwn",
-        "php",
-        "plaintext",
-        "python",
-        "pug",
-        "restructuredtext",
-        "rust",
-        "scala",
-        "scss",
-        "text",
-        "typescript",
-        "typescriptreact",
-        "yaml",
-        "yml",
-        "dart"
-    ],
-    "files.exclude": {
-        "**/.classpath": true,
-        "**/.project": true,
-        "**/.settings": true,
-        "**/.factorypath": true
-    },
-    "vscode-neovim.logOutputToConsole": true,
-    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
-    "vscode-neovim.useCtrlKeysForInsertMode": true,
-    "vscode-neovim.useCtrlKeysForNormalMode": true,
-    "cSpell.userWords": [
-        "fluttergen",
-        "pubspec"
-    ],
-    "terminal.integrated.env.osx": {
-        "FIG_NEW_SESSION": "1"
-    },
-    "editor.inlineSuggest.enabled": true,
-    "editor.accessibilitySupport": "off",
+    "editor.suggest.insertMode": "replace"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  /// Java //////////////////////////////////////////////
+  "java.jdt.ls.java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
+  /// Neovim ////////////////////////////////////////////
+  "vscode-neovim.logOutputToConsole": true,
+  "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+  "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
+  "vscode-neovim.useCtrlKeysForInsertMode": true,
+  "vscode-neovim.useCtrlKeysForNormalMode": true,
+  /// Spell Checker /////////////////////////////////////
+  "cSpell.enabledLanguageIds": [
+    "asciidoc",
+    "c",
+    "cpp",
+    "csharp",
+    "css",
+    "git-commit",
+    "go",
+    "graphql",
+    "handlebars",
+    "haskell",
+    "html",
+    "jade",
+    "java",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "jsonc",
+    "latex",
+    "less",
+    "markdjwn",
+    "php",
+    "plaintext",
+    "python",
+    "pug",
+    "restructuredtext",
+    "rust",
+    "scala",
+    "scss",
+    "text",
+    "typescript",
+    "typescriptreact",
+    "yaml",
+    "yml",
+    "dart"
+  ],
+  "cSpell.userWords": ["fluttergen", "pubspec"],
+  /// Files ////////////////////////////////////////////
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  /// ファイルの末尾を改行で終わらせる
+  "files.insertFinalNewline": true
 }
