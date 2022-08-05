@@ -18,22 +18,24 @@ end
 return {
   default_prog = default_prog(),
 
-  font = wezterm.font 'JetBrains Mono',
+  color_scheme = "WildCherry",
+  font = wezterm.font_with_fallback {
+    'Cascadia Code',
+    'JetBrains Mono',
+  },
   font_size = 14.0,
 
-  initial_cols = 180,
+  initial_cols = 160,
   initial_rows = 40,
   window_background_opacity = 1,
+  window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
 
   use_fancy_tab_bar = true,
   hide_tab_bar_if_only_one_tab = true,
 
   front_end = "OpenGL",
 
-  leader = {
-    key = 'Space',
-    mods = 'SHIFT|CTRL',
-  },
+  leader = { key = 'Space', mods = 'SHIFT|CTRL' },
 
   keys = {
     -- Window
@@ -45,9 +47,17 @@ return {
     { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(0.5) },
     { key = 'g', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollToBottom },
 
+    -- Tab
+    { key = '{', mods = 'SHIFT|ALT', action = wezterm.action.MoveTabRelative(-1) },
+    { key = '}', mods = 'SHIFT|ALT', action = wezterm.action.MoveTabRelative(1) },
+
     -- Keybinds of Copy and Paste
     { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("ClipboardAndPrimarySelection") },
     { key = "V", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
+    { key = "h", mods = "CTRL", action = wezterm.action.SendKey { key = 'LeftArrow'  } },
+    { key = "j", mods = "CTRL", action = wezterm.action.SendKey { key = 'DownArrow'  } },
+    { key = "k", mods = "CTRL", action = wezterm.action.SendKey { key = 'UpArrow'  } },
+    { key = "l", mods = "CTRL", action = wezterm.action.SendKey { key = 'RightArrow'  } },
 
     -- Fonts
     { key = "+", mods = "CTRL|SHIFT", action = "IncreaseFontSize" },
