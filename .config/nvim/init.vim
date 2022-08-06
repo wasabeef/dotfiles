@@ -253,7 +253,6 @@ require('flutter-tools').setup{
     settings = {
       analysisExcludedFolders = {
         vim.fn.expand("$HOME/.pub-cache"),
-        vim.fn.expand("$HOME/.pub-cache"),
       }
     }
   }
