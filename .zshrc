@@ -1,7 +1,8 @@
 # zsh
-
-# Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+  # Fig pre block. Keep at the top of this file.
+  [[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
+fi
 
 ## Auto complete
 autoload -U compinit
@@ -40,9 +41,6 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
-# HomeBrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -50,64 +48,78 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# OS蛻･縺ｮ險ｭ螳・
+case $(uname | tr '[:upper:]' '[:lower:]') in
+  linux*)
+    ;;
+  darwin*)
+    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+    
+    autoload -U +X bashcompinit && bashcompinit
+    complete -o nospace -C /usr/local/Cellar/go/1.15.2/libexec/bin/bitcomplete bit
+
+    # HomeBrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+    # asdf
+    # cat ~/.asdfrc
+    . $(brew --prefix asdf)/asdf.sh
+    . ~/.asdf/plugins/java/set-java-home.zsh
+    
+    ## Android
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
+    export PATH=$ANDROID_HOME/platform-tools:$PATH
+    export PATH=$ANDROID_HOME/tools/bin:$PATH
+    export PATH=$ANDROID_HOME/emulator:$PATH
+    export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+    
+    ## Go
+    export GOPATH=$HOME/.go
+    export GOROOT=$( go env GOROOT )
+    export GOBIN=$GOROOT/bin
+    export PATH=$GOBIN:$PATH
+    
+    # direnv
+    eval "$(direnv hook zsh)"
+    
+    ## Flutter
+    #export PATH="$PATH:/Applications/flutter/bin"
+    export PATH="$PATH":"$HOME/.pub-cache/bin"
+    
+    ## GCP
+    export PATH=$HOME/google-cloud-sdk/bin:$PATH
+    
+    ## Fastlane
+    export PATH=$HOME/.fastlane/bin:$PATH
+    
+    ## Yarn
+    export PATH="$(yarn global bin):$PATH"
+    
+    ## Ruby
+    #export PATH="$HOME/.rbenv/bin:$PATH"
+    #eval "$(rbenv init - zsh)"
+    
+    ## Rust
+    export PATH=$HOME/.cargo/bin:$PATH
+    
+    ## Clang/LLVM
+    export LLVM_PATH="$(brew --prefix llvm)"
+    export PATH="$LLVM_PATH/bin:${PATH}"
+    
+    export LDFLAGS="-L$LLVM_PATH/lib"
+    export CPPFLAGS="-I$LLVM_PATH/include"
+    ;;
+  msys*)
+    export PATH="$PATH":"$LOCALAPPDATA/Pub/Cache/bin"
+    ;;
+  *)
+esac
+
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
-
-# asdf
-# cat ~/.asdfrc
-. $(brew --prefix asdf)/asdf.sh
-. ~/.asdf/plugins/java/set-java-home.zsh
-
-## Android
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH=$ANDROID_HOME/platform-tools:$PATH
-export PATH=$ANDROID_HOME/tools/bin:$PATH
-export PATH=$ANDROID_HOME/emulator:$PATH
-export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-
-## Go
-export GOPATH=$HOME/.go
-export GOROOT=$( go env GOROOT )
-export GOBIN=$GOROOT/bin
-export PATH=$GOBIN:$PATH
-
-# direnv
-eval "$(direnv hook zsh)"
-
-## Flutter
-#export PATH="$PATH:/Applications/flutter/bin"
-export PATH="$PATH":"$HOME/.pub-cache/bin"
-
-## GCP
-export PATH=$HOME/google-cloud-sdk/bin:$PATH
-
-## Fastlane
-export PATH=$HOME/.fastlane/bin:$PATH
-
-## Yarn
-export PATH="$(yarn global bin):$PATH"
-
-## Ruby
-#export PATH="$HOME/.rbenv/bin:$PATH"
-#eval "$(rbenv init - zsh)"
-
-## Rust
-export PATH=$HOME/.cargo/bin:$PATH
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/Cellar/go/1.15.2/libexec/bin/bitcomplete bit
-
-
-## Clang/LLVM
-export LLVM_PATH="$(brew --prefix llvm)"
-export PATH="$LLVM_PATH/bin:${PATH}"
-
-export LDFLAGS="-L$LLVM_PATH/lib"
-export CPPFLAGS="-I$LLVM_PATH/include"
 
 ## Aliases
 alias vi='nvim'
@@ -120,5 +132,7 @@ alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias .....="cd ../../../../.."
 
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+  # Fig post block. Keep at the bottom of this file.
+  [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
+fi
