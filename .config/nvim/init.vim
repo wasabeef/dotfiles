@@ -34,6 +34,9 @@ Plug 'lambdalisue/nerdfont.vim'
 Plug 'lambdalisue/fern-renderer-nerdfont.vim'
 Plug 'lambdalisue/glyph-palette.vim'
 
+" ターミナル 
+Plug 'akinsho/toggleterm.nvim', {'tag' : 'v2.*'}
+
 " ステータスバー
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -96,10 +99,15 @@ hi HopUnmatched guifg=#4B5263
 " nmap cxc <Plug>(ExchangeClear)
 " nmap cxx <Plug>(ExchangeLine)
 
-" スタート画面
+
+" ---------- VSCode では無効 ---------- 
+if !exists('g:vscode')
+
+"スタート画面
 let g:startify_files_number = 10
 let g:startify_bookmarks = [
           \ { 'i': '~/.config/nvim/init.vim' },
+          \ { 'c': '~/.config/nvim/commons.vim' },
           \ { 'x': '~/.config/nvim/' },
           \ { 'z': '~/.zshrc' },
           \ ]
@@ -154,10 +162,16 @@ augroup END
 " nnoremap <silent> <C-g> :Telescope live_grep<CR>
 " nnoremap <Leader>fb :Telescope buffers<CR>
 " nnoremap <Leader>fh :Telescope help_tags<CR>
-nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files()<cr>
+nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<cr>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+
+" ターミナル
+autocmd TermEnter term://*toggleterm#*
+      \ tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
+
+nnoremap <C-t> :ToggleTerm<CR>
 
 " キーマップチートシート
 nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
@@ -253,6 +267,7 @@ require('flutter-tools').setup{
     settings = {
       analysisExcludedFolders = {
         vim.fn.expand("$HOME/.pub-cache"),
+        vim.fn.expand("$HOME/.pub-cache"),
       }
     }
   }
@@ -267,6 +282,11 @@ require("nvim-treesitter.configs").setup {
   }
 }
 
+-- Terminal
+require('toggleterm').setup{
+  direction = 'float',
+}
+
 -- for windows
 -- https://github.com/neovim/neovim/issues/16957
 if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
@@ -275,5 +295,7 @@ end
 
 -- lua end
 EOF
+
+endif " ---------- VSCode では無効 ---------- 
 
 colorscheme gotham256
