@@ -37,6 +37,9 @@ Plug 'lambdalisue/glyph-palette.vim'
 " ターミナル 
 Plug 'akinsho/toggleterm.nvim', {'tag' : 'v2.*'}
 
+" バッファ
+Plug 'akinsho/bufferline.nvim', { 'tag': 'v2.*' }
+
 " ステータスバー
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -58,6 +61,7 @@ Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " ファイル・テキスト検索(Fuzzy Finder)
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-ui-select.nvim'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -103,13 +107,21 @@ hi HopUnmatched guifg=#4B5263
 " ---------- VSCode では無効 ---------- 
 if !exists('g:vscode')
 
+" バッファ 
+nnoremap [[ :BufferLineCyclePrev<CR>
+nnoremap ]] :BufferLineCycleNext<CR>
+nnoremap [] :BufferLinePick<CR>
+nnoremap ][ :BufferLinePickClose<CR>
+nnoremap \\ :bd<CR>
+
 "スタート画面
-let g:startify_files_number = 10
+let g:startify_files_number = 5
 let g:startify_bookmarks = [
           \ { 'i': '~/.config/nvim/init.vim' },
           \ { 'c': '~/.config/nvim/commons.vim' },
-          \ { 'x': '~/.config/nvim/' },
+          \ { 'x': '~/.config/' },
           \ { 'z': '~/.zshrc' },
+          \ { 'w': '~/.wezterm.lua' },
           \ ]
 function! s:gitModified()
     let files = systemlist('git ls-files -m 2>/dev/null')
@@ -130,13 +142,10 @@ let g:startify_lists = [
 " // fern.vim
 " ドットファイル表示
 let g:fern#default_hidden=1
-
 " アイコンを表示（iTerm2 のフォントを変更する必要がある）
 let g:fern#renderer = "nerdfont"
-
 " ツリーを開く
 nnoremap <silent> <C-q> :Fern . -width=40 -drawer -reveal=% -toggle<CR>
-
 " アイコンにカラーをつける
 augroup my-glyph-palette
   autocmd! *
@@ -144,33 +153,25 @@ augroup my-glyph-palette
   autocmd FileType nerdtree,startify call glyph_palette#apply()
 augroup END
 function! s:init_fern() abort
-
   " ツリーは行番号非表示
   set nonumber
-
   " ツリーを閉じる
   nnoremap <silent><buffer><nowait> q :<C-u>quit<CR>
 endfunction
-
 augroup fern-custom
   autocmd! *
   autocmd FileType fern call s:init_fern()
 augroup END
 
 " Telescope
-" nnoremap <silent> <C-o> :Telescope find_files<CR>
-" nnoremap <silent> <C-g> :Telescope live_grep<CR>
-" nnoremap <Leader>fb :Telescope buffers<CR>
-" nnoremap <Leader>fh :Telescope help_tags<CR>
 nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<cr>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
-nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+" nnoremap <Leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+" nnoremap <Leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
 " ターミナル
 autocmd TermEnter term://*toggleterm#*
       \ tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
-
 nnoremap <C-t> :ToggleTerm<CR>
 
 " キーマップチートシート
@@ -180,7 +181,16 @@ nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 " ステータスバー
 let g:gotham_airline_emphasised_insert = 0
 
+" ---------- Lua ---------- 
 lua << EOF
+
+-- バッファ 
+vim.opt.termguicolors = true
+require("bufferline").setup{
+  options = {
+  }
+}
+
 -- スクロール
 require('neoscroll').setup()
 
@@ -189,45 +199,54 @@ require('Comment').setup()
 
 -- LSP
 require('fidget').setup{}
--- https://zenn.dev/botamotch/articles/21073d78bc68bf
-vim.opt.completeopt = "menu,menuone,noselect"
--- 1. Management
+vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+local on_attach = function(client, bufnr)
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+end
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+vim.keymap.set('n', '<Leader>k',  '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+vim.keymap.set('n', '<Leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+vim.keymap.set('n', '<Leader>r', '<cmd>lua vim.lsp.buf.references()<CR>')
+vim.keymap.set('n', '<Leader>d', '<cmd>lua vim.lsp.buf.definition()<CR>')
+vim.keymap.set('n', '<Leader>D', '<cmd>lua vim.lsp.buf.declaration()<CR>')
+vim.keymap.set('n', '<Leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>')
+vim.keymap.set('n', '<Leader>t', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+vim.keymap.set('n', '<Leader>n', '<cmd>lua vim.lsp.buf.rename()<CR>')
+vim.keymap.set('n', '<Leader>a', '<cmd>lua vim.lsp.buf.code_action()<CR>')
+vim.keymap.set('n', '<Leader>e', '<cmd>lua vim.diagnosti constc.open_float()<CR>')
+vim.keymap.set('n', '<Leader>]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
+vim.keymap.set('n', '<Leader>[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
+
+vim.keymap.set('n', '<Leader>cf', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>")
 require('mason').setup()
-require('mason-lspconfig').setup_handlers({ function(server)
-  local opt = {
-    -- -- Function executed when the LSP server startup
-    on_attach = function(client, bufnr)
-      local opts = { noremap=true, silent=true }
-      -- vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-      -- vim.cmd 'autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 1000)'
+require("mason-lspconfig").setup_handlers({
+  function (server_name) 
+    require("lspconfig")[server_name].setup {
+        flags = {
+            debounce_text_changes = 150,
+        },
+    }
+  end,
+})
+-- require('mason-lspconfig').setup_handlers({ function(server)
+--   require('lspconfig')[server].setup {
+--     on_attach = on_attach,
+--     capabilities = capabilities,
+--   }
+-- end
+-- })
+-- false : do not show error/warning/etc.. by virtual text
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
+)
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+  vim.lsp.handlers.hover, { separator = true }
+)
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+  vim.lsp.handlers.signature_help, { separator = true }
+)
 
-      -- keyboard shortcut
-      vim.keymap.set('n', 'K',  '<cmd>lua vim.lsp.buf.hover()<CR>')
-      vim.keymap.set('n', 'gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
-      vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
-      vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
-      vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>')
-      vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
-      vim.keymap.set('n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
-      vim.keymap.set('n', 'gn', '<cmd>lua vim.lsp.buf.rename()<CR>')
-      vim.keymap.set('n', 'ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
-      vim.keymap.set('n', 'ge', '<cmd>lua vim.diagnostic.open_float()<CR>')
-      vim.keymap.set('n', 'g]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
-      vim.keymap.set('n', 'g[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
-      -- LSP handlers
-      vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-        vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
-      )
-
-    end,
-    capabilities = require('cmp_nvim_lsp').update_capabilities(
-      vim.lsp.protocol.make_client_capabilities()
-    )
-  }
-  require('lspconfig')[server].setup(opt)
-end })
--- 3. completion (hrsh7th/nvim-cmp)
-local cmp = require("cmp")
+local cmp = require('cmp')
 local lspkind = require('lspkind')
 cmp.setup({
   snippet = {
@@ -263,19 +282,42 @@ cmp.setup({
 })
 require('flutter-tools').setup{
   flutter_lookup_cmd = 'asdf where flutter',
+  ui = { border = "rounded" },
+  widget_guides = { enabled = true },
   lsp = {
+    color = {
+      enabled = true,
+    },
     settings = {
       analysisExcludedFolders = {
-        vim.fn.expand("$HOME/.pub-cache"),
         vim.fn.expand("$HOME/.pub-cache"),
       }
     }
   }
 }
 
+-- File tree
+require('telescope').setup{
+  defaults = { 
+    file_ignore_patterns = { 
+      "node_modules/",
+      ".git/",
+    }
+  },
+  extensions = {
+    ["ui-select"] = {
+      require("telescope.themes").get_dropdown {
+        -- even more opts
+      }
+    }
+  }
+}
+require('telescope').load_extension('flutter')
+require('telescope').load_extension('ui-select')
+require('telescope').load_extension('dap')
+
 -- Debugging
 require("dapui").setup()
-require('telescope').load_extension('dap')
 require("nvim-treesitter.configs").setup {
   highlight = {
     enable = true,
@@ -293,8 +335,8 @@ if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
   vim.opt.shellcmdflag = "-c"
 end
 
--- lua end
 EOF
+" ---------- Lua ---------- 
 
 endif " ---------- VSCode では無効 ---------- 
 
