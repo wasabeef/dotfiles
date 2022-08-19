@@ -3,6 +3,9 @@ syntax on
 " 再読み込み
 command! ReloadVimrc source $MYVIMRC
 
+" ---------------------------------------------------------
+" 基本設定
+" ---------------------------------------------------------
 " <Leader>を`<Space>`に設定
 let mapleader = "\<Space>"
 map <Space> <Leader>
@@ -10,45 +13,86 @@ map <Space> <Leader>
 let g:maplocalleader = ','
 map , <LocalLeader>
 
+" 保存されていないファイルがあるときは終了前に保存確認
+set confirm
+" バックアップファイル出力無効
+set nobackup
+" swpファイル出力無効
+set noswapfile
+" 外部でファイルに変更がされた場合は読みなおす
+set autoread
+" 保存されていないファイルがあるときでも別のファイルを開くことが出来る
+set hidden
+" 入力中のコマンドを表示する
+set showcmd
+" クリップボード連携
+set clipboard&
+set clipboard^=unnamedplus
+" マウスを有効にする
+set mouse=a
+" 文字コードの指定
+set enc=utf-8
+set fenc=utf-8
+set encoding=utf-8
+set termencoding=utf-8
+set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
+" 行番号
+set number
+" カーソル行をハイライト
+set cursorline
+" set cursorcolumn
+"　カーソルを行末の一つ先まで移動可能にする
+set virtualedit=onemore
+" ビープ音を消す
+set visualbell
+" 対応する括弧を強調表示
+set showmatch
+" 対応する括弧を表示する時間（最小設定）
+set matchtime=1 
+" ステータス行を常に表示
+set laststatus=2
+" ファイル名補完
+set wildmode=list:longest
+" 空白文字の表示
+set list listchars=tab:\▸\-
+" タブ文字をスペースにする
+set expandtab
+set tabstop=2
+" 自動インデント（前の行から引き継ぎ）
+set autoindent
+" インデントのネスト上げ下げ
+set smartindent
+" 自動インデントでずれる幅
+set shiftwidth=2
+" 検索で大文字小文字を無視
+set ignorecase
+set smartcase
+" インクリメンタルサーチ
+set incsearch
+" 最後尾まで検索を終えたら次の検索で先頭に移る
+set wrapscan
+" 検索文字列をハイライトする
+set hlsearch
+" 置換の時 g オプションをデフォルトで有効にする
+set gdefault
+" Windows でもパスの区切り文字を / にする
+set shellslash
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" キーマップ
+" ---------------------------------------------------------
+" ESC連打でハイライト解除
+map <Esc><Esc> :nohlsearch<CR><Esc>
+
 " 折り返し時に表示行単位での移動できるようにする
 nnoremap j gj
 vnoremap j gj
 nnoremap k gk
 vnoremap k gk
 
-" ESC連打でハイライト解除
-map <Esc><Esc> :nohlsearch<CR><Esc>
-
-set nobackup
-set noswapfile
-set autoread
-set hidden
-set showcmd
-set clipboard=unnamed
-set mouse=a
-set enc=utf-8
-set fenc=utf-8
-set encoding=utf-8
-set termencoding=utf-8
-set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
-
-" // 見た目系
-set number
-set cursorline
-" set cursorcolumn
-set virtualedit=onemore
-set smartindent
-set visualbell
-set showmatch
-set laststatus=2
-set wildmode=list:longest
-
-" // タブ系
-set list listchars=tab:\▸\-
-set expandtab
-set tabstop=2
-set shiftwidth=2
-" 移動
+" タブの移動
 nmap tf :tabfirst<CR>
 nmap tl :tablast<CR>
 nmap tt :tabnext<CR>
@@ -57,7 +101,7 @@ nmap tc :tabclose<CR>
 nmap to :tabonly<CR>
 nmap tn :tabnew<CR>
 
-" // 画面分割
+" 画面分割
 " https://tamata78.hatenablog.com/entry/2015/10/15/214921
 " s を無効
 nmap s <Nop>
@@ -83,32 +127,8 @@ nmap sv :<C-u>vs<CR>
 nmap sq :<C-u>q<CR>
 nmap sQ :<C-u>bd<CR>
 
-" // 検索系
-set ignorecase
-set smartcase
-set incsearch
-set wrapscan
-set hlsearch
-
-" // 編集系
-" 入力モード中のカーソル移動 
-:inoremap <C-h> <Left>
-:inoremap <C-j> <Down>
-:inoremap <C-k> <Up>
-:inoremap <C-l> <Right>
-" 対象の行を移動
-nnoremap <C-Up> "zdd<Up>"zP
-nnoremap <C-Down> "zdd"zp
-" 対象の複数行を移動
-vnoremap <C-Up> "zx<Up>"zP`[V`]
-vnoremap <C-Down> "zx"zp`[V`]
-" Spaceを押した後にrを押すと :%s/// が自動で入力される
-nnoremap <Leader>r :%s///g<Left><Left><Left>
-
-" // コマンドラインウィンドウ (:~)
-" 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
-cnoremap <expr> <C-n> wildmenumode() ? "\<c-n>" : "\<down>"
-cnoremap <expr> <C-p> wildmenumode() ? "\<c-p>" : "\<up>"
+" ノーマルモードではセミコロンをコロンに
+nnoremap ; :
 
 " 保存・終了時のタイポ修正
 cnoremap Q q
@@ -123,7 +143,32 @@ nnoremap <C-s> :update<CR>
 " w!!でsudoを忘れても保存
 cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
-" // Plugins
+" 入力モード中のカーソル移動 
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
+" 対象の行を移動
+nnoremap <C-Up> "zdd<Up>"zP
+nnoremap <C-Down> "zdd"zp
+" 対象の複数行を移動
+vnoremap <C-Up> "zx<Up>"zP`[V`]
+vnoremap <C-Down> "zx"zp`[V`]
+
+" Spaceを押した後にrを押すと :%s/// が自動で入力される
+nnoremap <Leader>r :%s///g<Left><Left><Left>
+
+" コマンドラインウィンドウ (:~)
+" 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
+cnoremap <expr> <C-n> wildmenumode() ? "\<c-n>" : "\<down>"
+cnoremap <expr> <C-p> wildmenumode() ? "\<c-p>" : "\<up>"
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" プラグイン管理
+" ---------------------------------------------------------
 " 不要なプラグインを停止する
 let g:loaded_gzip = 1
 let g:loaded_tar = 1
@@ -204,10 +249,15 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
-call plug#end()
+call plug#end() 
+" ---------------------------------------------------------
 
-" hop.vim
+
+" ---------------------------------------------------------
+" phaazon/hop.nvim
+" ---------------------------------------------------------
 lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
+
 map f :HopChar2<enter>
 map fw :HopWord<enter>
 map fl :HopLine<enter>
@@ -216,25 +266,23 @@ hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
+" ---------------------------------------------------------
 
-" Exchange 
+
+" ---------------------------------------------------------
+" tommcdo/vim-exchange
+" ---------------------------------------------------------
 " nmap cx <Plug>(Exchange)
 " xmap X <Plug>(Exchange)
 " nmap cxc <Plug>(ExchangeClear)
 " nmap cxx <Plug>(ExchangeLine)
+" ---------------------------------------------------------
 
 
-" ---------- VSCode では無効 ---------- 
+" ---------------------------------------------------------
+" mhinz/vim-startify - スタート画面カスタム
+" ---------------------------------------------------------
 if !exists('g:vscode')
-
-" バッファ 
-nnoremap [[ :BufferLineCyclePrev<CR>
-nnoremap ]] :BufferLineCycleNext<CR>
-nnoremap [] :BufferLinePick<CR>
-nnoremap ][ :BufferLinePickClose<CR>
-nnoremap \\ :bd<CR>
-
-"スタート画面
 let g:startify_files_number = 5
 let g:startify_bookmarks = [
           \ { 'i': '~/.config/nvim/init.vim' },
@@ -257,8 +305,31 @@ let g:startify_lists = [
           \ { 'type': 'bookmarks', 'header': ['   Bookmarks'] },
           \ { 'type': 'sessions',  'header': ['   Sessions'] },
                   \ ]
+endif
+" ---------------------------------------------------------
 
-" // fern.vim
+
+" ---------------------------------------------------------
+" akinsho/bufferline.nvim
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
+" バッファ 
+nnoremap [[ :BufferLineCyclePrev<CR>
+nnoremap ]] :BufferLineCycleNext<CR>
+nnoremap [] :BufferLinePick<CR>
+nnoremap ][ :BufferLinePickClose<CR>
+nnoremap \\ :bd<CR>
+
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" lambdalisue/fern.vim - ファイルツリー
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
 " ドットファイル表示
 let g:fern#default_hidden=1
 " アイコンを表示（iTerm2 のフォントを変更する必要がある）
@@ -282,41 +353,94 @@ augroup fern-custom
   autocmd FileType fern call s:init_fern()
 augroup END
 
-" Telescope
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" nvim-telescope/telescope.nvim - fzf ファイル・コマンド検索
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
 nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<cr>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
 " nnoremap <Leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 " nnoremap <Leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
-" ターミナル
+lua << EOF
+require('telescope').setup{
+  defaults = { 
+    file_ignore_patterns = { 
+      "node_modules/",
+      ".git/",
+    }
+  },
+  extensions = {
+    ["ui-select"] = {
+      require("telescope.themes").get_dropdown {
+        -- even more opts
+      }
+    }
+  }
+}
+require('telescope').load_extension('flutter')
+require('telescope').load_extension('ui-select')
+require('telescope').load_extension('dap')
+EOF
+
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" akinsho/toggleterm.nvim ターミナル
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
 autocmd TermEnter term://*toggleterm#*
       \ tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>
 nnoremap <C-t> :ToggleTerm<CR>
 
-" キーマップチートシート
+lua << EOF
+require('toggleterm').setup{
+  direction = 'float',
+}
+EOF
+
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" liuchengxu/vim-which-key - キーマップチートシート
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
 nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
 nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 
-" ステータスバー
-let g:gotham_airline_emphasised_insert = 0
+endif
+" ---------------------------------------------------------
 
-" ---------- Lua ---------- 
+
+" ---------------------------------------------------------
+" whatyouhide/vim-gotham - テーマ
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
+colorscheme gotham256
+let g:gotham_airline_emphasised_kkinsert = 0
+
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" LSP
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
 lua << EOF
-
--- バッファ 
-vim.opt.termguicolors = true
-require("bufferline").setup{
-  options = {
-  }
-}
-
--- スクロール
-require('neoscroll').setup()
-
--- gcc でコメントアウト
-require('Comment').setup()
-
--- LSP
 require('fidget').setup{}
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 local on_attach = function(client, bufnr)
@@ -347,13 +471,7 @@ require("mason-lspconfig").setup_handlers({
     }
   end,
 })
--- require('mason-lspconfig').setup_handlers({ function(server)
---   require('lspconfig')[server].setup {
---     on_attach = on_attach,
---     capabilities = capabilities,
---   }
--- end
--- })
+
 -- false : do not show error/warning/etc.. by virtual text
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
@@ -415,48 +533,60 @@ require('flutter-tools').setup{
   }
 }
 
--- File tree
-require('telescope').setup{
-  defaults = { 
-    file_ignore_patterns = { 
-      "node_modules/",
-      ".git/",
-    }
-  },
-  extensions = {
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown {
-        -- even more opts
-      }
-    }
-  }
-}
-require('telescope').load_extension('flutter')
-require('telescope').load_extension('ui-select')
-require('telescope').load_extension('dap')
-
--- Debugging
-require("dapui").setup()
+-- Highlight
 require("nvim-treesitter.configs").setup {
   highlight = {
     enable = true,
   }
 }
 
--- Terminal
-require('toggleterm').setup{
-  direction = 'float',
-}
+-- Debugging
+require("dapui").setup()
+EOF
 
--- for windows
+endif
+" ---------------------------------------------------------
+
+" ---------------------------------------------------------
+" akinsho/bufferline.nvim
+" ---------------------------------------------------------
+if !exists('g:vscode')
+set termguicolors
+lua require("bufferline").setup{}
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" karb94/neoscroll.nvim - スムーススクロール
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua require('neoscroll').setup()
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" numToStr/Comment.nvim - コメントアウト
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua require('Comment').setup()
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" Windows 向けの特殊設定
+" ---------------------------------------------------------
+if !exists('g:vscode')
+
+lua << EOF
 -- https://github.com/neovim/neovim/issues/16957
 if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
   vim.opt.shellcmdflag = "-c"
 end
-
 EOF
-" ---------- Lua ---------- 
 
-endif " ---------- VSCode では無効 ---------- 
+endif
+" ---------------------------------------------------------
 
-colorscheme gotham256
