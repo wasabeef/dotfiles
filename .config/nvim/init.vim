@@ -75,8 +75,15 @@ set wrapscan
 set hlsearch
 " 置換の時 g オプションをデフォルトで有効にする
 set gdefault
-" Windows でもパスの区切り文字を / にする
-set shellslash
+
+if has('win64') || has('win32')
+  set shell=pwsh
+  set shellcmdflag=-c
+  " set shellslash " Windows でもパスの区切り文字を / にする
+  " set shellquote=\"
+  " set shellxquote=
+endif
+
 " ---------------------------------------------------------
 
 
@@ -176,7 +183,15 @@ let g:loaded_tarPlugin = 1
 let g:loaded_zip = 1
 let g:loaded_zipPlugin = 1
 
-call plug#begin('~/.config/nvim/plugged')
+
+" OS によって設定ファイルのパスが違う
+if has('mac')
+  call plug#begin('~/.config/nvim/plugged')
+endif
+
+if has('win64') || has('win32')
+  call plug#begin('~/AppData/Local/nvim/plugged')
+endif
 
 Plug 'tpope/vim-surround'
 Plug 'numToStr/Comment.nvim'
@@ -243,7 +258,6 @@ Plug 'j-hui/fidget.nvim'
 Plug 'onsails/lspkind-nvim'
 " LSP Flutter
 Plug 'akinsho/flutter-tools.nvim'
-
 " Debugging
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
@@ -319,7 +333,8 @@ nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>
 nnoremap ][ :BufferLinePickClose<CR>
-nnoremap \\ :bd<CR>
+nnoremap \\  :bp<CR>
+nnoremap \\\ :bd<CR>
 
 endif
 " ---------------------------------------------------------
@@ -335,7 +350,7 @@ let g:fern#default_hidden=1
 " アイコンを表示（iTerm2 のフォントを変更する必要がある）
 let g:fern#renderer = "nerdfont"
 " ツリーを開く
-nnoremap <silent> <C-q> :Fern . -width=40 -drawer -reveal=% -toggle<CR>
+nnoremap <silent> <C-n> :Fern . -width=30 -keep -drawer -reveal=% -toggle<CR>
 " アイコンにカラーをつける
 augroup my-glyph-palette
   autocmd! *
@@ -573,20 +588,3 @@ if !exists('g:vscode')
 lua require('Comment').setup()
 endif
 " ---------------------------------------------------------
-
-
-" ---------------------------------------------------------
-" Windows 向けの特殊設定
-" ---------------------------------------------------------
-if !exists('g:vscode')
-
-lua << EOF
--- https://github.com/neovim/neovim/issues/16957
-if vim.fn.has('win64') == 1 or vim.fn.has('win32') == 1 then
-  vim.opt.shellcmdflag = "-c"
-end
-EOF
-
-endif
-" ---------------------------------------------------------
-
