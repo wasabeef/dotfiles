@@ -1,11 +1,11 @@
-syntax on
-
 " 再読み込み
 command! ReloadVimrc source $MYVIMRC
 
 " ---------------------------------------------------------
 " 基本設定
 " ---------------------------------------------------------
+" Highlight
+syntax on
 " <Leader>を`<Space>`に設定
 let mapleader = "\<Space>"
 map <Space> <Leader>
@@ -44,7 +44,9 @@ set cursorline
 "　カーソルを行末の一つ先まで移動可能にする
 set virtualedit=onemore
 " ビープ音を消す
-set visualbell
+" set visualbell
+set vb t_vb=
+set novisualbell
 " 対応する括弧を強調表示
 set showmatch
 " 対応する括弧を表示する時間（最小設定）
@@ -54,6 +56,7 @@ set laststatus=2
 " ファイル名補完
 set wildmode=list:longest
 " 空白文字の表示
+set list
 set list listchars=tab:\▸\-
 " タブ文字をスペースにする
 set expandtab
@@ -190,9 +193,7 @@ let g:loaded_zipPlugin = 1
 " OS によって設定ファイルのパスが違う
 if has('mac')
   call plug#begin('~/.config/nvim/plugged')
-endif
-
-if has('win64') || has('win32')
+elseif has('win64') || has('win32')
   call plug#begin('~/AppData/Local/nvim/plugged')
 endif
 
@@ -235,9 +236,6 @@ Plug 'karb94/neoscroll.nvim'
 
 " Colorschema
 Plug 'whatyouhide/vim-gotham'
-
-" キーマップチートシート
-Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 
 " コードハイライト
 " e.g. :TSInstall <language_to_install>
@@ -393,7 +391,6 @@ lua << EOF
 require('telescope').setup{
   defaults = { 
     file_ignore_patterns = { 
-      "node_modules/",
       ".git/",
     }
   },
@@ -428,18 +425,6 @@ require('toggleterm').setup{
   direction = 'float',
 }
 EOF
-
-endif
-" ---------------------------------------------------------
-
-
-" ---------------------------------------------------------
-" liuchengxu/vim-which-key - キーマップチートシート
-" ---------------------------------------------------------
-if !exists('g:vscode')
-
-nnoremap <silent> <Leader>      :<C-u>WhichKey '<Space>'<CR>
-nnoremap <silent> <localleader> :<C-u>WhichKey  ','<CR>
 
 endif
 " ---------------------------------------------------------
