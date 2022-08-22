@@ -147,6 +147,9 @@ cnoremap WQ! wq!
 " Ctrl+s で保存
 nnoremap <C-s> :update<CR>
 
+" Ctrl+q で :q
+nnoremap <C-q> :q<CR>
+
 " w!!でsudoを忘れても保存
 cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
@@ -258,6 +261,10 @@ Plug 'j-hui/fidget.nvim'
 Plug 'onsails/lspkind-nvim'
 " LSP Flutter
 Plug 'akinsho/flutter-tools.nvim'
+" LSP エラーメッセージ
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'folke/trouble.nvim'
+
 " Debugging
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
@@ -350,7 +357,7 @@ let g:fern#default_hidden=1
 " アイコンを表示（iTerm2 のフォントを変更する必要がある）
 let g:fern#renderer = "nerdfont"
 " ツリーを開く
-nnoremap <silent> <C-n> :Fern . -width=30 -keep -drawer -reveal=% -toggle<CR>
+nnoremap <silent> <C-n> :Fern . -width=30 -drawer -reveal=% -toggle <CR>
 " アイコンにカラーをつける
 augroup my-glyph-palette
   autocmd! *
@@ -377,10 +384,10 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 
-nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<cr>
-nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<cr>
-" nnoremap <Leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-" nnoremap <Leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>
+nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
+" nnoremap <Leader>fb <cmd>lua require('telescope.builtin').buffers()<CR>
+" nnoremap <Leader>fh <cmd>lua require('telescope.builtin').help_tags()<CR>
 
 lua << EOF
 require('telescope').setup{
@@ -395,7 +402,7 @@ require('telescope').setup{
       require("telescope.themes").get_dropdown {
         -- even more opts
       }
-    }
+    },
   }
 }
 require('telescope').load_extension('flutter')
@@ -455,27 +462,35 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 
+" LSP Debugging
+nnoremap <Leader>k <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <Leader>f <cmd>lua vim.lsp.buf.formatting()<CR>
+nnoremap <Leader>r <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <Leader>d <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <Leader>D <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <Leader>i <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <Leader>t <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <Leader>n <cmd>lua vim.lsp.buf.rename()<CR>
+nnoremap <Leader>a <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <Leader>e <cmd>lua vim.diagnostic.open_float()<CR>
+nnoremap <Leader>] <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap <Leader>[ <cmd>lua vim.diagnostic.goto_prev()<CR>
+nnoremap <Leader>cf <cmd>lua require('telescope').extensions.flutter.commands()<CR>
+" エラーメッセージ
+nnoremap <Leader>tx <cmd>TroubleToggle<CR>
+nnoremap <Leader>tw <cmd>TroubleToggle workspace_diagnostics<CR>
+nnoremap <Leader>td <cmd>TroubleToggle document_diagnostics<CR>
+nnoremap <Leader>tq <cmd>TroubleToggle quickfix<CR>
+nnoremap <Leader>tl <cmd>TroubleToggle loclist<CR>
+nnoremap <Leader>tR <cmd>TroubleToggle lsp_references<CR>
+
 lua << EOF
-require('fidget').setup{}
+-- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 end
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-vim.keymap.set('n', '<Leader>k',  '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-vim.keymap.set('n', '<Leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>')
-vim.keymap.set('n', '<Leader>r', '<cmd>lua vim.lsp.buf.references()<CR>')
-vim.keymap.set('n', '<Leader>d', '<cmd>lua vim.lsp.buf.definition()<CR>')
-vim.keymap.set('n', '<Leader>D', '<cmd>lua vim.lsp.buf.declaration()<CR>')
-vim.keymap.set('n', '<Leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>')
-vim.keymap.set('n', '<Leader>t', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
-vim.keymap.set('n', '<Leader>n', '<cmd>lua vim.lsp.buf.rename()<CR>')
-vim.keymap.set('n', '<Leader>a', '<cmd>lua vim.lsp.buf.code_action()<CR>')
-vim.keymap.set('n', '<Leader>e', '<cmd>lua vim.diagnosti constc.open_float()<CR>')
-vim.keymap.set('n', '<Leader>]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
-vim.keymap.set('n', '<Leader>[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
-
-vim.keymap.set('n', '<Leader>cf', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>")
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
   function (server_name) 
@@ -488,9 +503,9 @@ require("mason-lspconfig").setup_handlers({
 })
 
 -- false : do not show error/warning/etc.. by virtual text
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
-)
+-- vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  -- vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
+-- )
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
   vim.lsp.handlers.hover, { separator = true }
 )
@@ -532,6 +547,8 @@ cmp.setup({
     ghost_text = true,
   },
 })
+
+-- Flutter -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 require('flutter-tools').setup{
   flutter_lookup_cmd = 'asdf where flutter',
   ui = { border = "rounded" },
@@ -548,14 +565,21 @@ require('flutter-tools').setup{
   }
 }
 
--- Highlight
+-- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("nvim-treesitter.configs").setup {
   highlight = {
     enable = true,
   }
 }
 
--- Debugging
+-- エラーメッセージ -- -- -- -- -- -- -- -- -- -- -- -
+require("trouble").setup {
+  position = "bottom",
+  height = 5,
+  -- auto_open = true,
+  auto_close = true,
+}
+-- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("dapui").setup()
 EOF
 
