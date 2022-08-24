@@ -200,8 +200,10 @@ endif
 Plug 'tpope/vim-surround'
 Plug 'numToStr/Comment.nvim'
 Plug 'tommcdo/vim-exchange'
+" incremental search improved
 Plug 'haya14busa/is.vim'
 Plug 'jiangmiao/auto-pairs'
+" スタート画面
 Plug 'mhinz/vim-startify'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'machakann/vim-highlightedyank'
@@ -234,6 +236,9 @@ Plug 'simeji/winresizer'
 " スクロール
 Plug 'karb94/neoscroll.nvim'
 
+" 通知
+Plug 'rcarriga/nvim-notify'
+
 " Colorschema
 Plug 'whatyouhide/vim-gotham'
 
@@ -243,6 +248,8 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " ファイル・テキスト検索(Fuzzy Finder)
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-ui-select.nvim'
+" 空白文字ハイライト
+Plug 'lukas-reineke/indent-blankline.nvim'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -257,11 +264,13 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'j-hui/fidget.nvim'
 " LSP アイコンを表示
 Plug 'onsails/lspkind-nvim'
-" LSP Flutter
-Plug 'akinsho/flutter-tools.nvim'
 " LSP エラーメッセージ
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'folke/trouble.nvim'
+" LSP ポップアップ
+Plug 'rmagatti/goto-preview'
+" Flutter
+Plug 'akinsho/flutter-tools.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -391,6 +400,7 @@ lua << EOF
 require('telescope').setup{
   defaults = { 
     file_ignore_patterns = { 
+      "node_modules",
       ".git/",
     }
   },
@@ -431,6 +441,17 @@ endif
 
 
 " ---------------------------------------------------------
+" rcarriga/nvim-notify - 通知
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua << EOF
+vim.notify = require("notify")
+EOF
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
 " whatyouhide/vim-gotham - テーマ
 " ---------------------------------------------------------
 if !exists('g:vscode')
@@ -451,23 +472,43 @@ if !exists('g:vscode')
 nnoremap <Leader>k <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <Leader>f <cmd>lua vim.lsp.buf.formatting()<CR>
 nnoremap <Leader>r <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <Leader>d <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <Leader>dd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <Leader>D <cmd>lua vim.lsp.buf.declaration()<CR>
-nnoremap <Leader>i <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <Leader>t <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <Leader>ii <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <Leader>tt <cmd>lua vim.lsp.buf.type_definition()<CR>
 nnoremap <Leader>n <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <Leader>a <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <Leader>e <cmd>lua vim.diagnostic.open_float()<CR>
 nnoremap <Leader>] <cmd>lua vim.diagnostic.goto_next()<CR>
 nnoremap <Leader>[ <cmd>lua vim.diagnostic.goto_prev()<CR>
-nnoremap <Leader>cf <cmd>lua require('telescope').extensions.flutter.commands()<CR>
+" LSP Popup
+nnoremap <Leader>d <cmd>lua require('goto-preview').goto_preview_definition()<CR>
+nnoremap <Leader>i <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
+nnoremap <Leader>t <cmd>lua require('goto-preview').goto_preview_type_definition()<CR>
 " エラーメッセージ
-nnoremap <Leader>tx <cmd>TroubleToggle<CR>
-nnoremap <Leader>tw <cmd>TroubleToggle workspace_diagnostics<CR>
-nnoremap <Leader>td <cmd>TroubleToggle document_diagnostics<CR>
-nnoremap <Leader>tq <cmd>TroubleToggle quickfix<CR>
-nnoremap <Leader>tl <cmd>TroubleToggle loclist<CR>
-nnoremap <Leader>tR <cmd>TroubleToggle lsp_references<CR>
+nnoremap <Leader>ee <cmd>TroubleToggle<CR>
+" nnoremap <Leader>tw <cmd>TroubleToggle workspace_diagnostics<CR>
+" nnoremap <Leader>td <cmd>TroubleToggle document_diagnostics<CR>
+" nnoremap <Leader>tq <cmd>TroubleToggle quickfix<CR>
+" nnoremap <Leader>tl <cmd>TroubleToggle loclist<CR>
+" nnoremap <Leader>tR <cmd>TroubleToggle lsp_references<CR>
+
+" Flutter
+function! s:trigger_hot_reload() abort
+    silent exec '!kill -SIGUSR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+endfunction
+function! s:trigger_hot_restart() abort
+    silent exec '!kill -SIGUSR2 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+endfunction
+function! s:dart()
+  command! FlutterHotReload call s:trigger_hot_reload()
+  command! FlutterHotRestart call s:trigger_hot_restart()
+  nnoremap <Leader>m <cmd>lua require('telescope').extensions.flutter.commands()<CR>
+endfunction
+augroup dart
+  autocmd!
+  autocmd BufRead,BufNewFile *.dart call s:dart()
+augroup end
 
 lua << EOF
 -- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
@@ -498,6 +539,7 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
   vim.lsp.handlers.signature_help, { separator = true }
 )
 
+-- Complete -- -- -- -- -- -- -- -- -- -- -- -- -- 
 local cmp = require('cmp')
 local lspkind = require('lspkind')
 cmp.setup({
@@ -539,6 +581,7 @@ require('flutter-tools').setup{
   ui = { border = "rounded" },
   widget_guides = { enabled = true },
   lsp = {
+    capabilities = capabilities,
     color = {
       enabled = true,
     },
@@ -547,7 +590,23 @@ require('flutter-tools').setup{
         vim.fn.expand("$HOME/.pub-cache"),
       }
     }
-  }
+  },
+  closing_tags = {
+    highlight = "ClosingTags",
+    prefix = "-> ",
+    enabled = true
+  },
+  dev_log = {
+    enabled = true,
+    open_cmd = "tabedit",
+  },
+  debugger = {
+    enabled = true,
+    register_configurations = function(_)
+      require("dap").configurations.dart = {}
+      require("dap.ext.vscode").load_launchjs()
+    end,
+  },
 }
 
 -- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
@@ -564,8 +623,22 @@ require("trouble").setup {
   -- auto_open = true,
   auto_close = true,
 }
+
+-- Status -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+require('fidget').setup{
+  text = {
+    spinner = 'moon',
+  },
+}
+
 -- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("dapui").setup()
+
+-- Popup -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+require('goto-preview').setup {
+  height = 40;
+  width = 160;
+}
 EOF
 
 endif
@@ -585,7 +658,17 @@ endif
 " karb94/neoscroll.nvim - スムーススクロール
 " ---------------------------------------------------------
 if !exists('g:vscode')
-lua require('neoscroll').setup()
+lua << EOF
+require('neoscroll').setup()
+local t = {}
+-- Syntax: t[keys] = {function, {function arguments}}
+t['<C-u>'] = {'scroll', {'-vim.wo.scroll', 'true', '100'}}
+t['<C-d>'] = {'scroll', { 'vim.wo.scroll', 'true', '100'}}
+t['<C-b>'] = {'scroll', {'-vim.api.nvim_win_get_height(0)', 'true', '200'}}
+t['<C-f>'] = {'scroll', { 'vim.api.nvim_win_get_height(0)', 'true', '200'}}
+
+require('neoscroll.config').set_mappings(t)
+EOF
 endif
 " ---------------------------------------------------------
 
