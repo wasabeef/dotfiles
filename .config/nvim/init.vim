@@ -214,11 +214,8 @@ Plug 'phaazon/hop.nvim'
 Plug 'markonm/traces.vim'
 
 " ファイルツリー
-Plug 'lambdalisue/fern.vim'
-Plug 'lambdalisue/fern-git-status.vim'
-Plug 'lambdalisue/nerdfont.vim'
-Plug 'lambdalisue/fern-renderer-nerdfont.vim'
-Plug 'lambdalisue/glyph-palette.vim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
 
 " ターミナル 
 Plug 'akinsho/toggleterm.nvim', {'tag' : 'v2.*'}
@@ -265,7 +262,6 @@ Plug 'j-hui/fidget.nvim'
 " LSP アイコンを表示
 Plug 'onsails/lspkind-nvim'
 " LSP エラーメッセージ
-Plug 'kyazdani42/nvim-web-devicons'
 Plug 'folke/trouble.nvim'
 " LSP ポップアップ
 Plug 'rmagatti/goto-preview'
@@ -355,32 +351,31 @@ endif
 
 
 " ---------------------------------------------------------
-" lambdalisue/fern.vim - ファイルツリー
+" kyazdani42/nvim-tree.lua - ファイルツリー
 " ---------------------------------------------------------
 if !exists('g:vscode')
 
-" ドットファイル表示
-let g:fern#default_hidden=1
-" アイコンを表示（iTerm2 のフォントを変更する必要がある）
-let g:fern#renderer = "nerdfont"
-" ツリーを開く
-nnoremap <silent> <C-n> :Fern . -width=30 -drawer -reveal=% -toggle <CR>
-" アイコンにカラーをつける
-augroup my-glyph-palette
-  autocmd! *
-  autocmd FileType fern call glyph_palette#apply()
-  autocmd FileType nerdtree,startify call glyph_palette#apply()
-augroup END
-function! s:init_fern() abort
-  " ツリーは行番号非表示
-  set nonumber
-  " ツリーを閉じる
-  nnoremap <silent><buffer><nowait> q :<C-u>quit<CR>
-endfunction
-augroup fern-custom
-  autocmd! *
-  autocmd FileType fern call s:init_fern()
-augroup END
+nnoremap <silent> <C-n> :NvimTreeToggle<CR>
+lua << EOF
+require("nvim-tree").setup({
+  view = {
+    adaptive_size = true,
+    mappings = {
+      list = {
+        { key = "/", action = "search_node" },
+        { key = "x", action = "system_open" },
+        { key = "s", action = "" },
+      },
+    },
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = false,
+  },
+})
+EOF
 
 endif
 " ---------------------------------------------------------
@@ -492,22 +487,36 @@ nnoremap <Leader>ee <cmd>TroubleToggle<CR>
 " nnoremap <Leader>tq <cmd>TroubleToggle quickfix<CR>
 " nnoremap <Leader>tl <cmd>TroubleToggle loclist<CR>
 " nnoremap <Leader>tR <cmd>TroubleToggle lsp_references<CR>
+" Debugging
+nnoremap <Leader>b <cmd>lua require('dap').toggle_breakpoint()<CR>
+nnoremap <Leader>bc <cmd>lua require('dap').continue()<CR>
+nnoremap <Leader>bi <cmd>lua require('dap').step_into()<CR>
+nnoremap <Leader>bo <cmd>lua require('dap').step_over()<CR>
+nnoremap <Leader>bu <cmd>lua require('dapui').toggle()<CR>
+" ブレイクポイントを全て削除
+function! s:clearBreakpoints() 
+  exec "lua require'dap'.list_breakpoints()"
+  for item in getqflist()
+    exec "exe " . item.lnum . "|lua require'dap'.toggle_breakpoint()"
+  endfor
+endfunction
+command! ClearBreakpoints call s:clearBreakpoints()
 
 " Flutter
 function! s:trigger_hot_reload() abort
-    silent exec '!kill -SIGUSR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+  silent exec '!kill -SIGUSR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
 endfunction
 function! s:trigger_hot_restart() abort
-    silent exec '!kill -SIGUSR2 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+  silent exec '!kill -SIGUSR2 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
 endfunction
-function! s:dart()
+function! s:flutter()
   command! FlutterHotReload call s:trigger_hot_reload()
   command! FlutterHotRestart call s:trigger_hot_restart()
   nnoremap <Leader>m <cmd>lua require('telescope').extensions.flutter.commands()<CR>
 endfunction
 augroup dart
   autocmd!
-  autocmd BufRead,BufNewFile *.dart call s:dart()
+  autocmd BufRead,BufNewFile *.dart call s:flutter()
 augroup end
 
 lua << EOF
@@ -579,7 +588,16 @@ cmp.setup({
 require('flutter-tools').setup{
   flutter_lookup_cmd = 'asdf where flutter',
   ui = { border = "rounded" },
+  decorations = {
+    statusline = {
+      app_version = false,
+      device = true,
+    }
+  },
   widget_guides = { enabled = true },
+  outline = {
+    auto_open = false
+  },
   lsp = {
     capabilities = capabilities,
     color = {
@@ -592,18 +610,27 @@ require('flutter-tools').setup{
     }
   },
   closing_tags = {
+    enabled = true,
     highlight = "ClosingTags",
     prefix = "-> ",
-    enabled = true
   },
   dev_log = {
-    enabled = true,
+    enabled = false,
     open_cmd = "tabedit",
   },
   debugger = {
     enabled = true,
-    register_configurations = function(_)
-      require("dap").configurations.dart = {}
+    run_via_dap = true,
+    register_configurations = function(paths)
+      -- require("dap").adapters.dart = {
+      --   type = "executable",
+      --   command = "flutter",
+      --   args = {"debug_adapter"}
+      -- }
+      -- require("dap").configurations.dart = {
+      --   dartSdkPath = paths.dart_sdk,
+      --   flutterSdkPath = paths.flutter_sdk,
+      -- }
       require("dap.ext.vscode").load_launchjs()
     end,
   },
@@ -632,7 +659,30 @@ require('fidget').setup{
 }
 
 -- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-require("dapui").setup()
+require("dapui").setup({
+  icons = { expanded = "▾", collapsed = "▸" },
+  expand_lines = vim.fn.has("nvim-0.7"),
+  layouts = {
+    {
+      elements = {
+        { id = "scopes", size = 0.25 },
+        "breakpoints",
+        "stacks",
+        "watches",
+      }, 
+      size = 30, -- columns
+      position = "left",
+    },
+    {
+      elements = {
+        "console",
+      },
+      size = 0.1,
+      position = "bottom",
+    },
+  
+  },
+})
 
 -- Popup -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require('goto-preview').setup {
