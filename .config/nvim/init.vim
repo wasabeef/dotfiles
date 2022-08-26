@@ -139,6 +139,16 @@ nmap sQ :<C-u>bd<CR>
 
 " ノーマルモードではセミコロンをコロンに
 nnoremap ; :
+" 入力モードでは;;で行末にセミコロン
+function! AddEndSemicolon()
+  let c = getline('.')[col('$') - 2]
+  if c != ';'
+    return 1
+  else
+    return 0
+  endif
+endfunction
+inoremap <expr>;; AddEndSemicolon() ? '<C-O>$;' : '<C-O>$'
 
 " 保存・終了時のタイポ修正
 cnoremap Q q
@@ -149,6 +159,7 @@ cnoremap WQ! wq!
 
 " Ctrl+s で保存
 nnoremap <C-s> :update<CR>
+nnoremap <silent> <s> :update<CR>
 
 " Ctrl+q で :q
 nnoremap <C-q> :q<CR>
@@ -199,7 +210,7 @@ endif
 
 Plug 'tpope/vim-surround'
 Plug 'numToStr/Comment.nvim'
-Plug 'tommcdo/vim-exchange'
+Plug 'machakann/vim-swap'
 " incremental search improved
 Plug 'haya14busa/is.vim'
 Plug 'jiangmiao/auto-pairs'
@@ -294,12 +305,8 @@ hi HopUnmatched guifg=#4B5263
 
 
 " ---------------------------------------------------------
-" tommcdo/vim-exchange
+" machakann/vim-swap
 " ---------------------------------------------------------
-" nmap cx <Plug>(Exchange)
-" xmap X <Plug>(Exchange)
-" nmap cxc <Plug>(ExchangeClear)
-" nmap cxx <Plug>(ExchangeLine)
 " ---------------------------------------------------------
 
 
@@ -501,6 +508,7 @@ function! s:clearBreakpoints()
   endfor
 endfunction
 command! ClearBreakpoints call s:clearBreakpoints()
+nnoremap <Leader>br <cmd>ClearBreakpoints<CR>
 
 " Flutter
 function! s:trigger_hot_reload() abort
@@ -601,7 +609,7 @@ require('flutter-tools').setup{
   lsp = {
     capabilities = capabilities,
     color = {
-      enabled = true,
+      enabled = false,
     },
     settings = {
       analysisExcludedFolders = {
@@ -639,7 +647,7 @@ require('flutter-tools').setup{
 -- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("nvim-treesitter.configs").setup {
   highlight = {
-    enable = true,
+    enable = false,
   }
 }
 
@@ -670,17 +678,9 @@ require("dapui").setup({
         "stacks",
         "watches",
       }, 
-      size = 30, -- columns
-      position = "left",
+      size = 45, -- columns
+      position = "right",
     },
-    {
-      elements = {
-        "console",
-      },
-      size = 0.1,
-      position = "bottom",
-    },
-  
   },
 })
 
