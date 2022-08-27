@@ -1,8 +1,4 @@
 # zsh
-if [[ "$OSTYPE" =~ ^darwin ]]; then
-  # Fig pre block. Keep at the top of this file.
-  [[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && . "$HOME/.fig/shell/zshrc.pre.zsh"
-fi
 
 ## Auto complete
 autoload -U compinit
@@ -41,64 +37,58 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
+
+autoload -U +X bashcompinit && bashcompinit
+    
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # fzf
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+    
+# direnv
+eval "$(direnv hook zsh)"
 
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
   linux*)
-    ;;
-  darwin*)
-    autoload -U +X bashcompinit && bashcompinit
-
-    # HomeBrew
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    export PATH="$PATH":"$HOME/.pub-cache/bin"
 
     # asdf
-    # cat ~/.asdfrc
+    . $HOME/.asdf/asdf.sh
+    . ~/.asdf/plugins/java/set-java-home.zsh
+
+    ## Android
+    export ANDROID_HOME="$HOME/Android/sdk"
+    export ANDROID_SDK_ROOT="$HOME/Android/sdk"
+    export PATH=$ANDROID_HOME/platform-tools:$PATH 
+    export PATH=$ANDROID_HOME/tools:$PATH
+    export PATH=$ANDROID_HOME/tools/bin:$PATH
+    export PATH=$ANDROID_HOME/emulator:$PATH
+    export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+
+    ## Flutter
+    export PATH="$PATH":"$HOME/.pub-cache/bin"
+    ;;
+  darwin*)
+    # HomeBrew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    # asdf
     . $(brew --prefix asdf)/asdf.sh
     . ~/.asdf/plugins/java/set-java-home.zsh
     
     ## Android
     export ANDROID_HOME="$HOME/Library/Android/sdk"
-    export PATH=$ANDROID_HOME/platform-tools:$PATH
+    export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+    export PATH=$ANDROID_HOME/platform-tools:$PATH 
+    export PATH=$ANDROID_HOME/tools:$PATH
     export PATH=$ANDROID_HOME/tools/bin:$PATH
     export PATH=$ANDROID_HOME/emulator:$PATH
     export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
     
-    ## Go
-    export GOPATH=$HOME/.go
-    export GOROOT=$( go env GOROOT )
-    export GOBIN=$GOROOT/bin
-    export PATH=$GOBIN:$PATH
-    
-    # direnv
-    eval "$(direnv hook zsh)"
-    
     ## Flutter
-    #export PATH="$PATH:/Applications/flutter/bin"
     export PATH="$PATH":"$HOME/.pub-cache/bin"
-    
-    ## GCP
-    export PATH=$HOME/google-cloud-sdk/bin:$PATH
-    
-    ## Fastlane
-    export PATH=$HOME/.fastlane/bin:$PATH
-    
-    ## Yarn
-    export PATH="$(yarn global bin):$PATH"
-    
-    ## Ruby
-    #export PATH="$HOME/.rbenv/bin:$PATH"
-    #eval "$(rbenv init - zsh)"
-    
-    ## Rust
-    export PATH=$HOME/.cargo/bin:$PATH
     
     ## Clang/LLVM
     export LLVM_PATH="$(brew --prefix llvm)"
@@ -107,11 +97,26 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export LDFLAGS="-L$LLVM_PATH/lib"
     export CPPFLAGS="-I$LLVM_PATH/include"
     ;;
-  msys*)
-    export PATH="$PATH":"$LOCALAPPDATA/Pub/Cache/bin"
-    ;;
   *)
 esac
+
+## GCP
+export PATH=$HOME/google-cloud-sdk/bin:$PATH
+    
+## Fastlane
+export PATH=$HOME/.fastlane/bin:$PATH
+    
+## Yarn
+export PATH="$(yarn global bin):$PATH"
+        
+## Rust
+export PATH=$HOME/.cargo/bin:$PATH
+
+## Go
+export GOPATH=$HOME/.go
+export GOROOT=$( go env GOROOT )
+export GOBIN=$GOROOT/bin
+export PATH=$GOBIN:$PATH
 
 # Exports
 export EDITOR='nvim'
@@ -128,8 +133,4 @@ alias ..="cd ../.."
 alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias .....="cd ../../../../.."
-
-if [[ "$OSTYPE" =~ ^darwin ]]; then
-  # Fig post block. Keep at the bottom of this file.
-  [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && . "$HOME/.fig/shell/zshrc.post.zsh"
-fi
+alias reload='exec -l $SHELL;source ~/.zshrc'
