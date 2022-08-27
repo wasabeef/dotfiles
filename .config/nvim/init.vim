@@ -204,6 +204,8 @@ let g:loaded_zipPlugin = 1
 " OS によって設定ファイルのパスが違う
 if has('mac')
   call plug#begin('~/.config/nvim/plugged')
+elseif has('linux')
+  call plug#begin('~/.config/nvim/plugged')
 elseif has('win64') || has('win32')
   call plug#begin('~/AppData/Local/nvim/plugged')
 endif
@@ -647,7 +649,7 @@ require('flutter-tools').setup{
 -- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("nvim-treesitter.configs").setup {
   highlight = {
-    enable = false,
+    enable = true,
   }
 }
 
@@ -730,3 +732,4 @@ if !exists('g:vscode')
 lua require('Comment').setup()
 endif
 " ---------------------------------------------------------
+
