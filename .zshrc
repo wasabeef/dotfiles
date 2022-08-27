@@ -54,7 +54,6 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     ;;
   darwin*)
     autoload -U +X bashcompinit && bashcompinit
-    complete -o nospace -C /usr/local/Cellar/go/1.15.2/libexec/bin/bitcomplete bit
 
     # HomeBrew
     eval "$(/opt/homebrew/bin/brew shellenv)"
