@@ -53,8 +53,6 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
   linux*)
     ;;
   darwin*)
-    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-    
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C /usr/local/Cellar/go/1.15.2/libexec/bin/bitcomplete bit
 
