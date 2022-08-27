@@ -48,7 +48,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# OS蛻･縺ｮ險ｭ螳・
+# OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
   linux*)
     ;;
