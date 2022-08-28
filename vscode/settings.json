@@ -1,11 +1,11 @@
 {
-  /// Windows ///////////////////////////////////////////
-  "window.zoomLevel": 0,
+  /// Window ////////////////////////////////////////////
   "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
+  "window.zoomLevel": 0,
   /// Editor ////////////////////////////////////////////
   "editor.wordWrap": "on",
   "editor.suggestSelection": "first",
-  "editor.fontFamily": "'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "'Cascadia Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": false
@@ -50,12 +50,14 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  /// Java //////////////////////////////////////////////
-  "java.jdt.ls.java.home": "/Users/a12622/.asdf/installs/java/zulu-11.50.19/zulu-11.jdk/Contents/Home",
+  /// Gradle ////////////////////////////////////////////
+  "gradle.allowParallelRun": true,
   /// Neovim ////////////////////////////////////////////
   "vscode-neovim.logOutputToConsole": true,
   "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
   "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/.config/nvim/init.vim",
+  "vscode-neovim.neovimExecutablePaths.win32": "C:\\Users\\dadad\\scoop\\shims\\nvim.exe",
+  "vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\dadad\\AppData\\Local\\nvim\\init.vim",
   "vscode-neovim.useCtrlKeysForInsertMode": true,
   "vscode-neovim.useCtrlKeysForNormalMode": true,
   /// Spell Checker /////////////////////////////////////
@@ -104,5 +106,6 @@
     "**/.factorypath": true
   },
   /// ファイルの末尾を改行で終わらせる
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
 }
+
