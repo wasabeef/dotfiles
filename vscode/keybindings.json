@@ -1,80 +1,189 @@
 // Place your key bindings in this file to override the defaults
 [
     {
+        "key": "space k",
+        "command": "editor.action.showHover",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "space d",
+        "command": "editor.action.goToDeclaration",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "space f",
+        "command": "notebook.formatCell",
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && inCompositeEditor && notebookEditable && !editorReadonly && activeEditor == 'workbench.editor.notebook'"
+    },
+    {
+        "key": "shift+alt+f",
+        "command": "-notebook.formatCell",
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && inCompositeEditor && notebookEditable && !editorReadonly && activeEditor == 'workbench.editor.notebook'"
+    },
+    {
+        "key": "space f",
+        "command": "editor.action.formatDocument",
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+    },
+    {
+        "key": "shift+alt+f",
+        "command": "-editor.action.formatDocument",
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+    },
+    {
+        "key": "space f",
+        "command": "editor.action.formatDocument.none",
+        "when": "editorTextFocus && !editorHasDocumentFormattingProvider && !editorReadonly"
+    },
+    {
+        "key": "shift+alt+f",
+        "command": "-editor.action.formatDocument.none",
+        "when": "editorTextFocus && !editorHasDocumentFormattingProvider && !editorReadonly"
+    },
+    {
+        "key": "space f",
+        "command": "notebook.format",
+        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'"
+    },
+    {
+        "key": "shift+alt+f",
+        "command": "-notebook.format",
+        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'"
+    },
+    {
+        "key": "oem_5 oem_5",
+        "command": "workbench.action.closeActiveEditor"
+    },
+    {
+        "key": "ctrl+f4",
+        "command": "-workbench.action.closeActiveEditor"
+    },
+    {
+        "key": "ctrl+o",
+        "command": "-workbench.action.files.openFile",
+        "when": "true"
+    },
+    {
+        "key": "ctrl+o",
+        "command": "-workbench.action.files.openFolderViaWorkspace",
+        "when": "!openFolderWorkspaceSupport && workbenchState == 'workspace'"
+    },
+    {
+        "key": "ctrl+o",
+        "command": "-workbench.action.files.openFileFolder",
+        "when": "isMacNative && openFolderWorkspaceSupport"
+    },
+    {
         "key": "ctrl+o",
         "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+p",
+        "command": "-workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "-workbench.action.gotoLine"
     },
     {
         "key": "ctrl+g",
         "command": "workbench.action.findInFiles"
     },
     {
-        "key": "ctrl+q",
-        "command": "workbench.action.toggleSidebarVisibility",
+        "key": "ctrl+shift+f",
+        "command": "-workbench.action.findInFiles"
     },
     {
-        "key": "ctrl+shift+q",
-        "command": "workbench.action.quickOpenView"
+        "key": "ctrl+p",
+        "command": "workbench.action.showAllSymbols"
     },
     {
-        "key": "ctrl+shift+d",
-        "command": "workbench.action.debug.continue",
-        "when": "debugState == 'stopped'"
+        "key": "ctrl+n",
+        "command": "-workbench.action.showAllSymbols"
     },
     {
-        "key": "f5",
-        "command": "-workbench.action.debug.continue",
-        "when": "debugState == 'stopped'"
+        "key": "ctrl+n",
+        "command": "-workbench.action.files.newUntitledFile"
     },
     {
-        "key": "ctrl+shift+d",
-        "command": "workbench.action.debug.start",
-        "when": "debuggersAvailable && debugState == 'inactive'"
+        "key": "ctrl+n",
+        "command": "-workbench.action.quickOpenSelectNext",
+        "when": "inQuickOpen"
     },
     {
-        "key": "f5",
-        "command": "-workbench.action.debug.start",
-        "when": "debuggersAvailable && debugState == 'inactive'"
+        "key": "ctrl+shift+n",
+        "command": "workbench.view.explorer",
+        "when": "viewContainer.workbench.view.explorer.enabled"
     },
     {
-        "key": "ctrl+r",
-        "command": "workbench.action.debug.run",
-        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
+        "key": "ctrl+shift+e",
+        "command": "-workbench.view.explorer",
+        "when": "viewContainer.workbench.view.explorer.enabled"
     },
     {
-        "key": "ctrl+d",
-        "command": "-workbench.action.debug.run",
-        "when": "debuggersAvailable && !inDebugMode && !terminalFocus"
+        "key": "ctrl+shift+n",
+        "command": "-workbench.action.quickOpen"
     },
     {
-        "key": "ctrl+r",
-        "command": "workbench.action.debug.run",
-        "when": "debuggersAvailable && debugState != 'initializing'"
+        "key": "ctrl+shift+n",
+        "command": "-workbench.action.newWindow"
     },
     {
-        "key": "ctrl+f5",
-        "command": "-workbench.action.debug.run",
-        "when": "debuggersAvailable && debugState != 'initializing'"
+        "key": "ctrl+n",
+        "command": "workbench.action.toggleSidebarVisibility"
     },
-    // Insert Modeでのカーソル移動
+    {
+        "key": "ctrl+b",
+        "command": "-workbench.action.toggleSidebarVisibility"
+    },
+    {
+        "key": "space i",
+        "command": "dart.goToSuper",
+        "when": "editorTextFocus && editorLangId == 'dart'"
+    },
+    {
+        "key": "ctrl+u",
+        "command": "-dart.goToSuper",
+        "when": "editorTextFocus && editorLangId == 'dart'"
+    },
+    {
+        "key": "space i",
+        "command": "java.action.navigateToSuperImplementation",
+        "when": "editorTextFocus && java:serverMode == 'Standard'"
+    },
+    {
+        "key": "ctrl+u",
+        "command": "-java.action.navigateToSuperImplementation",
+        "when": "editorTextFocus && java:serverMode == 'Standard'"
+    },
     {
         "key": "ctrl+l",
-        "command": "cursorRight",
-        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
-    },
-    {
-        "key": "ctrl+j",
-        "command": "cursorDown",
-        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
-    },
-    {
-        "key": "ctrl+k",
-        "command": "cursorUp",
-        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+        "command": "-notebook.centerActiveCell",
+        "when": "notebookEditorFocused"
     },
     {
         "key": "ctrl+h",
-        "command": "cursorLeft",
-        "when": "editorTextFocus && !editorReadOnly && vim.mode != 'Normal'"
+        "command": "-editor.action.startFindReplaceAction",
+        "when": "editorFocus || editorIsOpen"
     },
+    {
+        "key": "ctrl+h",
+        "command": "-java.action.showTypeHierarchy",
+        "when": "editorTextFocus && editorLangId == 'java'"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "-workbench.action.togglePanel"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "-expandLineSelection",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "ctrl+b",
+        "command": "-editor.action.goToDeclaration",
+        "when": "editorTextFocus"
+    }
 ]
+
