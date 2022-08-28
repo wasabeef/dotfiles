@@ -1,6 +1,197 @@
-" 共通設定
-source ~/.config/nvim/commons.vim
+" 再読み込み
+command! ReloadVimrc source $MYVIMRC
 
+" ---------------------------------------------------------
+" 基本設定
+" ---------------------------------------------------------
+" Highlight
+syntax on
+" <Leader>を`<Space>`に設定
+let mapleader = "\<Space>"
+map <Space> <Leader>
+" <LocalLeader>を`,`に設定
+let g:maplocalleader = ','
+map , <LocalLeader>
+
+" 保存されていないファイルがあるときは終了前に保存確認
+set confirm
+" バックアップファイル出力無効
+set nobackup
+" swpファイル出力無効
+set noswapfile
+" 外部でファイルに変更がされた場合は読みなおす
+set autoread
+" 保存されていないファイルがあるときでも別のファイルを開くことが出来る
+set hidden
+" 入力中のコマンドを表示する
+set showcmd
+" クリップボード連携
+set clipboard&
+set clipboard^=unnamedplus
+" マウスを有効にする
+set mouse=a
+" 文字コードの指定
+set enc=utf-8
+set fenc=utf-8
+set encoding=utf-8
+set termencoding=utf-8
+set fileencodings=utf-8,iso-2022-jp,cp932,euc-jp
+" 行番号
+set number
+" カーソル行をハイライト
+set cursorline
+" set cursorcolumn
+"　カーソルを行末の一つ先まで移動可能にする
+set virtualedit=onemore
+" ビープ音を消す
+" set visualbell
+set vb t_vb=
+set novisualbell
+" 対応する括弧を強調表示
+set showmatch
+" 対応する括弧を表示する時間（最小設定）
+set matchtime=1 
+" ステータス行を常に表示
+set laststatus=2
+" ファイル名補完
+set wildmode=list:longest
+" 空白文字の表示
+set list
+set list listchars=tab:\▸\-
+" タブ文字をスペースにする
+set expandtab
+set tabstop=2
+" 自動インデント（前の行から引き継ぎ）
+set autoindent
+" インデントのネスト上げ下げ
+set smartindent
+" 自動インデントでずれる幅
+set shiftwidth=2
+" 検索で大文字小文字を無視
+set ignorecase
+set smartcase
+" インクリメンタルサーチ
+set incsearch
+" 最後尾まで検索を終えたら次の検索で先頭に移る
+set wrapscan
+" 検索文字列をハイライトする
+set hlsearch
+" 置換の時 g オプションをデフォルトで有効にする
+set gdefault
+
+if has('win64') || has('win32')
+  set shell=pwsh
+  set shellcmdflag=-c
+  " set shellslash " Windows でもパスの区切り文字を / にする
+  " set shellquote=\"
+  " set shellxquote=
+endif
+
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" キーマップ
+" ---------------------------------------------------------
+" ESC連打でハイライト解除
+map <Esc><Esc> :nohlsearch<CR><Esc>
+
+" 折り返し時に表示行単位での移動できるようにする
+nnoremap j gj
+vnoremap j gj
+nnoremap k gk
+vnoremap k gk
+
+" タブの移動
+nmap tf :tabfirst<CR>
+nmap tl :tablast<CR>
+nmap tt :tabnext<CR>
+nmap T :tabprevious<CR>
+nmap tc :tabclose<CR>
+nmap to :tabonly<CR>
+nmap tn :tabnew<CR>
+
+" 画面分割
+" https://tamata78.hatenablog.com/entry/2015/10/15/214921
+" s を無効
+nmap s <Nop>
+nmap sj <C-w>j
+nmap sk <C-w>k
+nmap sl <C-w>l
+nmap sh <C-w>h
+nmap sJ <C-w>J
+nmap sK <C-w>K
+nmap sL <C-w>L
+nmap sH <C-w>H
+nmap sn gt
+nmap sp gT
+nmap s= <C-w>=
+nmap sw <C-w>w
+nmap so <C-w>_<C-w><Bar>
+nmap sO <C-w>=
+nmap sN :<C-u>bn<CR>
+nmap sP :<C-u>bp<CR>
+nmap st :<C-u>tabnew<CR>
+nmap ss :<C-u>sp<CR>
+nmap sv :<C-u>vs<CR>
+nmap sq :<C-u>q<CR>
+nmap sQ :<C-u>bd<CR>
+
+" ノーマルモードではセミコロンをコロンに
+nnoremap ; :
+" 入力モードでは;;で行末にセミコロン
+function! AddEndSemicolon()
+  let c = getline('.')[col('$') - 2]
+  if c != ';'
+    return 1
+  else
+    return 0
+  endif
+endfunction
+inoremap <expr>;; AddEndSemicolon() ? '<C-O>$;' : '<C-O>$'
+
+" 保存・終了時のタイポ修正
+cnoremap Q q
+cnoremap Q! q!
+cnoremap W w
+cnoremap W! w!
+cnoremap WQ! wq!
+
+" Ctrl+s で保存
+nnoremap <C-s> :update<CR>
+nnoremap <silent> <s> :update<CR>
+
+" Ctrl+q で :q
+nnoremap <C-q> :q<CR>
+
+" w!!でsudoを忘れても保存
+cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
+
+" 入力モード中のカーソル移動 
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
+" 対象の行を移動
+nnoremap <C-Up> "zdd<Up>"zP
+nnoremap <C-Down> "zdd"zp
+" 対象の複数行を移動
+vnoremap <C-Up> "zx<Up>"zP`[V`]
+vnoremap <C-Down> "zx"zp`[V`]
+
+" Spaceを押した後にrを押すと :%s/// が自動で入力される
+nnoremap <Leader>r :%s///g<Left><Left><Left>
+
+" コマンドラインウィンドウ (:~)
+" 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
+cnoremap <expr> <C-n> wildmenumode() ? "\<c-n>" : "\<down>"
+cnoremap <expr> <C-p> wildmenumode() ? "\<c-p>" : "\<up>"
+" ---------------------------------------------------------
+
+" ---------------------------------------------------------
+" キーマップを vim or ide どちらに流すか
+" ---------------------------------------------------------
 sethandler <C-B> a:vim
 sethandler <C-D> a:vim
 sethandler <C-E> a:vim
@@ -19,6 +210,9 @@ sethandler <C-T> a:vim
 sethandler <C-V> a:vim
 sethandler <C-W> a:vim
 
+" ---------------------------------------------------------
+" プラグイン管理
+" ---------------------------------------------------------
 set surround
 set easymotion
 set commentary
