@@ -1,5 +1,4 @@
 # zsh
-
 ## Auto complete
 autoload -U compinit
 compinit
@@ -36,7 +35,6 @@ setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history 
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
-
 
 autoload -U +X bashcompinit && bashcompinit
     
@@ -134,3 +132,7 @@ alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias .....="cd ../../../../.."
 alias reload='exec -l $SHELL;source ~/.zshrc'
+alias emu='emulator @$(emulator -list-avds | peco) &!'
+alias emu-ls='avdmanager list avd'
+alias simu='open -a Simulator'
+alias simu-ls='xcrun simctl list'
