@@ -1,6 +1,15 @@
 # zsh
+# Auto compile for speed
+if [ ~/.zshrc -nt ~/.zshrc.zwc ]; then
+  zcompile ~/.zshrc
+fi
+# Exports
+export EDITOR='nvim'
+export VISUAL='nvim'
+export PAGER='less'
+
 ## Auto complete
-autoload -U compinit
+autoload -Uz compinit
 compinit
 zstyle ':completion:*' list-colors di=34 fi=0
 zstyle ':completion:*:default' menu select=1
@@ -42,11 +51,11 @@ autoload -U +X bashcompinit && bashcompinit
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # fzf
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
     
 # direnv
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"
 
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
@@ -116,11 +125,6 @@ export GOROOT=$( go env GOROOT )
 export GOBIN=$GOROOT/bin
 export PATH=$GOBIN:$PATH
 
-# Exports
-export EDITOR='nvim'
-export VISUAL='nvim'
-export PAGER='less'
-
 ## Aliases
 alias vi='nvim'
 alias vim='nvim'
@@ -132,7 +136,7 @@ alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias .....="cd ../../../../.."
 alias reload='exec -l $SHELL;source ~/.zshrc'
-alias emu='emulator @$(emulator -list-avds | peco) &!'
+alias emu='emulator @$(emulator -list-avds | peco)'
 alias emu-ls='avdmanager list avd'
 alias simu='open -a Simulator'
 alias simu-ls='xcrun simctl list'
