@@ -260,6 +260,8 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-ui-select.nvim'
 " 空白文字ハイライト
 Plug 'lukas-reineke/indent-blankline.nvim'
+" カラーコード
+Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -268,6 +270,7 @@ Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
 " LSP スニペット
 Plug 'hrsh7th/vim-vsnip'
 " LSP status 表示
@@ -280,6 +283,8 @@ Plug 'folke/trouble.nvim'
 Plug 'rmagatti/goto-preview'
 " Flutter
 Plug 'akinsho/flutter-tools.nvim'
+" TypeScript
+Plug 'jose-elias-alvarez/typescript.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -303,12 +308,6 @@ hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
 hi HopUnmatched guifg=#4B5263
-" ---------------------------------------------------------
-
-
-" ---------------------------------------------------------
-" machakann/vim-swap
-" ---------------------------------------------------------
 " ---------------------------------------------------------
 
 
@@ -373,6 +372,9 @@ require("nvim-tree").setup({
       list = {
         { key = "/", action = "search_node" },
         { key = "x", action = "system_open" },
+        { key = "?", action = "toggle_help" },
+        { key = "t", action = "tabnew" },
+        { key = "<C-t>", action = "" },
         { key = "s", action = "" },
       },
     },
@@ -468,81 +470,64 @@ endif
 
 
 " ---------------------------------------------------------
+" RRethy/vim-hexokinase
+" ---------------------------------------------------------
+let g:Hexokinase_highlighters = [ 'virtual' ]
+let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
+" ---------------------------------------------------------
+
+" ---------------------------------------------------------
 " LSP
 " ---------------------------------------------------------
 if !exists('g:vscode')
-
-" LSP Debugging
-nnoremap <Leader>k <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <Leader>f <cmd>lua vim.lsp.buf.formatting()<CR>
-nnoremap <Leader>r <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <Leader>dd <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <Leader>D <cmd>lua vim.lsp.buf.declaration()<CR>
-nnoremap <Leader>ii <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <Leader>tt <cmd>lua vim.lsp.buf.type_definition()<CR>
-nnoremap <Leader>n <cmd>lua vim.lsp.buf.rename()<CR>
-nnoremap <Leader>a <cmd>lua vim.lsp.buf.code_action()<CR>
-nnoremap <Leader>e <cmd>lua vim.diagnostic.open_float()<CR>
-nnoremap <Leader>] <cmd>lua vim.diagnostic.goto_next()<CR>
-nnoremap <Leader>[ <cmd>lua vim.diagnostic.goto_prev()<CR>
-" LSP Popup
-nnoremap <Leader>d <cmd>lua require('goto-preview').goto_preview_definition()<CR>
-nnoremap <Leader>i <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
-nnoremap <Leader>t <cmd>lua require('goto-preview').goto_preview_type_definition()<CR>
-" エラーメッセージ
-nnoremap <Leader>ee <cmd>TroubleToggle<CR>
-" nnoremap <Leader>tw <cmd>TroubleToggle workspace_diagnostics<CR>
-" nnoremap <Leader>td <cmd>TroubleToggle document_diagnostics<CR>
-" nnoremap <Leader>tq <cmd>TroubleToggle quickfix<CR>
-" nnoremap <Leader>tl <cmd>TroubleToggle loclist<CR>
-" nnoremap <Leader>tR <cmd>TroubleToggle lsp_references<CR>
-" Debugging
-nnoremap <Leader>b <cmd>lua require('dap').toggle_breakpoint()<CR>
-nnoremap <Leader>bc <cmd>lua require('dap').continue()<CR>
-nnoremap <Leader>bi <cmd>lua require('dap').step_into()<CR>
-nnoremap <Leader>bo <cmd>lua require('dap').step_over()<CR>
-nnoremap <Leader>bu <cmd>lua require('dapui').toggle()<CR>
-" ブレイクポイントを全て削除
-function! s:clearBreakpoints() 
-  exec "lua require'dap'.list_breakpoints()"
-  for item in getqflist()
-    exec "exe " . item.lnum . "|lua require'dap'.toggle_breakpoint()"
-  endfor
-endfunction
-command! ClearBreakpoints call s:clearBreakpoints()
-nnoremap <Leader>br <cmd>ClearBreakpoints<CR>
-
-" Flutter
-function! s:trigger_hot_reload() abort
-  silent exec '!kill -SIGUSR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
-endfunction
-function! s:trigger_hot_restart() abort
-  silent exec '!kill -SIGUSR2 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
-endfunction
-function! s:flutter()
-  command! FlutterHotReload call s:trigger_hot_reload()
-  command! FlutterHotRestart call s:trigger_hot_restart()
-  nnoremap <Leader>m <cmd>lua require('telescope').extensions.flutter.commands()<CR>
-endfunction
-augroup dart
-  autocmd!
-  autocmd BufRead,BufNewFile *.dart call s:flutter()
-augroup end
-
 lua << EOF
 -- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  -- LSP Debugging
+  vim.keymap.set('n', '<Leader>k', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts)
+  vim.keymap.set('n', '<Leader>r', vim.lsp.buf.references, bufopts)
+  vim.keymap.set('n', '<Leader>dd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', '<Leader>D', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', '<Leader>ii', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<Leader>tt', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', '<Leader>e', vim.diagnostic.open_float, bufopts)
+  vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, bufopts)
+  vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, bufopts)
+  -- LSP Popup
+  vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
+  -- エラーメッセージ
+  vim.keymap.set('n', '<Leader>ee', "<cmd>TroubleToggle<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>tw', "<cmd>TroubleToggle workspace_diagnostics<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>td', "<cmd>TroubleToggle document_diagnostics<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>tq', "<cmd>TroubleToggle quickfix<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>tl', "<cmd>TroubleToggle loclist<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>tR', "<cmd>TroubleToggle lsp_references<CR>", bufopts)
+  -- Debugging
+  vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
 end
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
   function (server_name) 
     require("lspconfig")[server_name].setup {
-        flags = {
-            debounce_text_changes = 150,
-        },
+      on_attach = on_attach,
+      flags = {
+        debounce_text_changes = 150,
+      },
     }
   end,
 })
@@ -579,8 +564,8 @@ cmp.setup({
   sources = {
     { name = "nvim_lsp" },
     { name = "vsnip" },
-    -- { name = "buffer" },
-    -- { name = "path" },
+    { name = "buffer" },
+    { name = "path" },
   },
   mapping = cmp.mapping.preset.insert({
     ["<C-p>"] = cmp.mapping.select_prev_item(),
@@ -609,9 +594,14 @@ require('flutter-tools').setup{
     auto_open = false
   },
   lsp = {
+    on_attach = function(client, bunfs)
+      local bufopts = { noremap=true, silent=true, buffer=bufnr }
+      vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", bufopts)
+      on_attach(client, bunfs)
+    end,
     capabilities = capabilities,
     color = {
-      enabled = false,
+      enabled = true,
     },
     settings = {
       analysisExcludedFolders = {
@@ -632,19 +622,20 @@ require('flutter-tools').setup{
     enabled = true,
     run_via_dap = true,
     register_configurations = function(paths)
-      -- require("dap").adapters.dart = {
-      --   type = "executable",
-      --   command = "flutter",
-      --   args = {"debug_adapter"}
-      -- }
-      -- require("dap").configurations.dart = {
-      --   dartSdkPath = paths.dart_sdk,
-      --   flutterSdkPath = paths.flutter_sdk,
-      -- }
       require("dap.ext.vscode").load_launchjs()
     end,
   },
 }
+
+-- TypeScript -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+require("typescript").setup({
+    disable_commands = false, -- prevent the plugin from creating Vim commands
+    debug = false,
+    server = {
+      on_attach = on_attach,
+    },
+})
+
 
 -- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("nvim-treesitter.configs").setup {
@@ -665,6 +656,11 @@ require("trouble").setup {
 require('fidget').setup{
   text = {
     spinner = 'moon',
+  },
+  timer = {
+    spinner_rate = 125,       -- frame rate of spinner animation, in ms
+    fidget_decay = 1000000,      -- how long to keep around empty fidget, in ms
+    task_decay = 3000,        -- how long to keep around completed task, in ms
   },
 }
 
