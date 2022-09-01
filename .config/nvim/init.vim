@@ -281,6 +281,8 @@ Plug 'onsails/lspkind-nvim'
 Plug 'folke/trouble.nvim'
 " LSP ポップアップ
 Plug 'rmagatti/goto-preview'
+" 定義・シンボル
+Plug 'liuchengxu/vista.vim'
 " Flutter
 Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
@@ -596,12 +598,14 @@ require('flutter-tools').setup{
   },
   widget_guides = { enabled = true },
   outline = {
+    open_cmd = "rightbelow 50vnew",
     auto_open = false
   },
   lsp = {
     on_attach = function(client, bunfs)
       local bufopts = { noremap=true, silent=true, buffer=bufnr }
       vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", bufopts)
+      vim.keymap.set('n', '<Leader>o', "<cmd>FlutterOutlineToggle<CR>", bufopts)
       on_attach(client, bunfs)
     end,
     capabilities = capabilities,
@@ -681,8 +685,8 @@ require("dapui").setup({
         "stacks",
         "watches",
       }, 
-      size = 45, -- columns
-      position = "right",
+      size = 10, -- columns
+      position = "bottom",
     },
   },
 })
@@ -693,6 +697,13 @@ require('goto-preview').setup {
   width = 160;
 }
 EOF
+
+"" Vista -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+let g:vista_default_executive = 'nvim_lsp'
+let g:vista#renderer#enable_icon = 1
+let g:vista_sidebar_position = 'rightbelow 50vnew'
+
+nnoremap <Leader>v <cmd>Vista!!<CR>
 
 endif
 " ---------------------------------------------------------
