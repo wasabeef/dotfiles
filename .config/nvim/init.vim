@@ -79,6 +79,8 @@ set hlsearch
 " 置換の時 g オプションをデフォルトで有効にする
 set gdefault
 
+set termguicolors
+
 if has('win64') || has('win32')
   set shell=pwsh
   set shellcmdflag=-c
@@ -427,6 +429,7 @@ require('telescope').setup{
 }
 require('telescope').load_extension('ui-select')
 require('telescope').load_extension('flutter')
+require('telescope').load_extension('notify')
 require('telescope').load_extension('dap')
 EOF
 
@@ -444,9 +447,9 @@ autocmd TermEnter term://*toggleterm#*
 nnoremap <C-t> :ToggleTerm<CR>
 
 lua << EOF
-require('toggleterm').setup{
+require('toggleterm').setup({
   direction = 'float',
-}
+})
 EOF
 
 endif
@@ -459,6 +462,16 @@ endif
 if !exists('g:vscode')
 lua << EOF
 vim.notify = require("notify")
+require("notify").setup({
+  stages = "slide",
+  render = "default",
+  background_colour = "Normal",
+  level = 2, -- trace = 0, debug, info, warn, error
+  timeout = 3000,
+  fps = 60,
+  on_open = nil,
+  on_close = nil,
+})
 EOF
 endif
 " ---------------------------------------------------------
@@ -712,7 +725,6 @@ endif
 " akinsho/bufferline.nvim
 " ---------------------------------------------------------
 if !exists('g:vscode')
-set termguicolors
 lua require("bufferline").setup{}
 endif
 " ---------------------------------------------------------
