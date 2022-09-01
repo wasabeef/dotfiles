@@ -1,8 +1,4 @@
 # zsh
-# Auto compile for speed
-if [ ~/.zshrc -nt ~/.zshrc.zwc ]; then
-  zcompile ~/.zshrc
-fi
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
@@ -28,9 +24,9 @@ zstyle ':vcs_info:*' enable git
 
 ## Save command history
 HISTFILE="$HOME/.zsh_history"
-HISTSIZE=10000000
-HISTFILESIZE=10000000
-SAVEHIST=10000000
+HISTSIZE=10000
+HISTFILESIZE=10000
+SAVEHIST=10000
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
@@ -45,7 +41,7 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
-autoload -U +X bashcompinit && bashcompinit
+autoload -Uz +X bashcompinit && bashcompinit
     
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -79,11 +75,20 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     ;;
   darwin*)
     # HomeBrew
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    # eval "$(/opt/homebrew/bin/brew shellenv)"
+    export HOMEBREW_PREFIX="/opt/homebrew";
+    export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
+    export HOMEBREW_REPOSITORY="/opt/homebrew";
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
+    export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
+    export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
 
     # asdf
-    . $(brew --prefix asdf)/asdf.sh
-    . ~/.asdf/plugins/java/set-java-home.zsh
+    # . $(brew --prefix asdf)/asdf.sh
+    . /opt/homebrew/opt/asdf/asdf.sh
+    # . ~/.asdf/plugins/java/set-java-home.zsh
+    export JAVA_HOME=$(/usr/libexec/java_home)
+    export JDK_HOME=${JAVA_HOME}
     
     ## Android
     export ANDROID_HOME="$HOME/Library/Android/sdk"
@@ -98,7 +103,8 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export PATH="$PATH":"$HOME/.pub-cache/bin"
     
     ## Clang/LLVM
-    export LLVM_PATH="$(brew --prefix llvm)"
+    # export LLVM_PATH="$(brew --prefix llvm)"
+    export LLVM_PATH="/opt/homebrew/opt/llvm"
     export PATH="$LLVM_PATH/bin:${PATH}"
     
     export LDFLAGS="-L$LLVM_PATH/lib"
@@ -128,6 +134,7 @@ export PATH=$GOBIN:$PATH
 ## Aliases
 alias vi='nvim'
 alias vim='nvim'
+alias neovim='nvim'
 alias c="clear"
 alias ll='ls -laF'
 alias .="cd .."
