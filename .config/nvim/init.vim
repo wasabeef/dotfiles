@@ -398,9 +398,9 @@ endif
 if !exists('g:vscode')
 
 nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>
+nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
-" nnoremap <Leader>fb <cmd>lua require('telescope.builtin').buffers()<CR>
-" nnoremap <Leader>fh <cmd>lua require('telescope.builtin').help_tags()<CR>
+nnoremap <silent> <C-Space> <cmd>lua require('telescope.builtin').commands()<CR>
 
 lua << EOF
 require('telescope').setup{
@@ -408,6 +408,11 @@ require('telescope').setup{
     file_ignore_patterns = { 
       "node_modules",
       ".git/",
+    },
+    mappings = {
+      i = {
+        ["<C-q>"] = "close",
+      }
     }
   },
   extensions = {
@@ -418,8 +423,8 @@ require('telescope').setup{
     },
   }
 }
-require('telescope').load_extension('flutter')
 require('telescope').load_extension('ui-select')
+require('telescope').load_extension('flutter')
 require('telescope').load_extension('dap')
 EOF
 
@@ -523,12 +528,12 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
   function (server_name) 
-    require("lspconfig")[server_name].setup {
-      on_attach = on_attach,
-      flags = {
-        debounce_text_changes = 150,
-      },
-    }
+    -- require("lspconfig")[server_name].setup {
+    --   on_attach = on_attach,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
   end,
 })
 
@@ -658,9 +663,9 @@ require('fidget').setup{
     spinner = 'moon',
   },
   timer = {
-    spinner_rate = 125,       -- frame rate of spinner animation, in ms
-    fidget_decay = 1000000,      -- how long to keep around empty fidget, in ms
-    task_decay = 3000,        -- how long to keep around completed task, in ms
+    spinner_rate = 125,
+    fidget_decay = 1000000,
+    task_decay = 3000,
   },
 }
 
