@@ -141,6 +141,10 @@ nmap sQ :<C-u>bd<CR>
 
 " ノーマルモードではセミコロンをコロンに
 nnoremap ; :
+" ノーマルモードでは 0 で行頭、9 で行末
+nnoremap 0 ^
+nnoremap 9 $
+
 " 入力モードでは;;で行末にセミコロン
 function! AddEndSemicolon()
   let c = getline('.')[col('$') - 2]
@@ -202,7 +206,6 @@ let g:loaded_tarPlugin = 1
 let g:loaded_zip = 1
 let g:loaded_zipPlugin = 1
 
-
 " OS によって設定ファイルのパスが違う
 if has('mac')
   call plug#begin('~/.config/nvim/plugged')
@@ -217,7 +220,7 @@ Plug 'numToStr/Comment.nvim'
 Plug 'machakann/vim-swap'
 " incremental search improved
 Plug 'haya14busa/is.vim'
-Plug 'jiangmiao/auto-pairs'
+Plug 'windwp/nvim-autopairs'
 " スタート画面
 Plug 'mhinz/vim-startify'
 Plug 'editorconfig/editorconfig-vim'
@@ -289,6 +292,10 @@ Plug 'liuchengxu/vista.vim'
 Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
 Plug 'jose-elias-alvarez/typescript.nvim'
+" Java
+Plug 'mfussenegger/nvim-jdtls'
+" Android
+Plug 'hsanson/vim-android'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
@@ -405,6 +412,7 @@ nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden
 nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
 nnoremap <silent> <C-Space> <cmd>lua require('telescope.builtin').commands()<CR>
+nnoremap <silent> <Leader>n <cmd>Telescope notify<CR>
 
 lua << EOF
 require('telescope').setup{
@@ -545,6 +553,20 @@ require("mason-lspconfig").setup_handlers({
   function (server_name) 
     -- require("lspconfig")[server_name].setup {
     --   on_attach = on_attach,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
+    -- require("lspconfig")["jdtls"].setup {
+    --   on_attach = on_attach,
+    --   capabilities = capabilities,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
+    -- require("lspconfig")["kotlin_language_server"].setup {
+    --   on_attach = on_attach,
+    --   capabilities = capabilities,
     --   flags = {
     --     debounce_text_changes = 150,
     --   },
@@ -711,13 +733,22 @@ require('goto-preview').setup {
 }
 EOF
 
-"" Vista -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+"" Vista """""""""""""""""""""""""""""""""""""""""
 let g:vista_default_executive = 'nvim_lsp'
 let g:vista#renderer#enable_icon = 1
 let g:vista_sidebar_position = 'rightbelow 50vnew'
-
 nnoremap <Leader>v <cmd>Vista!!<CR>
 
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" hsanson/vim-android
+" ---------------------------------------------------------
+if !exists('g:vscode')
+let g:gradle_path = $GRADLE_HOME
+let g:android_sdk_path = $ANDROID_HOME
 endif
 " ---------------------------------------------------------
 
@@ -754,6 +785,17 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 lua require('Comment').setup()
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" windwp/nvim-autopairs
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua << EOF
+require("nvim-autopairs").setup {}
+EOF
 endif
 " ---------------------------------------------------------
 
