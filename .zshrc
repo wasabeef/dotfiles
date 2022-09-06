@@ -1,12 +1,15 @@
 # zsh
+
+# Porfile
+# zmodload zsh/zprof && zprof
+
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
 
 ## Auto complete
-autoload -Uz compinit
-compinit
+autoload -Uz compinit && compinit
 zstyle ':completion:*' list-colors di=34 fi=0
 zstyle ':completion:*:default' menu select=1
 setopt PRINT_EIGHT_BIT
@@ -47,12 +50,9 @@ autoload -Uz +X bashcompinit && bashcompinit
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # fzf
-# export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
     
-# direnv
-# eval "$(direnv hook zsh)"
-
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
   linux*)
@@ -76,6 +76,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
   darwin*)
     # HomeBrew
     # eval "$(/opt/homebrew/bin/brew shellenv)"
+    # export GRADLE_HOME=$(asdf where gradle)
     export HOMEBREW_PREFIX="/opt/homebrew";
     export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
     export HOMEBREW_REPOSITORY="/opt/homebrew";
@@ -131,12 +132,19 @@ export GOROOT=$( go env GOROOT )
 export GOBIN=$GOROOT/bin
 export PATH=$GOBIN:$PATH
 
+# direnv
+eval "$(direnv hook zsh)"
+
 ## Aliases
 alias vi='nvim'
 alias vim='nvim'
 alias neovim='nvim'
 alias c="clear"
-alias ll='ls -laF'
+alias ls='lsd'
+alias l='ls -l'
+alias la='ls -a'
+alias lla='ls -la'
+alias lt='ls --tree'
 alias .="cd .."
 alias ..="cd ../.."
 alias ...="cd ../../.."
@@ -147,3 +155,8 @@ alias emu='emulator @$(emulator -list-avds | peco)'
 alias emu-ls='avdmanager list avd'
 alias simu='open -a Simulator'
 alias simu-ls='xcrun simctl list'
+
+# Profile
+# if (which zprof > /dev/null 2>&1) ;then
+#   zprof | less
+# fi
