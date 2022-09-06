@@ -362,8 +362,8 @@ nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>
 nnoremap ][ :BufferLinePickClose<CR>
-nnoremap \\  :bp<CR>
-nnoremap \\\ :bd<CR>
+nnoremap \\ :bd<CR>
+nnoremap \\\  :bp<CR>
 
 endif
 " ---------------------------------------------------------
@@ -411,7 +411,7 @@ if !exists('g:vscode')
 nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>
 nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
-nnoremap <silent> <C-Space> <cmd>lua require('telescope.builtin').commands()<CR>
+nnoremap <silent> <C-c> <cmd>lua require('telescope.builtin').commands()<CR>
 nnoremap <silent> <Leader>n <cmd>Telescope notify<CR>
 
 lua << EOF
@@ -557,20 +557,20 @@ require("mason-lspconfig").setup_handlers({
     --     debounce_text_changes = 150,
     --   },
     -- }
-    -- require("lspconfig")["jdtls"].setup {
-    --   on_attach = on_attach,
-    --   capabilities = capabilities,
-    --   flags = {
-    --     debounce_text_changes = 150,
-    --   },
-    -- }
-    -- require("lspconfig")["kotlin_language_server"].setup {
-    --   on_attach = on_attach,
-    --   capabilities = capabilities,
-    --   flags = {
-    --     debounce_text_changes = 150,
-    --   },
-    -- }
+    require("lspconfig")["jdtls"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+    }
+    require("lspconfig")["kotlin_language_server"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+    }
   end,
 })
 
@@ -610,11 +610,13 @@ cmp.setup({
     { name = "path" },
   },
   mapping = cmp.mapping.preset.insert({
-    ["<C-p>"] = cmp.mapping.select_prev_item(),
-    ["<C-n>"] = cmp.mapping.select_next_item(),
-    ['<C-l>'] = cmp.mapping.complete(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm { select = true },
+    ['<CR>'] = cmp.mapping.confirm { select = true },
   }),
   experimental = {
     ghost_text = true,
@@ -673,11 +675,11 @@ require('flutter-tools').setup{
 
 -- TypeScript -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 require("typescript").setup({
-    disable_commands = false, -- prevent the plugin from creating Vim commands
-    debug = false,
-    server = {
-      on_attach = on_attach,
-    },
+  disable_commands = false, -- prevent the plugin from creating Vim commands
+  debug = false,
+  server = {
+    on_attach = on_attach,
+   },
 })
 
 
