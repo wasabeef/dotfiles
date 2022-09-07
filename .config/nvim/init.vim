@@ -415,6 +415,7 @@ nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden
 nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
 nnoremap <silent> <C-c> <cmd>lua require('telescope.builtin').commands()<CR>
+nnoremap <silent> <C-z> <cmd>lua require('telescope.builtin').keymaps()<CR>
 nnoremap <silent> <Leader>n <cmd>Telescope notify<CR>
 
 lua << EOF
