@@ -18,7 +18,7 @@ end
 return {
   default_prog = default_prog(),
 
-  color_scheme = "WildCherry",
+  color_scheme = "gotham (Gogh)",
   font = wezterm.font_with_fallback {
     'Cascadia Code',
     'JetBrains Mono',
