@@ -268,6 +268,9 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 " カラーコード
 Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
+" Lint Engine
+Plug 'dense-analysis/ale'
+
 " LSP
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/mason.nvim'
@@ -504,6 +507,40 @@ let g:Hexokinase_highlighters = [ 'virtual' ]
 let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
 " ---------------------------------------------------------
 
+
+" ---------------------------------------------------------
+" dense-analysis/ale - 
+" ---------------------------------------------------------
+let g:ale_sign_column_always = 1
+let g:ale_lint_on_save = 0
+let g:ale_linters = {
+      \ 'markdown': ['textlint'],
+      \ 'json': ['jq', 'jsonlint', 'cspell'],
+      \ }
+" Supported tools: https://github.com/dense-analysis/ale/blob/master/supported-tools.md
+let g:ale_fixers = {
+      \ '*': ['trim_whitespace'],
+      \ 'markdown': ['prettier'],
+      \ 'html': ['prettier'],
+      \ 'css': ['prettier'],
+      \ 'less': ['prettier'],
+      \ 'scss': ['prettier'],
+      \ 'json': ['prettier'],
+      \ 'graphql': ['prettier'],
+      \ 'vue': ['prettier'],
+      \ 'yaml': ['prettier'],
+      \ 'javascript': ['prettier', 'eslint'],
+      \ 'javascriptreact': ['prettier', 'eslint', 'stylelint'],
+      \ 'typescript': ['prettier', 'tslint', 'eslint'],
+      \ 'typescriptreact': ['prettier', 'tslint', 'eslint', 'stylelint'],
+      \ 'dart': ['dart-format'],
+      \ 'kotlin': ['ktlint'],
+      \ 'java': ['eclipselsp'],
+      \ }
+nnoremap <silent> <Leader>f :ALEFix<CR>
+" ---------------------------------------------------------
+
+
 " ---------------------------------------------------------
 " LSP
 " ---------------------------------------------------------
@@ -517,7 +554,7 @@ local on_attach = function(client, bufnr)
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   -- LSP Debugging
   vim.keymap.set('n', '<Leader>k', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts)
+  -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
   vim.keymap.set('n', '<Leader>r', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<Leader>dd', vim.lsp.buf.definition, bufopts)
   vim.keymap.set('n', '<Leader>D', vim.lsp.buf.declaration, bufopts)
