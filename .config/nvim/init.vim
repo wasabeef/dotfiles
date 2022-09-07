@@ -388,6 +388,8 @@ require("nvim-tree").setup({
         { key = "x", action = "system_open" },
         { key = "?", action = "toggle_help" },
         { key = "t", action = "tabnew" },
+        { key = "]", action = "cd" },
+        { key = "[", action = "dir_up" },
         { key = "<C-t>", action = "" },
         { key = "s", action = "" },
       },
