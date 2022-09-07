@@ -3,28 +3,6 @@
 # Porfile
 # zmodload zsh/zprof && zprof
 
-# Exports
-export EDITOR='nvim'
-export VISUAL='nvim'
-export PAGER='less'
-
-## Auto complete
-autoload -Uz compinit && compinit
-zstyle ':completion:*' list-colors di=34 fi=0
-zstyle ':completion:*:default' menu select=1
-setopt PRINT_EIGHT_BIT
-
-## Prompt
-## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
-PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-RPROMPT=\$vcs_info_msg_0_
-zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
-zstyle ':vcs_info:*' enable git
-
 ## Save command history
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
@@ -44,15 +22,39 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
+# Exports
+export EDITOR='nvim'
+export VISUAL='nvim'
+export PAGER='less'
+
+## Prompt
+## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
+PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+RPROMPT=\$vcs_info_msg_0_
+zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
+zstyle ':vcs_info:*' enable git
+# Git
+source ~/.zsh/git-prompt.sh
+fpath=(~/.zsh $fpath)
+zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
+# Auto complete
+zstyle ':completion:*' list-colors di=34 fi=0
+zstyle ':completion:*:default' menu select=1
+setopt PRINT_EIGHT_BIT
+autoload -Uz compinit && compinit
 autoload -Uz +X bashcompinit && bashcompinit
-    
+
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # fzf
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-    
+
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
   linux*)
