@@ -314,10 +314,9 @@ call plug#end()
 " ---------------------------------------------------------
 lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 
-map f :HopChar2<enter>
-map fw :HopWord<enter>
-map fl :HopLine<enter>
-map fp :HopPattern<enter>
+nnoremap f :HopChar2<CR>
+nnoremap fw :HopWord<CR>
+nnoremap fl :HopLine<CR>
 hi HopNextKey guifg=#E06C75
 hi HopNextKey1 guifg=#E06C75
 hi HopNextKey2 guifg=#E06C75
@@ -365,6 +364,7 @@ nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>
 nnoremap ][ :BufferLinePickClose<CR>
+nnoremap \][ :%bd<CR>
 nnoremap \\ :bd<CR>
 nnoremap \\\  :bp<CR>
 
@@ -388,8 +388,8 @@ require("nvim-tree").setup({
         { key = "x", action = "system_open" },
         { key = "?", action = "toggle_help" },
         { key = "t", action = "tabnew" },
-        { key = "<CR>", action = "cd" },
-        { key = "<BS>", action = "dir_up" },
+        { key = "=", action = "cd" },
+        { key = "-", action = "dir_up" },
         { key = "l", action = "edit" },
         { key = "h", action = "close_node" },
         { key = "<C-t>", action = "" },
@@ -420,7 +420,7 @@ nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
 nnoremap <silent> <C-c> <cmd>lua require('telescope.builtin').commands()<CR>
 nnoremap <silent> <C-z> <cmd>lua require('telescope.builtin').keymaps()<CR>
-nnoremap <silent> <Leader>n <cmd>Telescope notify<CR>
+nnoremap <silent> <Leader>h <cmd>Telescope notify<CR>
 
 lua << EOF
 require('telescope').setup{
@@ -516,6 +516,7 @@ let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
 " ---------------------------------------------------------
 " dense-analysis/ale - 
 " ---------------------------------------------------------
+let g:ale_lint_on_enter = 0
 let g:ale_sign_column_always = 1
 let g:ale_lint_on_save = 0
 let g:ale_linters = {
@@ -588,6 +589,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>be', "<cmd>lua require('dap').defaults.dart.exception_breakpoints = {}<CR>", bufopts)
 end
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 require('mason').setup()
@@ -747,7 +749,7 @@ require('fidget').setup{
   },
   timer = {
     spinner_rate = 125,
-    fidget_decay = 1000000,
+    fidget_decay = 10000,
     task_decay = 3000,
   },
 }
