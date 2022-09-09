@@ -314,7 +314,8 @@ call plug#end()
 " ---------------------------------------------------------
 lua require'hop'.setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
 
-nnoremap f :HopChar2<CR>
+" nnoremap f :HopChar2<CR>
+nnoremap ff :HopPattern<CR>
 nnoremap fw :HopWord<CR>
 nnoremap fl :HopLine<CR>
 hi HopNextKey guifg=#E06C75
@@ -711,6 +712,8 @@ require('flutter-tools').setup{
   debugger = {
     enabled = true,
     run_via_dap = true,
+    -- https://github.com/akinsho/flutter-tools.nvim/issues/182
+    exception_breakpoints = {},
     register_configurations = function(paths)
       require("dap.ext.vscode").load_launchjs()
     end,
@@ -844,4 +847,5 @@ require("nvim-autopairs").setup {}
 EOF
 endif
 " ---------------------------------------------------------
+
 
