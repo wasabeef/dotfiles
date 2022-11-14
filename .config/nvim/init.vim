@@ -187,7 +187,7 @@ vnoremap <C-Up> "zx<Up>"zP`[V`]
 vnoremap <C-Down> "zx"zp`[V`]
 
 " Spaceを押した後にrを押すと :%s/// が自動で入力される
-nnoremap <Leader>r :%s///g<Left><Left><Left>
+" nnoremap <Leader>r :%s///g<Left><Left><Left>
 
 " コマンドラインウィンドウ (:~)
 " 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -263,6 +263,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " ファイル・テキスト検索(Fuzzy Finder)
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-ui-select.nvim'
+Plug 'nvim-telescope/telescope-media-files.nvim'
 " 空白文字ハイライト
 Plug 'lukas-reineke/indent-blankline.nvim'
 " カラーコード
@@ -270,6 +271,9 @@ Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " Lint Engine
 Plug 'dense-analysis/ale'
+
+" Git changes
+Plug 'airblade/vim-gitgutter'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -365,7 +369,8 @@ nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>
 nnoremap ][ :BufferLinePickClose<CR>
-nnoremap \][ :%bd<CR>
+nnoremap \][ :BufferLineCloseLeft<CR>
+nnoremap \[] :BufferLineCloseRight<CR>
 nnoremap \\ :bd<CR>
 nnoremap \\\  :bp<CR>
 
@@ -434,7 +439,39 @@ require('telescope').setup{
       i = {
         ["<C-q>"] = "close",
       }
-    }
+    },
+    preview = {
+      mime_hook = function(filepath, bufnr, opts)
+        local is_image = function(filepath)
+          local image_extensions = { "png", "jpg", "jpeg", "gif" } -- Supported image formats
+          local split_path = vim.split(filepath:lower(), ".", { plain = true })
+          local extension = split_path[#split_path]
+          return vim.tbl_contains(image_extensions, extension)
+        end
+        if is_image(filepath) then
+          local term = vim.api.nvim_open_term(bufnr, {})
+          local function send_output(_, data, _)
+            for _, d in ipairs(data) do
+              vim.api.nvim_chan_send(term, d .. "\r\n")
+            end
+          end
+          vim.fn.jobstart({
+            "viu",
+            "-b",
+            filepath, 
+          }, {
+            on_stdout = send_output,
+            stdout_buffered = true,
+          })
+        else
+          require("telescope.previewers.utils").set_preview_message(
+            bufnr,
+            opts.winid,
+            "Binary cannot be previewed"
+          )
+        end
+      end,
+    },
   },
   extensions = {
     ["ui-select"] = {
@@ -448,6 +485,7 @@ require('telescope').load_extension('ui-select')
 require('telescope').load_extension('flutter')
 require('telescope').load_extension('notify')
 require('telescope').load_extension('dap')
+require("telescope").load_extension('media_files')
 EOF
 
 endif
@@ -515,7 +553,14 @@ let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
 
 
 " ---------------------------------------------------------
-" dense-analysis/ale - 
+" airblade/vim-gitgutter
+" ---------------------------------------------------------
+set signcolumn=yes
+set updatetime=100
+let g:gitgutter_map_keys = 0
+
+" ---------------------------------------------------------
+" dense-analysis/ale
 " ---------------------------------------------------------
 let g:ale_lint_on_enter = 0
 let g:ale_sign_column_always = 1
@@ -590,9 +635,10 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
-  vim.keymap.set('n', '<Leader>be', "<cmd>lua require('dap').defaults.dart.exception_breakpoints = {}<CR>", bufopts)
+  -- vim.keymap.set('n', '<Leader>be', "<cmd>lua require('dap').defaults.dart.exception_breakpoints = {}<CR>", bufopts)
 end
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
   function (server_name) 
