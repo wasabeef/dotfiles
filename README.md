@@ -1,7 +1,8 @@
 # dotfiles
 
 
-**Required**
+**Required**  
+
 [nvim]
 - install neovim
 - install vim-plug
