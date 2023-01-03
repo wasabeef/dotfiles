@@ -269,7 +269,7 @@ Plug 'nvim-telescope/telescope-media-files.nvim'
 " 空白文字ハイライト
 Plug 'lukas-reineke/indent-blankline.nvim'
 " カラーコード
-Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
+" Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " Lint Engine
 Plug 'dense-analysis/ale'
@@ -549,8 +549,8 @@ endif
 " ---------------------------------------------------------
 " RRethy/vim-hexokinase
 " ---------------------------------------------------------
-let g:Hexokinase_highlighters = [ 'virtual' ]
-let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
+" let g:Hexokinase_highlighters = [ 'virtual' ]
+" let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
 " ---------------------------------------------------------
 
 
