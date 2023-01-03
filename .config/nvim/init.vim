@@ -78,6 +78,8 @@ set wrapscan
 set hlsearch
 " 置換の時 g オプションをデフォルトで有効にする
 set gdefault
+" 変更時にガタつかないようにサイン列を常に表示しておく
+set signcolumn=yes
 
 set termguicolors
 
@@ -273,7 +275,7 @@ Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 Plug 'dense-analysis/ale'
 
 " Git changes
-Plug 'airblade/vim-gitgutter'
+Plug 'lewis6991/gitsigns.nvim'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
@@ -553,12 +555,53 @@ let g:Hexokinase_ftEnabled = ['css', 'html', 'javascript', 'typescript']
 
 
 " ---------------------------------------------------------
-" airblade/vim-gitgutter
+" lewis6991/gitsigns.nvim
 " ---------------------------------------------------------
-set signcolumn=yes
-set updatetime=100
-let g:gitgutter_map_keys = 0
-
+if !exists('g:vscode')
+lua << EOF
+require('gitsigns').setup {
+  signs = {
+    add          = { hl = 'GitSignsAdd'   , text = '│', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'    },
+    change       = { hl = 'GitSignsChange', text = '│', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn' },
+    delete       = { hl = 'GitSignsDelete', text = '_', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn' },
+    topdelete    = { hl = 'GitSignsDelete', text = '‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn' },
+    changedelete = { hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn' },
+    untracked    = { hl = 'GitSignsAdd'   , text = '┆', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'    },
+  },
+  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+  watch_gitdir = {
+    interval = 1000,
+    follow_files = true
+  },
+  attach_to_untracked = true,
+  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+    delay = 1000,
+    ignore_whitespace = false,
+  },
+  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+  sign_priority = 6,
+  update_debounce = 100,
+  status_formatter = nil, -- Use default
+  max_file_length = 40000, -- Disable if file is longer than this (in lines)
+  preview_config = {
+    -- Options passed to nvim_open_win
+    border = 'single',
+    style = 'minimal',
+    relative = 'cursor',
+    row = 0,
+    col = 1
+  },
+  yadm = {
+    enable = false
+  },
+}
+EOF
+endif
 " ---------------------------------------------------------
 " dense-analysis/ale
 " ---------------------------------------------------------
@@ -717,6 +760,7 @@ cmp.setup({
 -- Flutter -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 require('flutter-tools').setup{
   flutter_lookup_cmd = 'asdf where flutter',
+  -- flutter_lookup_cmd = '/Users/a12622/.asdf/installs/flutter/3.3.10-stable',
   ui = { border = "rounded" },
   decorations = {
     statusline = {
