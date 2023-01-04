@@ -5,28 +5,18 @@ local os = (function()
     return "macOS"
   elseif string.find(wezterm.target_triple, 'windows') then
     return "windows"
+  elseif string.find(wezterm.target_triple, 'linux') then
+    return "linux"
   end
 end)()
 
-local function default_prog()
-  if os == "macOS" then
-  elseif os == "windows" then
-    return { 'msys2.cmd', '-defterm', '-no-start', '-full-path', '-shell', 'zsh' }
-  end
-end
-
-return {
-  default_prog = default_prog(),
-
+-- Common settings
+local config = {
   color_scheme = "gotham (Gogh)",
   font = wezterm.font_with_fallback {
     'Cascadia Code',
     'JetBrains Mono',
   },
-  font_size = 14.0,
-
-  initial_cols = 160,
-  initial_rows = 40,
   window_background_opacity = 1,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
 
@@ -68,3 +58,22 @@ return {
     { key = "F5", action = "ReloadConfiguration" },
   },
 }
+
+-- macOS settings
+if os == "macOS" then
+  config["font_size"] = 14.0
+  config["initial_cols"] = 160
+  config["initial_rows"] = 40
+
+-- Windows settings
+elseif os == "windows" then
+  -- config["default_prog"] = { 'msys2.cmd', '-defterm', '-no-start', '-full-path', '-shell', 'zsh' }
+  config["font_size"] = 12.0
+  config["initial_cols"] = 140
+  config["initial_rows"] = 60
+  
+-- Linux settings
+elseif os == "linux" then
+end
+
+return config
