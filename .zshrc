@@ -88,7 +88,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
 
     # asdf
     # . $(brew --prefix asdf)/asdf.sh
-    . /opt/homebrew/opt/asdf/asdf.sh
+    . /opt/homebrew/opt/asdf/libexec/asdf.sh
     # . ~/.asdf/plugins/java/set-java-home.zsh
     export JAVA_HOME=$(/usr/libexec/java_home)
     export JDK_HOME=${JAVA_HOME}
@@ -123,16 +123,16 @@ export PATH=$HOME/google-cloud-sdk/bin:$PATH
 export PATH=$HOME/.fastlane/bin:$PATH
     
 ## Yarn
-export PATH="$(yarn global bin):$PATH"
+# export PATH="$(yarn global bin):$PATH"
         
 ## Rust
-export PATH=$HOME/.cargo/bin:$PATH
+# export PATH=$HOME/.cargo/bin:$PATH
 
 ## Go
-export GOPATH=$HOME/.go
-export GOROOT=$( go env GOROOT )
-export GOBIN=$GOROOT/bin
-export PATH=$GOBIN:$PATH
+# export GOPATH=$HOME/.go
+# export GOROOT=$( go env GOROOT )
+# export GOBIN=$GOROOT/bin
+# export PATH=$GOBIN:$PATH
 
 # direnv
 eval "$(direnv hook zsh)"
