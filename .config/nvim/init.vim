@@ -269,8 +269,6 @@ Jetpack 'nvim-telescope/telescope-ui-select.nvim'
 Jetpack 'nvim-telescope/telescope-media-files.nvim'
 " 空白文字ハイライト
 Jetpack 'lukas-reineke/indent-blankline.nvim'
-" カラーコード
-" Jetpack 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 " Lint Engine
 Jetpack 'dense-analysis/ale'
