@@ -12,7 +12,7 @@ end)()
 
 -- Common settings
 local config = {
-  color_scheme = "gotham (Gogh)",
+  color_scheme = "duskfox",
   font = wezterm.font_with_fallback {
     'Cascadia Code',
     'JetBrains Mono',

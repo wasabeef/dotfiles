@@ -112,6 +112,11 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     
     export LDFLAGS="-L$LLVM_PATH/lib"
     export CPPFLAGS="-I$LLVM_PATH/include"
+
+    ## pnpm
+    export PNPM_HOME="/Users/a12622/Library/pnpm"
+    export PATH="$PNPM_HOME:$PATH"
+
     ;;
   *)
 esac
@@ -162,3 +167,4 @@ alias simu-ls='xcrun simctl list'
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
+

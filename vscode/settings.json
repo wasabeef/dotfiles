@@ -2,7 +2,6 @@
   /// Window ////////////////////////////////////////////
   "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
   "window.zoomLevel": 0,
-  /// Editor ////////////////////////////////////////////
   "editor.wordWrap": "on",
   "editor.suggestSelection": "first",
   "editor.fontFamily": "'Cascadia Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
@@ -12,7 +11,6 @@
   },
   "editor.inlineSuggest.enabled": true,
   "editor.accessibilitySupport": "off",
-  "editor.experimental.stickyScroll.enabled": true,
   /// Theme ////////////////////////////////////////////
   "screencastMode.verticalOffset": 5,
   "screencastMode.fontSize": 24,
@@ -29,9 +27,9 @@
   // "dart.debugExternalLibraries": false,
   // "dart.debugSdkLibraries": false,
   "[dart]": {
-    "editor.formatOnPaste": true,
+    "editor.formatOnPaste": false,
     "editor.formatOnSave": false,
-    "editor.formatOnType": true,
+    "editor.formatOnType": false,
     "editor.rulers": [80],
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
@@ -107,5 +105,6 @@
   },
   /// ファイルの末尾を改行で終わらせる
   "files.insertFinalNewline": true,
+  "editor.stickyScroll.enabled": true,
 }
 

@@ -210,107 +210,109 @@ let g:loaded_zipPlugin = 1
 
 " OS によって設定ファイルのパスが違う
 if has('mac')
-  call jetpack#begin('~/.config/nvim/plugged')
+  call plug#begin('~/.config/nvim/plugged')
 elseif has('linux')
-  call jetpack#begin('~/.config/nvim/plugged')
+  call plug#begin('~/.config/nvim/plugged')
 elseif has('win64') || has('win32')
-  call jetpack#begin('~/AppData/Local/nvim/plugged')
+  call plug#begin('~/AppData/Local/nvim/plugged')
 endif
 
-Jetpack 'tani/vim-jetpack', {'opt': 1} "bootstrap
-Jetpack 'tpope/vim-surround'
-Jetpack 'numToStr/Comment.nvim'
-Jetpack 'machakann/vim-swap'
+Plug 'tpope/vim-surround'
+Plug 'numToStr/Comment.nvim'
+Plug 'machakann/vim-swap'
 " incremental search improved
-Jetpack 'haya14busa/is.vim'
-Jetpack 'windwp/nvim-autopairs'
+Plug 'haya14busa/is.vim'
+Plug 'windwp/nvim-autopairs'
 " スタート画面
-Jetpack 'mhinz/vim-startify'
-Jetpack 'editorconfig/editorconfig-vim'
-Jetpack 'machakann/vim-highlightedyank'
-Jetpack 'nvim-lua/plenary.nvim'
+Plug 'mhinz/vim-startify'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'machakann/vim-highlightedyank'
+Plug 'nvim-lua/plenary.nvim'
 
 " 検索
-Jetpack 'phaazon/hop.nvim'
-Jetpack 'markonm/traces.vim'
+Plug 'phaazon/hop.nvim'
+Plug 'markonm/traces.vim'
 
 " ファイルツリー
-Jetpack 'kyazdani42/nvim-web-devicons'
-Jetpack 'kyazdani42/nvim-tree.lua'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
+
+" イメージプレビュー
+Plug 'https://github.com/adelarsq/image_preview.nvim'
 
 " ターミナル 
-Jetpack 'akinsho/toggleterm.nvim'
+Plug 'akinsho/toggleterm.nvim'
 
 " バッファ
-Jetpack 'akinsho/bufferline.nvim'
+Plug 'akinsho/bufferline.nvim'
 
 " ステータスバー
-Jetpack 'vim-airline/vim-airline'
-Jetpack 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " ウィンドウサイズ
-Jetpack 'simeji/winresizer'
+Plug 'simeji/winresizer'
 
 " スクロール
-Jetpack 'karb94/neoscroll.nvim'
+Plug 'karb94/neoscroll.nvim'
 
 " 通知
-Jetpack 'rcarriga/nvim-notify'
+Plug 'rcarriga/nvim-notify'
 
 " Colorschema
-Jetpack 'whatyouhide/vim-gotham'
+Plug 'EdenEast/nightfox.nvim'
 
 " コードハイライト
 " e.g. :TSInstall <language_to_install>
-Jetpack 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " ファイル・テキスト検索(Fuzzy Finder)
-Jetpack 'nvim-telescope/telescope.nvim'
-Jetpack 'nvim-telescope/telescope-ui-select.nvim'
-Jetpack 'nvim-telescope/telescope-media-files.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-ui-select.nvim'
+Plug 'nvim-telescope/telescope-media-files.nvim'
 " 空白文字ハイライト
-Jetpack 'lukas-reineke/indent-blankline.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim'
 
 " Lint Engine
-Jetpack 'dense-analysis/ale'
+Plug 'dense-analysis/ale'
 
 " Git changes
-Jetpack 'lewis6991/gitsigns.nvim'
+Plug 'lewis6991/gitsigns.nvim'
 
 " LSP
-Jetpack 'neovim/nvim-lspconfig'
-Jetpack 'williamboman/mason.nvim'
-Jetpack 'williamboman/mason-lspconfig.nvim'
-Jetpack 'hrsh7th/nvim-cmp'
-Jetpack 'hrsh7th/cmp-nvim-lsp'
-Jetpack 'hrsh7th/cmp-buffer'
-Jetpack 'hrsh7th/cmp-path'
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
 " LSP スニペット
-Jetpack 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 " LSP status 表示
-Jetpack 'j-hui/fidget.nvim'
+Plug 'j-hui/fidget.nvim'
 " LSP アイコンを表示
-Jetpack 'onsails/lspkind-nvim'
+Plug 'onsails/lspkind-nvim'
 " LSP エラーメッセージ
-Jetpack 'folke/trouble.nvim'
+Plug 'folke/trouble.nvim'
 " LSP ポップアップ
-Jetpack 'rmagatti/goto-preview'
+Plug 'rmagatti/goto-preview'
 " 定義・シンボル
-Jetpack 'liuchengxu/vista.vim'
+Plug 'liuchengxu/vista.vim'
 " Flutter
-Jetpack 'akinsho/flutter-tools.nvim'
+Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
-Jetpack 'jose-elias-alvarez/typescript.nvim'
+Plug 'jose-elias-alvarez/typescript.nvim'
 " Java
-Jetpack 'mfussenegger/nvim-jdtls'
+Plug 'mfussenegger/nvim-jdtls'
 " Android
-Jetpack 'hsanson/vim-android'
+Plug 'hsanson/vim-android'
 
 " Debugging
-Jetpack 'mfussenegger/nvim-dap'
-Jetpack 'rcarriga/nvim-dap-ui'
-Jetpack 'nvim-telescope/telescope-dap.nvim'
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-telescope/telescope-dap.nvim'
 
-call jetpack#end() 
+call plug#end() 
 " ---------------------------------------------------------
 
 
@@ -394,6 +396,18 @@ require("nvim-tree").setup({
 })
 EOF
 
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
+" nadelarsq/image_preview.nvim - イメージプレビュー
+" ---------------------------------------------------------
+"  <silent> <leader>p :lua require('image_preview').PreviewImage()
+if !exists('g:vscode')
+lua << EOF
+require("image_preview").setup({})
+EOF
 endif
 " ---------------------------------------------------------
 
@@ -519,7 +533,7 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 
-colorscheme gotham256
+colorscheme duskfox
 let g:gotham_airline_emphasised_kkinsert = 0
 
 endif
@@ -591,6 +605,7 @@ let g:ale_lint_on_save = 0
 let g:ale_linters = {
       \ 'markdown': ['textlint'],
       \ 'json': ['jq', 'jsonlint', 'cspell'],
+      \ 'yaml': ['yamllint'],
       \ }
 " Supported tools: https://github.com/dense-analysis/ale/blob/master/supported-tools.md
 let g:ale_fixers = {
@@ -898,10 +913,10 @@ lua << EOF
 require('neoscroll').setup()
 local t = {}
 -- Syntax: t[keys] = {function, {function arguments}}
-t['<C-u>'] = {'scroll', {'-vim.wo.scroll', 'true', '100'}}
-t['<C-d>'] = {'scroll', { 'vim.wo.scroll', 'true', '100'}}
-t['<C-b>'] = {'scroll', {'-vim.api.nvim_win_get_height(0)', 'true', '200'}}
-t['<C-f>'] = {'scroll', { 'vim.api.nvim_win_get_height(0)', 'true', '200'}}
+t['<C-u>'] = {'scroll', {'-vim.wo.scroll', 'true', '80'}}
+t['<C-d>'] = {'scroll', { 'vim.wo.scroll', 'true', '80'}}
+t['<C-b>'] = {'scroll', {'-vim.api.nvim_win_get_height(0)', 'true', '160'}}
+t['<C-f>'] = {'scroll', { 'vim.api.nvim_win_get_height(0)', 'true', '160'}}
 
 require('neoscroll.config').set_mappings(t)
 EOF
