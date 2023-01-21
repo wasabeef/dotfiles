@@ -230,6 +230,8 @@ elseif has('win64') || has('win32')
   call plug#begin('~/AppData/Local/nvim/plugged')
 endif
 
+Plug 'lewis6991/impatient.nvim'
+
 Plug 'tpope/vim-surround'
 Plug 'numToStr/Comment.nvim'
 Plug 'machakann/vim-swap'
@@ -249,9 +251,6 @@ Plug 'markonm/traces.vim'
 " ファイルツリー
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
-
-" イメージプレビュー
-Plug 'https://github.com/adelarsq/image_preview.nvim'
 
 " ターミナル 
 Plug 'akinsho/toggleterm.nvim'
@@ -325,7 +324,14 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
+
 call plug#end() 
+" ---------------------------------------------------------
+
+" ---------------------------------------------------------
+" plewis6991/impatient.nvim
+" ---------------------------------------------------------
+lua require('impatient')
 " ---------------------------------------------------------
 
 
@@ -409,18 +415,6 @@ require("nvim-tree").setup({
 })
 EOF
 
-endif
-" ---------------------------------------------------------
-
-
-" ---------------------------------------------------------
-" nadelarsq/image_preview.nvim - イメージプレビュー
-" ---------------------------------------------------------
-"  <silent> <leader>p :lua require('image_preview').PreviewImage()
-if !exists('g:vscode')
-lua << EOF
-require("image_preview").setup({})
-EOF
 endif
 " ---------------------------------------------------------
 
