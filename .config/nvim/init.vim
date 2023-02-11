@@ -50,7 +50,7 @@ set novisualbell
 " 対応する括弧を強調表示
 set showmatch
 " 対応する括弧を表示する時間（最小設定）
-set matchtime=1 
+set matchtime=1
 " ステータス行を常に表示
 set laststatus=2
 " ファイル名補完
@@ -175,7 +175,7 @@ nnoremap <C-q> :q<CR>
 " w!!でsudoを忘れても保存
 cnoremap w!! w !sudo tee > /dev/null %<CR> :e!<CR>
 
-" 入力モード中のカーソル移動 
+" 入力モード中のカーソル移動
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
@@ -230,6 +230,7 @@ elseif has('win64') || has('win32')
   call plug#begin('~/AppData/Local/nvim/plugged')
 endif
 
+" パフォーマンス改善
 Plug 'lewis6991/impatient.nvim'
 
 Plug 'tpope/vim-surround'
@@ -252,7 +253,7 @@ Plug 'markonm/traces.vim'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
 
-" ターミナル 
+" ターミナル
 Plug 'akinsho/toggleterm.nvim'
 
 " バッファ
@@ -298,6 +299,8 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
+" 
+Plug 'DNLHC/glance.nvim'
 " LSP スニペット
 Plug 'hrsh7th/vim-vsnip'
 " LSP status 表示
@@ -324,8 +327,12 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
+" GitHub Copilot
+Plug 'zbirenbaum/copilot.lua'
+" Plug 'zbirenbaum/copilot-cmp'
 
-call plug#end() 
+
+call plug#end()
 " ---------------------------------------------------------
 
 " ---------------------------------------------------------
@@ -412,6 +419,10 @@ require("nvim-tree").setup({
   filters = {
     dotfiles = false,
   },
+  git = {
+    enable = true,
+    ignore = false,
+  },
 })
 EOF
 
@@ -433,8 +444,8 @@ nnoremap <silent> <Leader>h <cmd>Telescope notify<CR>
 
 lua << EOF
 require('telescope').setup{
-  defaults = { 
-    file_ignore_patterns = { 
+  defaults = {
+    file_ignore_patterns = {
       "node_modules",
       ".git/",
     },
@@ -461,7 +472,7 @@ require('telescope').setup{
           vim.fn.jobstart({
             "viu",
             "-b",
-            filepath, 
+            filepath,
           }, {
             on_stdout = send_output,
             stdout_buffered = true,
@@ -625,6 +636,7 @@ let g:ale_fixers = {
       \ 'json': ['prettier'],
       \ 'graphql': ['prettier'],
       \ 'vue': ['prettier'],
+      \ 'svelte': ['prettier'],
       \ 'yaml': ['prettier'],
       \ 'javascript': ['prettier', 'eslint'],
       \ 'javascriptreact': ['prettier', 'eslint', 'stylelint'],
@@ -639,11 +651,42 @@ nnoremap <silent> <Leader>f :ALEFix<CR>
 
 
 " ---------------------------------------------------------
+" zbirenbaum/copilot.lua
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua << EOF
+require('copilot').setup({
+  panel = {
+    enabled = false,
+    auto_refresh = false,
+  },
+  suggestion = {
+    enabled = true,
+    auto_trigger = true,
+    debounce = 75,
+    keymap = {
+      accept = "<M-a>",
+      accept_word = false,
+      accept_line = false,
+      next = "<M-]>",
+      prev = "<M-[>",
+      dismiss = "<M-c>",
+    },
+  },
+  copilot_node_command = 'node', -- Node.js version must be > 16.x
+  server_opts_overrides = {},
+})
+EOF
+endif
+" ---------------------------------------------------------
+
+
+" ---------------------------------------------------------
 " LSP
 " ---------------------------------------------------------
 if !exists('g:vscode')
 lua << EOF
--- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- --
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -686,13 +729,41 @@ end
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
-  function (server_name) 
+  function (server_name)
     -- require("lspconfig")[server_name].setup {
     --   on_attach = on_attach,
     --   flags = {
     --     debounce_text_changes = 150,
     --   },
     -- }
+    require("lspconfig")["html"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+      filetypes = {"html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "htmldjango"},
+      root_dir = function(fname)
+        return require("lspconfig").root_pattern("package.json")(fname) or vim.loop.os_homedir()
+      end,
+    }
+    require("lspconfig")["svelte"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+    }
+    require("lspconfig")["tsserver"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+      root_dir = function(fname)
+        return require("lspconfig").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname) or vim.loop.os_homedir()
+      end,
+    }
     require("lspconfig")["jdtls"].setup {
       on_attach = on_attach,
       capabilities = capabilities,
@@ -706,6 +777,9 @@ require("mason-lspconfig").setup_handlers({
       flags = {
         debounce_text_changes = 150,
       },
+      root_dir = function(fname)
+        return require("lspconfig").root_pattern("build.gradle.kts", "settings.gradle.kts", "build.gradle", "settings.gradle", "pom.xml")(fname) or vim.loop.os_homedir()
+      end,
     }
   end,
 })
@@ -721,7 +795,75 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
   vim.lsp.handlers.signature_help, { separator = true }
 )
 
--- Complete -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- LSP Navigation -- -- -- -- -- -- -- -- -- -- -- -- --
+local glance = require('glance')
+local actions = glance.actions
+
+glance.setup({
+  height = 18, -- Height of the window
+  zindex = 45,
+  preview_win_opts = { -- Configure preview window options
+    cursorline = true,
+    number = true,
+    wrap = true,
+  },
+  border = {
+    enable = false, -- Show window borders. Only horizontal borders allowed
+    top_char = '―',
+    bottom_char = '―',
+  },
+  list = {
+    position = 'right', -- Position of the list window 'left'|'right'
+    width = 0.33, -- 33% width relative to the active window, min 0.1, max 0.5
+  },
+  theme = { -- This feature might not work properly in nvim-0.7.2
+    enable = true, -- Will generate colors for the plugin based on your current colorscheme
+    mode = 'auto', -- 'brighten'|'darken'|'auto', 'auto' will set mode based on the brightness of your colorscheme
+  },
+  mappings = {
+    list = {
+      ['j'] = actions.next, -- Bring the cursor to the next item in the list
+      ['k'] = actions.previous, -- Bring the cursor to the previous item in the list
+      ['<Down>'] = actions.next,
+      ['<Up>'] = actions.previous,
+      ['<Tab>'] = actions.next_location, -- Bring the cursor to the next location skipping groups in the list
+      ['<S-Tab>'] = actions.previous_location, -- Bring the cursor to the previous location skipping groups in the list
+      ['<C-u>'] = actions.preview_scroll_win(5),
+      ['<C-d>'] = actions.preview_scroll_win(-5),
+      ['v'] = actions.jump_vsplit,
+      ['s'] = actions.jump_split,
+      ['t'] = actions.jump_tab,
+      ['<CR>'] = actions.jump,
+      ['o'] = actions.jump,
+      ['<leader>l'] = actions.enter_win('preview'), -- Focus preview window
+      ['q'] = actions.close,
+      ['Q'] = actions.close,
+      ['<Esc>'] = actions.close,
+      -- ['<Esc>'] = false -- disable a mapping
+    },
+    preview = {
+      ['Q'] = actions.close,
+      ['<Tab>'] = actions.next_location,
+      ['<S-Tab>'] = actions.previous_location,
+      ['<leader>l'] = actions.enter_win('list'), -- Focus list window
+    },
+  },
+  hooks = {},
+  folds = {
+    fold_closed = '',
+    fold_open = '',
+    folded = true, -- Automatically fold list on startup
+  },
+  indent_lines = {
+    enable = true,
+    icon = '│',
+  },
+  winbar = {
+    enable = true, -- Available strating from nvim-0.8+
+  },
+})
+
+-- Complete -- -- -- -- -- -- -- -- -- -- -- -- --
 local cmp = require('cmp')
 local lspkind = require('lspkind')
 cmp.setup({
@@ -740,10 +882,10 @@ cmp.setup({
     })
   },
   sources = {
-    { name = "nvim_lsp" },
-    { name = "vsnip" },
-    { name = "buffer" },
-    { name = "path" },
+    { name = "nvim_lsp", group_index = 2 },
+    { name = "vsnip", group_index = 2 },
+    { name = "buffer", group_index = 2 },
+    { name = "path", group_index = 2 },
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
@@ -787,9 +929,13 @@ require('flutter-tools').setup{
       enabled = true,
     },
     settings = {
+      showTodos = true,
+      completeFunctionCalls = true,
       analysisExcludedFolders = {
         vim.fn.expand("$HOME/.pub-cache"),
-      }
+      },
+      renameFilesWithClasses = "prompt",
+      enableSnippets = true
     }
   },
   closing_tags = {
@@ -798,8 +944,12 @@ require('flutter-tools').setup{
     prefix = "-> ",
   },
   dev_log = {
-    enabled = false,
+    enabled = true,
     open_cmd = "tabedit",
+  },
+  dev_tools = {
+    autostart = false,
+    auto_open_browser = false,
   },
   debugger = {
     enabled = true,
@@ -812,7 +962,7 @@ require('flutter-tools').setup{
   },
 }
 
--- TypeScript -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- TypeScript -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require("typescript").setup({
   disable_commands = false, -- prevent the plugin from creating Vim commands
   debug = false,
@@ -822,7 +972,7 @@ require("typescript").setup({
 })
 
 
--- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require("nvim-treesitter.configs").setup {
   highlight = {
     enable = true,
@@ -849,7 +999,7 @@ require('fidget').setup{
   },
 }
 
--- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require("dapui").setup({
   icons = { expanded = "▾", collapsed = "▸" },
   expand_lines = vim.fn.has("nvim-0.7"),
@@ -860,14 +1010,14 @@ require("dapui").setup({
         "breakpoints",
         "stacks",
         "watches",
-      }, 
+      },
       size = 10, -- columns
       position = "bottom",
     },
   },
 })
 
--- Popup -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- Popup -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require('goto-preview').setup {
   height = 40;
   width = 160;
@@ -898,7 +1048,7 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 lua require("bufferline").setup{}
-" バッファ 
+" バッファ
 nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>
@@ -949,5 +1099,3 @@ require("nvim-autopairs").setup {}
 EOF
 endif
 " ---------------------------------------------------------
-
-

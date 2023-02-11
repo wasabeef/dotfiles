@@ -1,5 +1,8 @@
 # zsh
 
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+
 # Porfile
 # zmodload zsh/zprof && zprof
 
@@ -47,6 +50,9 @@ zstyle ':completion:*:default' menu select=1
 setopt PRINT_EIGHT_BIT
 autoload -Uz compinit && compinit
 autoload -Uz +X bashcompinit && bashcompinit
+
+# Plugins
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -139,6 +145,9 @@ export PATH=$HOME/.fastlane/bin:$PATH
 # export GOBIN=$GOROOT/bin
 # export PATH=$GOBIN:$PATH
 
+## Maestro
+export PATH="$PATH":"$HOME/.maestro/bin"
+
 # direnv
 eval "$(direnv hook zsh)"
 
@@ -146,12 +155,14 @@ eval "$(direnv hook zsh)"
 alias vi='nvim'
 alias vim='nvim'
 alias neovim='nvim'
+alias g='git'
 alias c="clear"
 alias ls='lsd'
 alias l='ls -l'
 alias la='ls -a'
 alias lla='ls -la'
 alias lt='ls --tree'
+alias m='melos'
 alias .="cd .."
 alias ..="cd ../.."
 alias ...="cd ../../.."
@@ -167,4 +178,3 @@ alias simu-ls='xcrun simctl list'
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
-
