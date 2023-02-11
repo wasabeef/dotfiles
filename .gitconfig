@@ -1,22 +1,28 @@
 [user]
-  name = wasabeef
-  email = dadadada.chop@gmail.com
+    name = wasabeef
+    email = dadadada.chop@gmail.com
 [core]
-  editor = nvim
-  attributesfile = ~/.gitattributes
+    editor = nvim
+    attributesfile = ~/.gitattributes
 [color]
-  ui = auto
+    ui = auto
 [push]
   default = simple
+	autoSetupRemote = true
 [pull]
   rebase = false
 [fetch]
   prune = true
 [github]
   user = wasabeef
-[credential]
-  helper = store
 [alias]
+  ba = branch -a
+  f = fetch --all
+  bm = branch -m
+  ch = checkout
+  c = commit
+  sw = switch
+  p = push
   pr = "!pr() { \
          git fetch origin pull/$1/head:$2; \
        }; pr"
