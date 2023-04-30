@@ -148,15 +148,15 @@ nnoremap 0 ^
 nnoremap 9 $
 
 " 入力モードでは;;で行末にセミコロン
-function! AddEndSemicolon()
-  let c = getline('.')[col('$') - 2]
-  if c != ';'
-    return 1
-  else
-    return 0
-  endif
-endfunction
-inoremap <expr>;; AddEndSemicolon() ? '<C-O>$;' : '<C-O>$'
+" function! AddEndSemicolon()
+"   let c = getline('.')[col('$') - 2]
+"   if c != ';'
+"     return 1
+"   else
+"     return 0
+"   endif
+" endfunction
+" inoremap <expr>;; AddEndSemicolon() ? '<C-O>$;' : '<C-O>$'
 
 " 保存・終了時のタイポ修正
 cnoremap Q q
@@ -212,6 +212,7 @@ let g:loaded_gzip               = 1
 let g:loaded_man                = 1
 let g:loaded_matchit            = 1
 let g:loaded_matchparen         = 1
+let g:loaded_netrw              = 1
 let g:loaded_netrwPlugin        = 1
 let g:loaded_remote_plugins     = 1
 let g:loaded_shada_plugin       = 1
@@ -243,7 +244,9 @@ Plug 'windwp/nvim-autopairs'
 Plug 'mhinz/vim-startify'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'machakann/vim-highlightedyank'
+
 Plug 'nvim-lua/plenary.nvim'
+" Plug 'stevearc/dressing.nvim'
 
 " 検索
 Plug 'phaazon/hop.nvim'
@@ -282,8 +285,11 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-ui-select.nvim'
 Plug 'nvim-telescope/telescope-media-files.nvim'
+Plug 'dimaportenko/telescope-simulators.nvim'
 " 空白文字ハイライト
 Plug 'lukas-reineke/indent-blankline.nvim'
+" カーソル位置のハイライト
+Plug 'RRethy/vim-illuminate'
 
 " Lint Engine
 Plug 'dense-analysis/ale'
@@ -299,7 +305,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
-" 
+"
 Plug 'DNLHC/glance.nvim'
 " LSP スニペット
 Plug 'hrsh7th/vim-vsnip'
@@ -314,7 +320,7 @@ Plug 'rmagatti/goto-preview'
 " 定義・シンボル
 Plug 'liuchengxu/vista.vim'
 " Flutter
-Plug 'akinsho/flutter-tools.nvim'
+" Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
 Plug 'jose-elias-alvarez/typescript.nvim'
 " Java
@@ -329,7 +335,7 @@ Plug 'nvim-telescope/telescope-dap.nvim'
 
 " GitHub Copilot
 Plug 'zbirenbaum/copilot.lua'
-" Plug 'zbirenbaum/copilot-cmp'
+Plug 'zbirenbaum/copilot-cmp'
 
 
 call plug#end()
@@ -395,22 +401,30 @@ if !exists('g:vscode')
 
 nnoremap <silent> <C-n> :NvimTreeToggle<CR>
 lua << EOF
+-- https://github.com/nvim-tree/nvim-tree.lua/blob/master/lua/nvim-tree/keymap-legacy.lua
+local M = {}
+function M.on_attach(bufnr)
+   local api = require("nvim-tree.api")
+   local function opts(desc)
+     return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+   end
+   api.config.mappings.default_on_attach(bufnr)
+   vim.keymap.set('n', 'x', api.node.run.system, opts('Open System'))
+   vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
+   vim.keymap.set('n', '=', api.tree.change_root_to_node, opts('CD'))
+   vim.keymap.set('n', '-', api.tree.change_root_to_parent, opts('Dir Up'))
+   vim.keymap.set('n', 'l', api.node.open.edit, opts('Edit'))
+   vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Node'))
+   vim.keymap.set('n', 's', '', opts(''))
+   vim.keymap.set('n', '<c-t>', "<cmd>ToggleTerm<CR>", opts('ToggleTerm'))
+end
+
 require("nvim-tree").setup({
+  on_attach = M.on_attach,
   view = {
     adaptive_size = true,
-    mappings = {
-      list = {
-        { key = "/", action = "search_node" },
-        { key = "x", action = "system_open" },
-        { key = "?", action = "toggle_help" },
-        { key = "t", action = "tabnew" },
-        { key = "=", action = "cd" },
-        { key = "-", action = "dir_up" },
-        { key = "l", action = "edit" },
-        { key = "h", action = "close_node" },
-        { key = "<C-t>", action = "" },
-        { key = "s", action = "" },
-      },
+    float = {
+      enable = ture,
     },
   },
   renderer = {
@@ -441,6 +455,7 @@ nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
 nnoremap <silent> <C-c> <cmd>lua require('telescope.builtin').commands()<CR>
 nnoremap <silent> <C-z> <cmd>lua require('telescope.builtin').keymaps()<CR>
 nnoremap <silent> <Leader>h <cmd>Telescope notify<CR>
+nnoremap <silent> <Leader>s <cmd>Telescope simulators run<CR>
 
 lua << EOF
 require('telescope').setup{
@@ -449,15 +464,29 @@ require('telescope').setup{
       "node_modules",
       ".git/",
     },
+    vimgrep_arguments = {
+      "rg",
+      "--color=never",
+      "--no-heading",
+      "--with-filename",
+      "--line-number",
+      "--column",
+      "--smart-case",
+      "--trim",
+      "--hidden",
+      "--glob",
+      "!**/.git/*",
+    },
     mappings = {
       i = {
         ["<C-q>"] = "close",
       }
     },
     preview = {
+      treesitter = false,
       mime_hook = function(filepath, bufnr, opts)
         local is_image = function(filepath)
-          local image_extensions = { "png", "jpg", "jpeg", "gif" } -- Supported image formats
+          local image_extensions = { "png", "jpg", "jpeg", "gif", "ico", "webp" } -- Supported image formats
           local split_path = vim.split(filepath:lower(), ".", { plain = true })
           local extension = split_path[#split_path]
           return vim.tbl_contains(image_extensions, extension)
@@ -487,19 +516,16 @@ require('telescope').setup{
       end,
     },
   },
-  extensions = {
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown {
-        -- even more opts
-      }
-    },
-  }
 }
 require('telescope').load_extension('ui-select')
-require('telescope').load_extension('flutter')
+-- require('telescope').load_extension('flutter')
 require('telescope').load_extension('notify')
 require('telescope').load_extension('dap')
 require("telescope").load_extension('media_files')
+require("simulators").setup({
+  android_emulator = true,
+  apple_simulator = true,
+})
 EOF
 
 endif
@@ -614,6 +640,40 @@ require('gitsigns').setup {
 }
 EOF
 endif
+
+
+" ---------------------------------------------------------
+" RRethy/vim-illuminate
+" ---------------------------------------------------------
+if !exists('g:vscode')
+lua << EOF
+require('illuminate').configure({
+    providers = {
+        'lsp',
+        'treesitter',
+    },
+    delay = 100,
+    filetype_overrides = {},
+    filetypes_denylist = {
+        'dirvish',
+        'fugitive',
+    },
+    filetypes_allowlist = {},
+    modes_denylist = {},
+    modes_allowlist = {},
+    providers_regex_syntax_denylist = {},
+    providers_regex_syntax_allowlist = {},
+    under_cursor = true,
+    large_file_cutoff = nil,
+    large_file_overrides = nil,
+    min_count_to_highlight = 1,
+})
+
+EOF
+endif
+" ---------------------------------------------------------
+
+
 " ---------------------------------------------------------
 " dense-analysis/ale
 " ---------------------------------------------------------
@@ -624,27 +684,33 @@ let g:ale_linters = {
       \ 'markdown': ['textlint'],
       \ 'json': ['jq', 'jsonlint', 'cspell'],
       \ 'yaml': ['yamllint'],
+      \ 'go': ['gofmt', 'gopls'],
       \ }
-" Supported tools: https://github.com/dense-analysis/ale/blob/master/supported-tools.md
+"
 let g:ale_fixers = {
       \ '*': ['trim_whitespace'],
+      \ 'sh': ['shfmt'],
+      \ 'bash': ['shfmt'],
+      \ 'zsh': ['shfmt'],
       \ 'markdown': ['prettier'],
+      \ 'yaml': ['prettier'],
       \ 'html': ['prettier'],
       \ 'css': ['prettier'],
       \ 'less': ['prettier'],
       \ 'scss': ['prettier'],
       \ 'json': ['prettier'],
-      \ 'graphql': ['prettier'],
       \ 'vue': ['prettier'],
       \ 'svelte': ['prettier'],
-      \ 'yaml': ['prettier'],
+      \ 'astro': ['prettier'],
       \ 'javascript': ['prettier', 'eslint'],
       \ 'javascriptreact': ['prettier', 'eslint', 'stylelint'],
       \ 'typescript': ['prettier', 'tslint', 'eslint'],
       \ 'typescriptreact': ['prettier', 'tslint', 'eslint', 'stylelint'],
-      \ 'dart': ['dart-format'],
-      \ 'kotlin': ['ktlint'],
       \ 'java': ['eclipselsp'],
+      \ 'kotlin': ['ktlint'],
+      \ 'dart': ['dart-format'],
+      \ 'go': ['gofmt', 'goimports'],
+      \ 'graphql': ['prettier'],
       \ }
 nnoremap <silent> <Leader>f :ALEFix<CR>
 " ---------------------------------------------------------
@@ -661,7 +727,7 @@ require('copilot').setup({
     auto_refresh = false,
   },
   suggestion = {
-    enabled = true,
+    enabled = false,
     auto_trigger = true,
     debounce = 75,
     keymap = {
@@ -676,6 +742,9 @@ require('copilot').setup({
   copilot_node_command = 'node', -- Node.js version must be > 16.x
   server_opts_overrides = {},
 })
+require('copilot_cmp').setup {
+  method = 'getCompletionsCycling',
+}
 EOF
 endif
 " ---------------------------------------------------------
@@ -723,7 +792,6 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
-  -- vim.keymap.set('n', '<Leader>be', "<cmd>lua require('dap').defaults.dart.exception_breakpoints = {}<CR>", bufopts)
 end
 -- local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -736,35 +804,60 @@ require("mason-lspconfig").setup_handlers({
     --     debounce_text_changes = 150,
     --   },
     -- }
-    require("lspconfig")["html"].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      flags = {
-        debounce_text_changes = 150,
-      },
-      filetypes = {"html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "htmldjango"},
-      root_dir = function(fname)
-        return require("lspconfig").root_pattern("package.json")(fname) or vim.loop.os_homedir()
+    require("lspconfig")["dartls"].setup {
+      on_attach = function(client, bunfs)
+        local bufopts = { noremap=true, silent=true, buffer=bufnr }
+        on_attach(client, bunfs)
       end,
-    }
-    require("lspconfig")["svelte"].setup {
-      on_attach = on_attach,
       capabilities = capabilities,
       flags = {
         debounce_text_changes = 150,
       },
+      cmd = {'dart', 'language-server', '--protocol=lsp'},
+      init_options = {
+        onlyAnalyzeProjectsWithOpenFiles = true,
+        suggestFromUnimportedLibraries = true,
+        closingLabels = true,
+        outline = true,
+        flutterOutline = true,
+      },
     }
+    -- require("lspconfig")["svelte"].setup {
+    --   on_attach = on_attach,
+    --   capabilities = capabilities,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
+    -- require("lspconfig")["astro"].setup {
+    --   on_attach = on_attach,
+    --   capabilities = capabilities,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
     require("lspconfig")["tsserver"].setup {
       on_attach = on_attach,
       capabilities = capabilities,
       flags = {
         debounce_text_changes = 150,
       },
-      root_dir = function(fname)
-        return require("lspconfig").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git")(fname) or vim.loop.os_homedir()
-      end,
     }
-    require("lspconfig")["jdtls"].setup {
+    -- require("lspconfig")["jdtls"].setup {
+    --   on_attach = on_attach,
+    --   capabilities = capabilities,
+    --   flags = {
+    --     debounce_text_changes = 150,
+    --   },
+    -- }
+    require("lspconfig")["sourcekit"].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+      flags = {
+        debounce_text_changes = 150,
+      },
+    }
+    require("lspconfig")["gopls"].setup {
       on_attach = on_attach,
       capabilities = capabilities,
       flags = {
@@ -777,9 +870,10 @@ require("mason-lspconfig").setup_handlers({
       flags = {
         debounce_text_changes = 150,
       },
-      root_dir = function(fname)
-        return require("lspconfig").root_pattern("build.gradle.kts", "settings.gradle.kts", "build.gradle", "settings.gradle", "pom.xml")(fname) or vim.loop.os_homedir()
-      end,
+      -- root_dir = function(fname)
+        -- return require("lspconfig").root_pattern("build.gradle.kts", "settings.gradle.kts", "build.gradle", "settings.gradle")(fname) or vim.loop.os_homedir()
+        -- return require("lspconfig").root_pattern("build.gradle", "settings.gradle")(fname) or vim.loop.os_homedir()
+      -- end,
     }
   end,
 })
@@ -866,6 +960,11 @@ glance.setup({
 -- Complete -- -- -- -- -- -- -- -- -- -- -- -- --
 local cmp = require('cmp')
 local lspkind = require('lspkind')
+require('lspkind').init({
+  symbol_map = {
+    Copilot = "",
+  },
+})
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -882,6 +981,7 @@ cmp.setup({
     })
   },
   sources = {
+    { name = "copilot", group_index = 2 },
     { name = "nvim_lsp", group_index = 2 },
     { name = "vsnip", group_index = 2 },
     { name = "buffer", group_index = 2 },
@@ -902,75 +1002,59 @@ cmp.setup({
 })
 
 -- Flutter -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
-require('flutter-tools').setup{
-  flutter_lookup_cmd = 'asdf where flutter',
-  -- flutter_lookup_cmd = '/Users/a12622/.asdf/installs/flutter/3.3.10-stable',
-  ui = { border = "rounded" },
-  decorations = {
-    statusline = {
-      app_version = false,
-      device = true,
-    }
-  },
-  widget_guides = { enabled = true },
-  outline = {
-    open_cmd = "rightbelow 50vnew",
-    auto_open = false
-  },
-  lsp = {
-    on_attach = function(client, bunfs)
-      local bufopts = { noremap=true, silent=true, buffer=bufnr }
-      vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", bufopts)
-      vim.keymap.set('n', '<Leader>o', "<cmd>FlutterOutlineToggle<CR>", bufopts)
-      on_attach(client, bunfs)
-    end,
-    capabilities = capabilities,
-    color = {
-      enabled = true,
-    },
-    settings = {
-      showTodos = true,
-      completeFunctionCalls = true,
-      analysisExcludedFolders = {
-        vim.fn.expand("$HOME/.pub-cache"),
-      },
-      renameFilesWithClasses = "prompt",
-      enableSnippets = true
-    }
-  },
-  closing_tags = {
-    enabled = true,
-    highlight = "ClosingTags",
-    prefix = "-> ",
-  },
-  dev_log = {
-    enabled = true,
-    open_cmd = "tabedit",
-  },
-  dev_tools = {
-    autostart = false,
-    auto_open_browser = false,
-  },
-  debugger = {
-    enabled = true,
-    run_via_dap = true,
-    -- https://github.com/akinsho/flutter-tools.nvim/issues/182
-    exception_breakpoints = {},
-    register_configurations = function(paths)
-      require("dap.ext.vscode").load_launchjs()
-    end,
-  },
-}
-
--- TypeScript -- -- -- -- -- -- -- -- -- -- -- -- -- --
-require("typescript").setup({
-  disable_commands = false, -- prevent the plugin from creating Vim commands
-  debug = false,
-  server = {
-    on_attach = on_attach,
-   },
-})
-
+-- require('flutter-tools').setup{
+--   flutter_lookup_cmd = 'asdf where flutter',
+--   ui = { border = "rounded" },
+--   widget_guides = { enabled = false },
+--   outline = {
+--     open_cmd = "rightbelow 50vnew",
+--     auto_open = false
+--   },
+--   lsp = {
+--     color = { enabled = false },
+--     on_attach = function(client, bunfs)
+--       local bufopts = { noremap=true, silent=true, buffer=bufnr }
+--       vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", bufopts)
+--       vim.keymap.set('n', '<Leader>o', "<cmd>FlutterOutlineToggle<CR>", bufopts)
+--       on_attach(client, bunfs)
+--     end,
+--     capabilities = capabilities,
+--     settings = {
+--       showTodos = true,
+--       completeFunctionCalls = true,
+--       analysisExcludedFolders = {
+--         vim.fn.expand("$HOME/.pub-cache"),
+--       },
+--       renameFilesWithClasses = "prompt",
+--       updateImportsOnRename = true,
+--       enableSnippets = true
+--     }
+--   },
+--   closing_tags = {
+--     enabled = true,
+--     highlight = "ClosingTags",
+--     prefix = "-> ",
+--   },
+--   dev_log = {
+--     enabled = true,
+--     notify_errors = true,
+--     open_cmd = "tabedit",
+--   },
+--   dev_tools = {
+--     autostart = false,
+--     auto_open_browser = true,
+--   },
+--   debugger = {
+--     enabled = true,
+--     run_via_dap = true,
+--     -- https://github.com/akinsho/flutter-tools.nvim/issues/182
+--     exception_breakpoints = {},
+--     register_configurations = function(paths)
+--       require("dap").configurations.dart = {}
+--       require("dap.ext.vscode").load_launchjs()
+--     end,
+--   },
+-- }
 
 -- Highlight -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require("nvim-treesitter.configs").setup {

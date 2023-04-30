@@ -1,7 +1,7 @@
 # zsh
 
-LANG=en_US.UTF-8
-LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
 # Porfile
 # zmodload zsh/zprof && zprof
@@ -123,6 +123,22 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export PNPM_HOME="/Users/a12622/Library/pnpm"
     export PATH="$PNPM_HOME:$PATH"
 
+
+    ## Ruby
+    if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
+      export PATH=/opt/homebrew/opt/ruby/bin:$PATH
+      export PATH=`gem environment gemdir`/bin:$PATH
+    fi
+    # export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+    # export LDFLAGS="-L/opt/homebrew/opt/readline/lib"
+    # export CPPFLAGS="-I/opt/homebrew/opt/readline/include"
+    # export PKG_CONFIG_PATH="/opt/homebrew/opt/readline/lib/pkgconfig"
+    # export optflags="-Wno-error=implicit-function-declaration"
+    # export LDFLAGS="-L/opt/homebrew/opt/libffi/lib"
+    # export CPPFLAGS="-I/opt/homebrew/opt/libffi/include"
+    # export PKG_CONFIG_PATH="/opt/homebrew/opt/libffi/lib/pkgconfig"
+    # export RUBY_CFLAGS="-w"
+
     ;;
   *)
 esac
@@ -140,10 +156,10 @@ export PATH=$HOME/.fastlane/bin:$PATH
 # export PATH=$HOME/.cargo/bin:$PATH
 
 ## Go
-# export GOPATH=$HOME/.go
-# export GOROOT=$( go env GOROOT )
-# export GOBIN=$GOROOT/bin
-# export PATH=$GOBIN:$PATH
+export GOPATH=$HOME/.go
+export GOROOT=$( go env GOROOT )
+export GOBIN=$GOROOT/bin
+export PATH=$GOBIN:$PATH
 
 ## Maestro
 export PATH="$PATH":"$HOME/.maestro/bin"
@@ -156,6 +172,7 @@ alias vi='nvim'
 alias vim='nvim'
 alias neovim='nvim'
 alias g='git'
+alias gi='git'
 alias c="clear"
 alias ls='lsd'
 alias l='ls -l'
