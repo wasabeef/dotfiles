@@ -1,0 +1,38 @@
+[user]
+    name = wasabeef
+    email = dadadada.chop@gmail.com
+[core]
+    editor = nvim
+    attributesfile = ~/.gitattributes
+[color]
+    ui = auto
+[push]
+  default = simple
+	autoSetupRemote = true
+[pull]
+  rebase = false
+[fetch]
+  prune = true
+[github]
+  user = wasabeef
+[alias]
+  ba = branch -a
+  bd = "!bd() { \
+         git branch | awk '{ if ($1 != \"*\") print $1; }' | xargs git branch -D; \
+        }; bd"
+  bm = branch -m
+  ch = checkout
+  c = commit
+  ca = commit --amend
+  cl = clean
+  clf = clean -f
+  f = fetch --all
+  sw = switch
+  stu = stash -u
+  stp = stash pop
+  pu = push
+  pf = push -f
+  pl = pull
+  pr = "!pr() { \
+         git fetch origin pull/$1/head:$2; \
+       }; pr"
