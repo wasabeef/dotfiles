@@ -28,25 +28,6 @@ export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
 
-## Prompt
-## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
-PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-RPROMPT=\$vcs_info_msg_0_
-zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
-zstyle ':vcs_info:*' enable git
-# Git
-# source ~/.zsh/git-prompt.sh
-fpath=(~/.zsh $fpath)
-# zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
-# Auto complete
-zstyle ':completion:*' list-colors di=34 fi=0
-zstyle ':completion:*:default' menu select=1
-setopt PRINT_EIGHT_BIT
-
 # vim
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -82,8 +63,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
 
     # asdf
-    # . $(brew --prefix asdf)/asdf.sh
-    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+    . $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
     # . ~/.asdf/plugins/java/set-java-home.zsh
     export JAVA_HOME=$(/usr/libexec/java_home)
     export JDK_HOME=${JAVA_HOME}
@@ -112,22 +92,6 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export PNPM_HOME="$HOME/Library/pnpm"
     export PATH="$PNPM_HOME:$PATH"
 
-
-    ## Ruby
-    if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
-      export PATH=/opt/homebrew/opt/ruby/bin:$PATH
-      export PATH=`gem environment gemdir`/bin:$PATH
-    fi
-    # export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
-    # export LDFLAGS="-L/opt/homebrew/opt/readline/lib"
-    # export CPPFLAGS="-I/opt/homebrew/opt/readline/include"
-    # export PKG_CONFIG_PATH="/opt/homebrew/opt/readline/lib/pkgconfig"
-    # export optflags="-Wno-error=implicit-function-declaration"
-    # export LDFLAGS="-L/opt/homebrew/opt/libffi/lib"
-    # export CPPFLAGS="-I/opt/homebrew/opt/libffi/include"
-    # export PKG_CONFIG_PATH="/opt/homebrew/opt/libffi/lib/pkgconfig"
-    # export RUBY_CFLAGS="-w"
-
     ;;
   *)
 esac
@@ -153,9 +117,6 @@ export PATH=$GOBIN:$PATH
 
 ## Maestro
 export PATH="$PATH":"$HOME/.maestro/bin"
-
-# direnv
-eval "$(direnv hook zsh)"
 
 ## Aliases
 alias vi='nvim'
@@ -185,9 +146,6 @@ alias simu-ls='xcrun simctl list'
 if [[ -x `which sheldon` ]]; then
   eval "$(sheldon source)"
 fi
-
-# fzf
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 
 # Profile
 if (which zprof > /dev/null 2>&1) ;then

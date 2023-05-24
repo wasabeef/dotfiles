@@ -27,5 +27,31 @@ apply = ['defer']
 github = "junegunn/fzf"
 apply = ['defer']
 
+[plugins.fzf-settings]
+inline = '''
+# fzf
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+'''
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.direnv]
+inline = 'eval "$(direnv hook zsh)"'
+
+## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
+[plugins.git-branch]
+inline = '''
+PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+RPROMPT=\$vcs_info_msg_0_
+zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
+zstyle ':vcs_info:*' enable git
+'''
+
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
