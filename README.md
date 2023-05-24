@@ -7,7 +7,7 @@
 - install neovim
 - install vim-plug
 - :PlugInstall
-- :TSInstall {all}
+- :TSInstall
 - :Mason
 - install tree-sitter (use cargo/rustup)
 - install nerd-font
