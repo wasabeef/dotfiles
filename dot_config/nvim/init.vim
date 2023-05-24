@@ -324,7 +324,7 @@ Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
 Plug 'jose-elias-alvarez/typescript.nvim'
 " Java
-Plug 'mfussenegger/nvim-jdtls'
+" Plug 'mfussenegger/nvim-jdtls'
 " Android
 Plug 'hsanson/vim-android'
 
@@ -1052,7 +1052,7 @@ require('flutter-tools').setup{
   },
   debugger = {
     enabled = true,
-    run_via_dap = true,
+    -- run_via_dap = true,
     exception_breakpoints = {},
     register_configurations = function(paths)
       -- require("dap").configurations.dart = {}
