@@ -318,6 +318,9 @@ Plug 'DNLHC/glance.nvim'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'hrsh7th/cmp-vsnip'
+" GitHub Copilot
+Plug 'zbirenbaum/copilot.lua'
+Plug 'zbirenbaum/copilot-cmp'
 " LSP status 表示
 Plug 'j-hui/fidget.nvim'
 " LSP アイコンを表示
@@ -332,9 +335,6 @@ Plug 'liuchengxu/vista.vim'
 Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
 Plug 'jose-elias-alvarez/typescript.nvim'
-" GitHub Copilot
-Plug 'zbirenbaum/copilot.lua'
-Plug 'zbirenbaum/copilot-cmp'
 " Java
 " Plug 'mfussenegger/nvim-jdtls'
 " Android
@@ -573,15 +573,11 @@ EOF
 endif
 " ---------------------------------------------------------
 
-
 " ---------------------------------------------------------
-" whatyouhide/vim-gotham - テーマ
+" EdenEast/nightfox.nvim - テーマ
 " ---------------------------------------------------------
 if !exists('g:vscode')
-
 colorscheme duskfox
-let g:gotham_airline_emphasised_kkinsert = 0
-
 endif
 " ---------------------------------------------------------
 
@@ -877,11 +873,11 @@ require("mason-lspconfig").setup_handlers({
     --   },
     -- }
     require("lspconfig")["dartls"].setup {
-      flags = { 
-        allow_incremental_sync = false, 
-        debounce_text_changes = nil,
-        exit_timeot = 0,
-      },
+      -- flags = { 
+      --   allow_incremental_sync = false, 
+      --   debounce_text_changes = nil,
+      --   exit_timeout = 0,
+      -- },
       -- on_attach = function(client, bunfs)
       --   local bufopts = { noremap=true, silent=true, buffer=bufnr }
       --   on_attach(client, bunfs)
@@ -1067,6 +1063,11 @@ require('flutter-tools').setup{
       renameFilesWithClasses = "prompt",
       updateImportsOnRename = true,
       enableSnippets = true
+    },
+    flags = {
+      allow_incremental_sync = false, 
+      debounce_text_changes = nil,
+      exit_timeout = 0,
     }
   },
   closing_tags = {
