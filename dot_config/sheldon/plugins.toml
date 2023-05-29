@@ -29,7 +29,6 @@ apply = ['defer']
 
 [plugins.fzf-settings]
 inline = '''
-# fzf
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 '''
 
@@ -38,10 +37,12 @@ github = "zsh-users/zsh-syntax-highlighting"
 apply = ["defer"]
 
 [plugins.direnv]
-inline = 'eval "$(direnv hook zsh)"'
+github = "ohmyzsh/ohmyzsh"
+dir = "plugins/direnv"
+apply = ["defer"]
 
-## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
 [plugins.git-branch]
+## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
 inline = '''
 PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
 autoload -Uz vcs_info
@@ -51,6 +52,7 @@ setopt prompt_subst
 RPROMPT=\$vcs_info_msg_0_
 zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
 zstyle ':vcs_info:*' enable git
+zstyle ':completion:*:default' menu select=1
 '''
 
 [plugins.compinit]

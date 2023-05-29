@@ -4,6 +4,10 @@ command! ReloadVimrc source $MYVIMRC
 " ---------------------------------------------------------
 " 基本設定
 " ---------------------------------------------------------
+" パフォーマンス改善
+" lua if vim.loader then vim.loader.enable() end
+lua vim.loader.enable()
+
 " Highlight
 syntax on
 " <Leader>を`<Space>`に設定
@@ -231,9 +235,6 @@ elseif has('win64') || has('win32')
   call plug#begin('~/AppData/Local/nvim/plugged')
 endif
 
-" パフォーマンス改善
-Plug 'lewis6991/impatient.nvim'
-
 Plug 'tpope/vim-surround'
 Plug 'numToStr/Comment.nvim'
 Plug 'machakann/vim-swap'
@@ -303,12 +304,20 @@ Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
+" バッファ
 Plug 'hrsh7th/cmp-buffer'
+" ファイルパス
 Plug 'hrsh7th/cmp-path'
-"
+" コマンドライン
+Plug 'hrsh7th/cmp-cmdline'
+" シンボル
 Plug 'DNLHC/glance.nvim'
 " LSP スニペット
 Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'hrsh7th/cmp-vsnip'
 " LSP status 表示
 Plug 'j-hui/fidget.nvim'
 " LSP アイコンを表示
@@ -323,28 +332,20 @@ Plug 'liuchengxu/vista.vim'
 Plug 'akinsho/flutter-tools.nvim'
 " TypeScript
 Plug 'jose-elias-alvarez/typescript.nvim'
+" GitHub Copilot
+Plug 'zbirenbaum/copilot.lua'
+Plug 'zbirenbaum/copilot-cmp'
 " Java
 " Plug 'mfussenegger/nvim-jdtls'
 " Android
-Plug 'hsanson/vim-android'
+" Plug 'hsanson/vim-android'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
-" GitHub Copilot
-Plug 'zbirenbaum/copilot.lua'
-Plug 'zbirenbaum/copilot-cmp'
-
-
 call plug#end()
-" ---------------------------------------------------------
-
-" ---------------------------------------------------------
-" plewis6991/impatient.nvim
-" ---------------------------------------------------------
-lua require('impatient')
 " ---------------------------------------------------------
 
 
@@ -756,6 +757,78 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 lua << EOF
+-- Complete -- -- -- -- -- -- -- -- -- -- -- -- --
+local cmp = require('cmp')
+local lspkind = require('lspkind')
+require('lspkind').init({
+  symbol_map = {
+    Copilot = "",
+  },
+})
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+  window = {
+    completion = cmp.config.window.bordered({
+      border = 'single'
+   }),
+    documentation = cmp.config.window.bordered({
+      border = 'single'
+   }),
+  },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = 'symbol',
+      maxwidth = 50,
+      ellipsis_char = '...',
+      before = function (entry, vim_item)
+        return vim_item
+      end
+    })
+  },
+  sources = cmp.config.sources({
+    { name = "copilot", group_index = 2 },
+    { name = "nvim_lsp", group_index = 2 },
+    { name = "vsnip", group_index = 2 },
+    { name = 'nvim_lsp_signature_help', group_index = 2 },
+    { name = "path", group_index = 2 },
+    }, {
+    { name = "buffer", group_index = 2 },
+  }),
+  mapping = cmp.mapping.preset.insert({
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm { select = true },
+  }),
+  experimental = {
+    ghost_text = true,
+  },
+})
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp_document_symbol' }
+  }, {
+    { name = 'buffer' }
+ })
+})
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline', keyword_length = 2 }
+  })
+})
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 -- Mason -- -- -- -- -- -- -- -- -- -- -- -- -- --
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 local on_attach = function(client, bufnr)
@@ -794,8 +867,6 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
 end
--- local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 require('mason').setup()
 require("mason-lspconfig").setup_handlers({
   function (server_name)
@@ -805,22 +876,27 @@ require("mason-lspconfig").setup_handlers({
     --     debounce_text_changes = 150,
     --   },
     -- }
-    -- require("lspconfig")["dartls"].setup {
-    --   on_attach = function(client, bunfs)
-    --     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    --     on_attach(client, bunfs)
-    --   end,
-    --   capabilities = capabilities,
-    --   flags = {allow_incremental_sync = true, debounce_text_changes = 500},
-    --   cmd = {'dart', 'language-server', '--protocol=lsp'},
-    --   init_options = {
-    --     onlyAnalyzeProjectsWithOpenFiles = false,
-    --     suggestFromUnimportedLibraries = true,
-    --     closingLabels = false,
-    --     outline = false,
-    --     flutterOutline = false,
-    --   },
-    -- }
+    require("lspconfig")["dartls"].setup {
+      flags = { 
+        allow_incremental_sync = false, 
+        debounce_text_changes = nil,
+        exit_timeot = 0,
+      },
+      -- on_attach = function(client, bunfs)
+      --   local bufopts = { noremap=true, silent=true, buffer=bufnr }
+      --   on_attach(client, bunfs)
+      -- end,
+      -- capabilities = capabilities,
+      -- flags = {allow_incremental_sync = true, debounce_text_changes = 500},
+      -- cmd = {'dart', 'language-server', '--protocol=lsp'},
+      -- init_options = {
+      --   onlyAnalyzeProjectsWithOpenFiles = false,
+      --   suggestFromUnimportedLibraries = true,
+      --   closingLabels = false,
+      --   outline = false,
+      --   flutterOutline = false,
+      -- },
+    }
     -- require("lspconfig")["svelte"].setup {
     --   on_attach = on_attach,
     --   capabilities = capabilities,
@@ -952,50 +1028,6 @@ glance.setup({
   },
 })
 
--- Complete -- -- -- -- -- -- -- -- -- -- -- -- --
-local cmp = require('cmp')
-local lspkind = require('lspkind')
-require('lspkind').init({
-  symbol_map = {
-    Copilot = "",
-  },
-})
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  formatting = {
-    format = lspkind.cmp_format({
-      mode = 'symbol',
-      maxwidth = 50,
-      before = function (entry, vim_item)
-        return vim_item
-      end
-    })
-  },
-  sources = {
-    { name = "copilot", group_index = 2 },
-    { name = "nvim_lsp", group_index = 2 },
-    { name = "vsnip", group_index = 2 },
-    { name = "buffer", group_index = 2 },
-    { name = "path", group_index = 2 },
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm { select = true },
-  }),
-  experimental = {
-    ghost_text = true,
-  },
-})
-
 -- Flutter -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 require('flutter-tools').setup{
   flutter_lookup_cmd = 'asdf where flutter',
@@ -1010,9 +1042,10 @@ require('flutter-tools').setup{
   },
   lsp = {
     color = {
-      enabled = false,
+      enabled = true,
       foreground = false,
-      background = false
+      background = false,
+      virtual_text = true
     },
     on_attach = function(client, bunfs)
       local bufopts = { noremap=true, silent=true, buffer=bufnr }
@@ -1042,12 +1075,12 @@ require('flutter-tools').setup{
     prefix = "-> ",
   },
   dev_log = {
-    enabled = true,
+    enabled = false,
     notify_errors = false,
     open_cmd = "tabedit",
   },
   dev_tools = {
-    autostart = false,
+    autostart = true,
     auto_open_browser = false,
   },
   debugger = {
@@ -1055,7 +1088,14 @@ require('flutter-tools').setup{
     -- run_via_dap = true,
     exception_breakpoints = {},
     register_configurations = function(paths)
-      -- require("dap").configurations.dart = {}
+      -- local dap = require("dap")
+      -- dap.adapters.dart = {
+      --   type = "executable",
+      --   command = "dart",
+      --   args = { "debug_adapter" },
+      -- }
+      -- dap.configurations.dart = {}
+      require("dap").configurations.dart = {}
       require("dap.ext.vscode").load_launchjs()
     end,
   },
@@ -1126,10 +1166,10 @@ endif
 " ---------------------------------------------------------
 " hsanson/vim-android
 " ---------------------------------------------------------
-if !exists('g:vscode')
-let g:gradle_path = $GRADLE_HOME
-let g:android_sdk_path = $ANDROID_HOME
-endif
+" if !exists('g:vscode')
+" let g:gradle_path = $GRADLE_HOME
+" let g:android_sdk_path = $ANDROID_HOME
+" endif
 " ---------------------------------------------------------
 
 " ---------------------------------------------------------

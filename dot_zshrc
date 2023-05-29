@@ -2,7 +2,7 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 # Proile
-zmodload zsh/zprof && zprof
+# zmodload zsh/zprof && zprof
 
 ## Save command history
 HISTFILE="$HOME/.zsh_history"
@@ -148,6 +148,6 @@ if [[ -x `which sheldon` ]]; then
 fi
 
 # Profile
-if (which zprof > /dev/null 2>&1) ;then
-  zprof | less
-fi
+# if (which zprof > /dev/null 2>&1) ;then
+#   zprof | less
+# fi
