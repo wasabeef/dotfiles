@@ -64,7 +64,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
 
     # asdf
     . $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
-    # . ~/.asdf/plugins/java/set-java-home.zsh
+    . ~/.asdf/plugins/java/set-java-home.zsh
     export JAVA_HOME=$(/usr/libexec/java_home)
     export JDK_HOME=${JAVA_HOME}
     
@@ -79,14 +79,17 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     
     ## Flutter
     export PATH="$PATH":"$HOME/.pub-cache/bin"
+    # cocoapods (required by flutter)
+    # export GEM_HOME=$HOME/.gem
+    # export PATH=$GEM_HOME/bin:$PATH
     
     ## Clang/LLVM
     # export LLVM_PATH="$(brew --prefix llvm)"
-    export LLVM_PATH="/opt/homebrew/opt/llvm"
-    export PATH="$LLVM_PATH/bin:${PATH}"
-    
-    export LDFLAGS="-L$LLVM_PATH/lib"
-    export CPPFLAGS="-I$LLVM_PATH/include"
+    # export LLVM_PATH="/opt/homebrew/opt/llvm"
+    # export PATH="$LLVM_PATH/bin:${PATH}"
+
+    # export LDFLAGS="-L$LLVM_PATH/lib"
+    # export CPPFLAGS="-I$LLVM_PATH/include"
 
     ## pnpm
     export PNPM_HOME="$HOME/Library/pnpm"
@@ -106,7 +109,7 @@ export PATH=$HOME/.fastlane/bin:$PATH
 # export PATH="$(yarn global bin):$PATH"
         
 ## Rust
-# export PATH=$HOME/.cargo/bin:$PATH
+export PATH=$HOME/.cargo/bin:$PATH
 
 ## Go
 export ASDF_GOLANG_MOD_VERSION_ENABLED=true
@@ -131,6 +134,12 @@ alias la='ls -a'
 alias lla='ls -la'
 alias lt='ls --tree'
 alias m='melos'
+alias mbs='melos bootstrap'
+alias mgt='melos get'
+alias mgn='melos get'
+alias mget='melos get'
+alias mgen='melos gen'
+alias mr='melos refresh'
 alias .="cd .."
 alias ..="cd ../.."
 alias ...="cd ../../.."
@@ -151,3 +160,12 @@ fi
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+# [[ -f /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
+
+# bun completions
+[ -s "/Users/a12622/.bun/_bun" ] && source "/Users/a12622/.bun/_bun"

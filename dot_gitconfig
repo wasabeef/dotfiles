@@ -36,3 +36,11 @@
   pr = "!pr() { \
          git fetch origin pull/$1/head:$2; \
        }; pr"
+[diff "lockb"]
+	textconv = bun
+	binary = true
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process

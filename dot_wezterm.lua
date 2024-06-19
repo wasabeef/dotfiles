@@ -62,9 +62,9 @@ local config = {
 
 -- macOS settings
 if os == "macOS" then
-  config["font_size"] = 14.0
-  config["initial_cols"] = 160
-  config["initial_rows"] = 40
+  config["font_size"] = 10.0
+  config["initial_cols"] = 320
+  config["initial_rows"] = 100
 
 -- Windows settings
 elseif os == "windows" then

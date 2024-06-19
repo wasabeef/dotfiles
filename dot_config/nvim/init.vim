@@ -84,6 +84,8 @@ set hlsearch
 set gdefault
 " 変更時にガタつかないようにサイン列を常に表示しておく
 set signcolumn=yes
+" LineLength 80 に色を付ける
+set colorcolumn=80
 
 set termguicolors
 
@@ -236,15 +238,17 @@ elseif has('win64') || has('win32')
 endif
 
 Plug 'tpope/vim-surround'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'machakann/vim-highlightedyank'
 Plug 'numToStr/Comment.nvim'
+
+" 引数の入れ替え g> g< gs
 Plug 'machakann/vim-swap'
 " incremental search improved
 Plug 'haya14busa/is.vim'
 Plug 'windwp/nvim-autopairs'
 " スタート画面
 Plug 'mhinz/vim-startify'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'machakann/vim-highlightedyank'
 
 Plug 'nvim-lua/plenary.nvim'
 " Plug 'stevearc/dressing.nvim'
@@ -300,29 +304,30 @@ Plug 'lewis6991/gitsigns.nvim'
 
 " LSP
 Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'
-Plug 'williamboman/mason-lspconfig.nvim'
-Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
-Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
 " バッファ
 Plug 'hrsh7th/cmp-buffer'
 " ファイルパス
 Plug 'hrsh7th/cmp-path'
 " コマンドライン
 Plug 'hrsh7th/cmp-cmdline'
-" シンボル
-Plug 'DNLHC/glance.nvim'
+Plug 'hrsh7th/nvim-cmp'
 " LSP スニペット
+Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
-Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+Plug 'hrsh7th/cmp-nvim-lsp-document-symbol'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'aznhe21/actions-preview.nvim'
+" シンボル
+Plug 'DNLHC/glance.nvim'
 " GitHub Copilot
 Plug 'zbirenbaum/copilot.lua'
 Plug 'zbirenbaum/copilot-cmp'
 " LSP status 表示
-Plug 'j-hui/fidget.nvim'
+Plug 'j-hui/fidget.nvim', { 'tag': 'legacy' }
 " LSP アイコンを表示
 Plug 'onsails/lspkind-nvim'
 " LSP エラーメッセージ
@@ -342,6 +347,7 @@ Plug 'jose-elias-alvarez/typescript.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
+Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
@@ -371,6 +377,7 @@ hi HopUnmatched guifg=#4B5263
 if !exists('g:vscode')
 let g:startify_files_number = 5
 let g:startify_bookmarks = [
+          \ { 'p': '~/git/jump-app/' },
           \ { 'i': '~/.config/nvim/init.vim' },
           \ { 'x': '~/.config/' },
           \ { 'z': '~/.zshrc' },
@@ -454,7 +461,7 @@ if !exists('g:vscode')
 nnoremap <silent> <C-o> <cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>
 nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').oldfiles()<CR>
 nnoremap <silent> <C-g> <cmd>lua require('telescope.builtin').live_grep()<CR>
-nnoremap <silent> <C-c> <cmd>lua require('telescope.builtin').commands()<CR>
+nnoremap <silent> <C-x> <cmd>lua require('telescope.builtin').commands()<CR>
 nnoremap <silent> <C-z> <cmd>lua require('telescope.builtin').keymaps()<CR>
 nnoremap <silent> <Leader>h <cmd>Telescope notify<CR>
 nnoremap <silent> <Leader>s <cmd>Telescope simulators run<CR>
@@ -462,6 +469,7 @@ nnoremap <silent> <Leader>s <cmd>Telescope simulators run<CR>
 lua << EOF
 require('telescope').setup{
   defaults = {
+    -- initial_mode = "normal",
     file_ignore_patterns = {
       "node_modules",
       ".git/",
@@ -502,11 +510,14 @@ require('telescope').setup{
           end
           vim.fn.jobstart({
             "viu",
+            "-w",
+            "100",
             "-b",
             filepath,
           }, {
             on_stdout = send_output,
             stdout_buffered = true,
+            pty = true,
           })
         else
           require("telescope.previewers.utils").set_preview_message(
@@ -755,6 +766,7 @@ if !exists('g:vscode')
 lua << EOF
 -- Complete -- -- -- -- -- -- -- -- -- -- -- -- --
 local cmp = require('cmp')
+local types = require('cmp.types')
 local lspkind = require('lspkind')
 require('lspkind').init({
   symbol_map = {
@@ -762,6 +774,16 @@ require('lspkind').init({
   },
 })
 cmp.setup({
+  completion = {
+    autocomplete = {
+      types.cmp.TriggerEvent.TextChanged,
+      types.cmp.TriggerEvent.TextChanged,
+    },
+    completeopt = 'longest,menu,menuone,noselect,noinsert,preview',
+    --completeopt = 'menu,menuone,noselect',
+    keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]],
+    keyword_length = 1,
+  },
   snippet = {
     expand = function(args)
       vim.fn["vsnip#anonymous"](args.body)
@@ -795,8 +817,8 @@ cmp.setup({
     { name = "buffer", group_index = 2 },
   }),
   mapping = cmp.mapping.preset.insert({
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-Space>'] = cmp.mapping.complete(),
@@ -840,7 +862,8 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>ii', vim.lsp.buf.implementation, bufopts)
   vim.keymap.set('n', '<Leader>tt', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts)
+  -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', '<Leader>a', "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>e', vim.diagnostic.open_float, bufopts)
   vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, bufopts)
   vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, bufopts)
@@ -849,7 +872,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
   -- エラーメッセージ
-  vim.keymap.set('n', '<Leader>ee', "<cmd>TroubleToggle<CR>", bufopts)
+  vim.keymap.set('n', '<Leader>te', "<cmd>TroubleToggle<CR>", bufopts)
   vim.keymap.set('n', '<Leader>tw', "<cmd>TroubleToggle workspace_diagnostics<CR>", bufopts)
   vim.keymap.set('n', '<Leader>td', "<cmd>TroubleToggle document_diagnostics<CR>", bufopts)
   vim.keymap.set('n', '<Leader>tq', "<cmd>TroubleToggle quickfix<CR>", bufopts)
@@ -872,9 +895,9 @@ require("mason-lspconfig").setup_handlers({
     --     debounce_text_changes = 150,
     --   },
     -- }
-    require("lspconfig")["dartls"].setup {
-      -- flags = { 
-      --   allow_incremental_sync = false, 
+    -- require("lspconfig")["dartls"].setup {
+      -- flags = {
+      --   allow_incremental_sync = false,
       --   debounce_text_changes = nil,
       --   exit_timeout = 0,
       -- },
@@ -892,7 +915,7 @@ require("mason-lspconfig").setup_handlers({
       --   outline = false,
       --   flutterOutline = false,
       -- },
-    }
+    -- }
     -- require("lspconfig")["svelte"].setup {
     --   on_attach = on_attach,
     --   capabilities = capabilities,
@@ -937,10 +960,6 @@ require("mason-lspconfig").setup_handlers({
       capabilities = capabilities,
       flags = {
       },
-      -- root_dir = function(fname)
-        -- return require("lspconfig").root_pattern("build.gradle.kts", "settings.gradle.kts", "build.gradle", "settings.gradle")(fname) or vim.loop.os_homedir()
-        -- return require("lspconfig").root_pattern("build.gradle", "settings.gradle")(fname) or vim.loop.os_homedir()
-      -- end,
     }
   end,
 })
@@ -1023,11 +1042,45 @@ glance.setup({
     enable = true, -- Available strating from nvim-0.8+
   },
 })
+-- actions-preview -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+require("actions-preview").setup {
+  diff = {
+    algorithm = "histogram",
+    -- 差分がある部分の前後に表示する行数。git diff --unified=<n>相当
+    ctxlen = 3,
+    -- 同一ファイルの差分塊間の行数がこれ以下なら全部表示する。git diff --inter-hunk-context=<lines>相当
+    interhunkctxlen = 0,
+
+    -- あらゆるスペースの変更を無視する。trueならgit diff --ignore-all-space相当
+    ignore_whitespace = false,
+    -- 行頭や連続するスペースの変更を無視する。trueならgit diff --ignore-space-change相当
+    ignore_whitespace_change = false,
+    -- 行末スペースの変更を無視する。trueならgit diff --ignore-space-at-eol相当
+    ignore_whitespace_change_at_eol = false,
+    -- 改行前のCR（\r）を無視する。trueならgit diff --ignore-cr-at-eol相当
+    ignore_cr_at_eol = false,
+    -- 連続した空行の変更を無視する。trueならgit diff --ignore-blank-lines相当
+    ignore_blank_lines = false,
+    -- 差分のズレを抑制する。trueならgit diff --indent-heuristic相当。actions-preview.nvimではデフォルト無効
+    indent_heuristic = false,
+  },
+  telescope = require("telescope.themes").get_dropdown {
+    color_devicons = true,
+    layout_strategy = "vertical",
+    layout_config = {
+      width = 0.5,
+      height = 0.75,
+    },
+   },
+}
 
 -- Flutter -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+
 require('flutter-tools').setup{
+  flutter_path = nil,
   flutter_lookup_cmd = 'asdf where flutter',
   fvm = false,
+  -- root_patterns = { ".git", "pubspec.yaml" },
   ui = {
     border = "rounded",
   },
@@ -1044,9 +1097,23 @@ require('flutter-tools').setup{
       virtual_text = true
     },
     on_attach = function(client, bunfs)
-      local bufopts = { noremap=true, silent=true, buffer=bufnr }
+    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+
       vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", bufopts)
+      -- vim.keymap.set('n', '<Leader>m', "<cmd>Telescope flutter commands initial_mode=normal<CR>", bufopts)
       vim.keymap.set('n', '<Leader>o', "<cmd>FlutterOutlineToggle<CR>", bufopts)
+      -- vim.keymap.set('n', '<Leader>G', "<cmd>autocmd CursorHold * :normal! G<CR>", bufopts)
+
+      local function find_flutter_files()
+        local flutter_sdk_path = vim.fn.system("asdf where flutter | tr -d '\\n'")
+        require('telescope.builtin').find_files({
+        prompt_title = 'Find Flutter Files',
+        search_dirs = {flutter_sdk_path, '/Users/a12622/git/jump-app'},
+      })
+      end
+      vim.api.nvim_create_user_command('TelescopeFindFlutterFiles', find_flutter_files, {})
+      vim.keymap.set('n', '<C-i>', "<cmd>TelescopeFindFlutterFiles<CR>", {noremap = true, silent = true})
+
       on_attach(client, bunfs)
     end,
     -- capabilities = capabilities,
@@ -1062,10 +1129,10 @@ require('flutter-tools').setup{
       },
       renameFilesWithClasses = "prompt",
       updateImportsOnRename = true,
-      enableSnippets = true
+      enableSnippets = false
     },
     flags = {
-      allow_incremental_sync = false, 
+      allow_incremental_sync = false,
       debounce_text_changes = nil,
       exit_timeout = 0,
     }
@@ -1076,26 +1143,40 @@ require('flutter-tools').setup{
     prefix = "-> ",
   },
   dev_log = {
-    enabled = false,
+    enabled = true,
     notify_errors = false,
     open_cmd = "tabedit",
   },
   dev_tools = {
-    autostart = true,
+    autostart = false,
     auto_open_browser = false,
   },
   debugger = {
-    enabled = true,
-    -- run_via_dap = true,
+    enabled = false,
+    run_via_dap = true,
     exception_breakpoints = {},
     register_configurations = function(paths)
-      -- local dap = require("dap")
-      -- dap.adapters.dart = {
-      --   type = "executable",
-      --   command = "dart",
-      --   args = { "debug_adapter" },
+      require("dap").adapters.dart = {
+        type = "executable",
+        command = "dart",
+        args = { "debug_adapter" },
+      }
+      -- require("dap").configurations.dart = {
+      --   type = 'dart',
+      --   name = "Run app for Dev",
+      --   program = "${workspaceFolder}/packages/app/lib/main.dart",
+      --   dartSdkPath = paths.dart_sdk,
+      --   flutterSdkPath = paths.flutter_sdk,
+      --   request = "launch",
+      --   flutterMode = "debug",
+      --   args = {
+      --     "--debug",
+      --     "--flavor",
+      --     "dev",
+      --     "--dart-define-from-file=define/flavor/dev/common.json",
+      --     "--dart-define-from-file=define/flavor/dev/tracking.json"
+      --   }
       -- }
-      -- dap.configurations.dart = {}
       require("dap").configurations.dart = {}
       require("dap.ext.vscode").load_launchjs()
     end,
@@ -1132,7 +1213,6 @@ require('fidget').setup{
 -- Debugging -- -- -- -- -- -- -- -- -- -- -- -- -- --
 require("dapui").setup({
   icons = { expanded = "▾", collapsed = "▸" },
-  expand_lines = vim.fn.has("nvim-0.7"),
   layouts = {
     {
       elements = {
@@ -1154,7 +1234,7 @@ require('goto-preview').setup {
 }
 EOF
 
-"" Vista """""""""""""""""""""""""""""""""""""""""
+" Vista ---------------------------------------------------------
 let g:vista_default_executive = 'nvim_lsp'
 let g:vista#renderer#enable_icon = 1
 let g:vista_sidebar_position = 'rightbelow 50vnew'
@@ -1178,7 +1258,6 @@ endif
 " ---------------------------------------------------------
 if !exists('g:vscode')
 lua require("bufferline").setup{}
-" バッファ
 nnoremap [[ :BufferLineCyclePrev<CR>
 nnoremap ]] :BufferLineCycleNext<CR>
 nnoremap [] :BufferLinePick<CR>

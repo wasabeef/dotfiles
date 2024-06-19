@@ -1,4 +1,5 @@
 *.gif diff=image
 *.jpg diff=image
 *.png diff=image
+*.lockb binary diff=lockb
 
