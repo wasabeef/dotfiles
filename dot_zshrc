@@ -49,6 +49,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
     ## Flutter
+    export FLUTTER_ROOT="$(asdf where flutter)"
     export PATH="$PATH":"$HOME/.pub-cache/bin"
     ;;
   darwin*)

@@ -62,7 +62,7 @@ local config = {
 
 -- macOS settings
 if os == "macOS" then
-  config["font_size"] = 10.0
+  config["font_size"] = 11.0
   config["initial_cols"] = 320
   config["initial_rows"] = 100
 
