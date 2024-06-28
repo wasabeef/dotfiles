@@ -176,6 +176,9 @@ vim.api.nvim_set_keymap('n', '<C-Down>', '"zdd"zp', { noremap = true })
 -- 対象の複数行を移動
 vim.api.nvim_set_keymap('v', '<C-Up>', '"zx<Up>"zP`[V`]', { noremap = true })
 vim.api.nvim_set_keymap('v', '<C-Down>', '"zx"zp`[V`]', { noremap = true })
+-- Ctrl + p で繰り返しヤンクした文字をペースト
+vim.api.nvim_set_keymap('v', '<C-p>', '"0p', { silent = true })
+
 
 -- Spaceを押した後にrを押すと :%s/// が自動で入力される
 -- vim.api.nvim_set_keymap('n', '<Leader>r', ':%s///g<Left><Left><Left>', { noremap = true })
@@ -354,6 +357,12 @@ require("lazy").setup({
       end
     },
 
+    -- スクロールバー
+    {
+      "dstein64/nvim-scrollview",
+      event = 'VeryLazy',
+    },
+
     -- スムーススクロール
     {
       "karb94/neoscroll.nvim",
@@ -363,8 +372,8 @@ require("lazy").setup({
          local keymap = {
            ["<C-u>"] = function() neoscroll.ctrl_u({ duration = 80; }) end;
            ["<C-d>"] = function() neoscroll.ctrl_d({ duration = 80; }) end;
-           ["<C-b>"] = function() neoscroll.ctrl_u({ duration = 160; }) end;
-           ["<C-f>"] = function() neoscroll.ctrl_d({ duration = 160; }) end;
+           ["<C-b>"] = function() neoscroll.ctrl_b({ duration = 160; }) end;
+           ["<C-f>"] = function() neoscroll.ctrl_f({ duration = 160; }) end;
          }
 
          local modes = { 'n', 'v', 'x' }
@@ -488,6 +497,9 @@ require("lazy").setup({
       "lukas-reineke/indent-blankline.nvim",
       main = "ibl",
       event = 'VeryLazy',
+      config = function()
+        require("ibl").setup {}
+      end
     },
     
     -- インラインターミナル
