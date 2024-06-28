@@ -179,7 +179,6 @@ vim.api.nvim_set_keymap('v', '<C-Down>', '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 vim.api.nvim_set_keymap('v', '<C-p>', '"0p', { silent = true })
 
-
 -- Spaceを押した後にrを押すと :%s/// が自動で入力される
 -- vim.api.nvim_set_keymap('n', '<Leader>r', ':%s///g<Left><Left><Left>', { noremap = true })
 
@@ -188,6 +187,40 @@ vim.api.nvim_set_keymap('v', '<C-p>', '"0p', { silent = true })
 vim.api.nvim_set_keymap('c', '<C-n>', 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
 vim.api.nvim_set_keymap('c', '<C-p>', 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 -- ---------------------------------------------------------
+
+-- 不要なプラグインを停止する
+vim.g.did_install_default_menus = 1
+vim.g.did_install_syntax_menu = 1
+vim.g.did_indent_on = 1
+vim.g.did_load_filetypes = 1
+vim.g.did_load_ftplugin = 1
+vim.g.loaded_2html_plugin = 1
+vim.g.loaded_gzip = 1
+vim.g.loaded_man = 1
+vim.g.loaded_matchit = 1
+vim.g.loaded_matchparen = 1
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_remote_plugins = 1
+vim.g.loaded_shada_plugin = 1
+vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_tarPlugin = 1
+vim.g.loaded_tutor_mode_plugin = 1
+vim.g.loaded_zipPlugin = 1
+vim.g.skip_loading_mswin = 1
+
+-- 前回開いたファイルのカーソル位置を復旧する
+vim.api.nvim_create_autocmd('BufReadPost', {
+  group = vim.api.nvim_create_augroup('restore_cursor', { clear = true }),
+  pattern = '*',
+  callback = function()
+    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+    if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
+      vim.api.nvim_win_set_cursor(0, {row, col})
+    end
+  end,
+})
+
 
 -- LSP 
 -- Mason と flutter-tools で利用する
@@ -219,31 +252,6 @@ local my_on_attach = function(client, bufnr)
   vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
   vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
 end
-
--- ---------------------------------------------------------
--- プラグイン管理
--- ---------------------------------------------------------
--- 不要なプラグインを停止する
-vim.g.did_install_default_menus = 1
-vim.g.did_install_syntax_menu = 1
-vim.g.did_indent_on = 1
-vim.g.did_load_filetypes = 1
-vim.g.did_load_ftplugin = 1
-vim.g.loaded_2html_plugin = 1
-vim.g.loaded_gzip = 1
-vim.g.loaded_man = 1
-vim.g.loaded_matchit = 1
-vim.g.loaded_matchparen = 1
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_remote_plugins = 1
-vim.g.loaded_shada_plugin = 1
-vim.g.loaded_spellfile_plugin = 1
-vim.g.loaded_tarPlugin = 1
-vim.g.loaded_tutor_mode_plugin = 1
-vim.g.loaded_zipPlugin = 1
-vim.g.skip_loading_mswin = 1
-
 
 require("lazy").setup({
   spec = {
@@ -334,15 +342,16 @@ require("lazy").setup({
           -- Set menu
           dashboard.section.buttons.val = {
             -- dashboard.button("e", "   New file",       ":ene <BAR> startinsert <CR>"),
-            dashboard.button("f", "   Find file",      ":Telescope find_files<CR>"),
-            dashboard.button("g", "󰱼   Find word",      ":Telescope live_grep<CR>"),
-            dashboard.button("r", "󰈚   Recent",         ":Telescope oldfiles<CR>"),
-            dashboard.button("i", "   Edit init.lua",  ":e $MYVIMRC <CR>"),
-            dashboard.button("z", "   Edit .zshrc",    ":e ~/.zshrc <CR>"),
-            dashboard.button("m", "󱌣   Mason",          ":Mason<CR>"),
-            dashboard.button("l", "󰒲   Lazy",           ":Lazy<CR>"),
-            dashboard.button("u", "󰂖   Update plugins", "<cmd>lua require('lazy').sync()<CR>"),
-            dashboard.button("q", "   Quit NVIM",      ":qa<CR>"),
+            dashboard.button("f", "   Find file",         ":Telescope find_files<CR>"),
+            dashboard.button("g", "󰱼   Find word",         ":Telescope live_grep<CR>"),
+            dashboard.button("r", "󰈚   Recent",            ":Telescope oldfiles<CR>"),
+            dashboard.button("i", "   Edit init.lua",     ":e $MYVIMRC <CR>"),
+            dashboard.button("z", "   Edit .zshrc",       ":e ~/.zshrc <CR>"),
+            dashboard.button("w", "   Edit .wezterm.lua", ":e ~/.wezterm.lua <CR>"),
+            dashboard.button("m", "󱌣   Mason",             ":Mason<CR>"),
+            dashboard.button("l", "󰒲   Lazy",              ":Lazy<CR>"),
+            dashboard.button("u", "󰂖   Update plugins",    "<cmd>lua require('lazy').sync()<CR>"),
+            dashboard.button("q", "   Quit NVIM",         ":qa<CR>"),
           }
       
           local function footer()
@@ -494,14 +503,17 @@ require("lazy").setup({
 
     -- 空白文字ハイライト
     {
-      "lukas-reineke/indent-blankline.nvim",
-      main = "ibl",
-      event = 'VeryLazy',
-      config = function()
-        require("ibl").setup {}
-      end
+      "shellRaining/hlchunk.nvim",
+     event = { "BufReadPre", "BufNewFile" },
+     opts = {
+       chunk = {
+         enable = true,
+         use_treesitter = true,
+       },
+       indent = { enable = true },
+     },
     },
-    
+
     -- インラインターミナル
     {
       "akinsho/toggleterm.nvim",
@@ -622,44 +634,44 @@ require("lazy").setup({
     {
       'dense-analysis/ale',
       event = 'VeryLazy',
-       config = function()
-         vim.g.ale_lint_on_enter = 0
-         vim.g.ale_sign_column_always = 1
-         vim.g.ale_lint_on_save = 0
-         vim.g.ale_linters = {
-           markdown = {'textlint'},
-           json = {'jq', 'jsonlint', 'cspell'},
-           yaml = {'yamllint'},
-           go = {'gofmt', 'gopls'},
-         }
-         vim.g.ale_fixers = {
-           ['*'] = {'trim_whitespace'},
-           lua = {'lua_language_server'},
-           sh = {'shfmt'},
-           bash = {'shfmt'},
-           zsh = {'shfmt'},
-           markdown = {'prettier'},
-           yaml = {'prettier'},
-           html = {'prettier'},
-           css = {'prettier'},
-           -- less = {'prettier'},
-           -- scss = {'prettier'},
-           json = {'prettier'},
-           -- xml = {'xmllint'},
-           -- vue = {'prettier'},
-           -- svelte = {'prettier'},
-           -- astro = {'prettier'},
-           javascript = {'prettier', 'eslint'},
-           javascriptreact = {'prettier', 'eslint', 'stylelint'},
-           typescript = {'prettier', 'tslint', 'eslint'},
-           typescriptreact = {'prettier', 'tslint', 'eslint', 'stylelint'},
-           java = {'eclipselsp'},
-           kotlin = {'ktlint'},
-           dart = {'dart-format'},
-           go = {'gofmt', 'goimports'},
-           graphql = {'prettier'},
-         }
-         vim.api.nvim_set_keymap('n', '<Leader>f', ':ALEFix<CR>', { noremap = true, silent = true })
+      config = function()
+        vim.g.ale_lint_on_enter = 0
+        vim.g.ale_sign_column_always = 1
+        vim.g.ale_lint_on_save = 0
+        vim.g.ale_linters = {
+          markdown = {'textlint'},
+          json = {'jq', 'jsonlint', 'cspell'},
+          yaml = {'yamllint'},
+          go = {'gofmt', 'gopls'},
+        }
+        vim.g.ale_fixers = {
+          ['*'] = {'trim_whitespace'},
+          lua = {'lua_language_server'},
+          sh = {'shfmt'},
+          bash = {'shfmt'},
+          zsh = {'shfmt'},
+          markdown = {'prettier'},
+          yaml = {'prettier'},
+          html = {'prettier'},
+          css = {'prettier'},
+          -- less = {'prettier'},
+          -- scss = {'prettier'},
+          json = {'prettier'},
+          -- xml = {'xmllint'},
+          -- vue = {'prettier'},
+          -- svelte = {'prettier'},
+          -- astro = {'prettier'},
+          javascript = {'prettier', 'eslint'},
+          javascriptreact = {'prettier', 'eslint', 'stylelint'},
+          typescript = {'prettier', 'tslint', 'eslint'},
+          typescriptreact = {'prettier', 'tslint', 'eslint', 'stylelint'},
+          java = {'eclipselsp'},
+          kotlin = {'ktlint'},
+          dart = {'dart-format'},
+          go = {'gofmt', 'goimports'},
+          graphql = {'prettier'},
+        }
+        vim.api.nvim_set_keymap('n', '<Leader>f', ':ALEFix<CR>', { noremap = true, silent = true })
       end
     },
 
@@ -791,6 +803,10 @@ require("lazy").setup({
         'nvim-telescope/telescope-media-files.nvim',
         'dimaportenko/telescope-simulators.nvim',
         'nvim-telescope/telescope-dap.nvim',
+        {
+          'nvim-telescope/telescope-fzf-native.nvim',
+           build = 'make',
+        },
       },
       event = 'VeryLazy',
       config = function()
@@ -863,6 +879,14 @@ require("lazy").setup({
                 end
               end,
             },
+            extensions = {
+              fzf = {
+                fuzzy = true,                    -- false will only do exact matching
+                override_generic_sorter = true,  -- override the generic sorter
+                override_file_sorter = true,     -- override the file sorter
+                case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+              }
+            }
           },
         }
         require('telescope').load_extension('ui-select')
@@ -870,6 +894,7 @@ require("lazy").setup({
         require('telescope').load_extension('notify')
         require('telescope').load_extension('dap')
         require("telescope").load_extension('media_files')
+        require('telescope').load_extension('fzf')
         require("simulators").setup({
           android_emulator = true,
           apple_simulator = true,
@@ -940,7 +965,7 @@ require("lazy").setup({
           },
           lsp = {
             color = {
-              enabled = true,
+              enabled = false,
               background = false,
               background_color = nil,
               foreground = false,
