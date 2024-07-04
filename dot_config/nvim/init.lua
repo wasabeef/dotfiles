@@ -518,17 +518,21 @@ require("lazy").setup({
     {
       "akinsho/toggleterm.nvim",
       event = 'VeryLazy',
-      config = function()
-        vim.api.nvim_create_autocmd('TermEnter', {
-          pattern = 'term://*toggleterm#*',
-          command = 'tnoremap <silent><c-t> <Cmd>exe v:count1 . "ToggleTerm"<CR>'
-        })
-        vim.api.nvim_set_keymap('n', '<C-t>', ':ToggleTerm<CR>', { noremap = true })
-        
-        require('toggleterm').setup({
-          direction = 'float',
-        })
-      end
+      keys = {
+        { '<C-t>f', '<Cmd>ToggleTerm direction=float<CR>' },
+        { '<C-t>v', '<Cmd>ToggleTerm direction=vertical<CR>' },
+        { '<C-t>h', '<Cmd>ToggleTerm direction=horizontal<CR>' },
+      },
+      opts = {
+        size = function(term)
+            return ({
+              horizontal = vim.o.lines * 0.3,
+              vertical   = vim.o.columns * 0.35,
+            })[term.direction]
+        end,
+        open_mapping = '<C-t>',
+        direction = 'float',
+      }
     },
 
     -- 通知
@@ -841,6 +845,22 @@ require("lazy").setup({
             mappings = {
               i = {
                 ["<C-q>"] = "close",
+                ["<Tab>"] = function(prompt_bufnr)
+                              local action_state = require("telescope.actions.state")
+                              local actions = require("telescope.actions")
+                              local picker = action_state.get_current_picker(prompt_bufnr)
+                              local prompt_win = picker.prompt_win
+                              local previewer = picker.previewer
+                              local bufnr = previewer.state.bufnr or previewer.state.termopen_bufnr
+                              local winid = previewer.state.winid or vim.fn.bufwinid(bufnr)
+                              vim.keymap.set("n", "<Tab>", function()
+                              	vim.cmd(string.format("noautocmd lua vim.api.nvim_set_current_win(%s)", prompt_win))
+                              end, { buffer = bufnr })
+                              vim.keymap.set("n", "<esc>", function()
+                              	actions.close(prompt_bufnr)
+                              end, { buffer = bufnr })
+                              vim.cmd(string.format("noautocmd lua vim.api.nvim_set_current_win(%s)", winid))
+                            end,
               }
             },
             preview = {

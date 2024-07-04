@@ -67,8 +67,8 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     export JDK_HOME=${JAVA_HOME}
     
     ## Android
-    export ANDROID_HOME="$HOME/Library/Android/sdk"
-    export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+    export ANDROID_HOME="$HOME/Android/sdk"
+    export ANDROID_SDK_ROOT="$HOME/Android/sdk"
     export PATH=$ANDROID_HOME/platform-tools:$PATH 
     export PATH=$ANDROID_HOME/tools:$PATH
     export PATH=$ANDROID_HOME/tools/bin:$PATH

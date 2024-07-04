@@ -1,6 +1,8 @@
 [user]
     name = wasabeef
     email = dadadada.chop@gmail.com
+[credential]
+	helper = osxkeychain
 [core]
     editor = nvim
     attributesfile = ~/.gitattributes
