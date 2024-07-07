@@ -988,15 +988,15 @@ require("lazy").setup({
           flutter_path = nil,
           flutter_lookup_cmd = "asdf where flutter",
           fvm = false,
-          -- root_patterns = { ".git", "pubspec.yaml" },
+          root_patterns = { ".git", "pubspec.yaml" },
           ui = {
             border = "rounded",
-            -- notification_style = 'native',
+            notification_style = 'native',
           },
           decorations = {
             statusline = {
-              app_version = false,
-              device = false,
+              app_version = true,
+              device = true,
               project_config = false,
             },
           },
@@ -1016,7 +1016,7 @@ require("lazy").setup({
             end,
           },
           widget_guides = {
-            enabled = false,
+            enabled = true,
           },
           closing_tags = {
             enabled = true,
@@ -1062,7 +1062,7 @@ require("lazy").setup({
                 local flutter_sdk_path = vim.fn.system("asdf where flutter | tr -d '\\n'")
                 require("telescope.builtin").find_files({
                   prompt_title = "Find Flutter Files",
-                  search_dirs = { flutter_sdk_path, "/Users/a12622/git/jump-app" },
+                  search_dirs = { flutter_sdk_path },
                 })
               end
               vim.api.nvim_create_user_command("TelescopeFindFlutterFiles", find_flutter_files, {})
@@ -1083,11 +1083,6 @@ require("lazy").setup({
               renameFilesWithClasses = "prompt",
               enableSnippets = false,
               updateImportsOnRename = true,
-            },
-            flags = {
-              allow_incremental_sync = false,
-              debounce_text_changes = nil,
-              exit_timeout = 0,
             },
           },
         })
@@ -1118,6 +1113,7 @@ require("lazy").setup({
     -- エラーメッセージ
     {
       "folke/trouble.nvim",
+      event = "VeryLazy",
       opts = {
         position = "bottom",
         height = 5,
@@ -1164,7 +1160,6 @@ require("lazy").setup({
         --   desc = "Quickfix List (Trouble)",
         -- },
       },
-      event = "VeryLazy",
     },
 
     -- LSP Status
@@ -1487,8 +1482,8 @@ require("lazy").setup({
       dependencies = {
         "zbirenbaum/copilot-cmp",
       },
-      cmd = "Copilot",
       event = "InsertEnter",
+      cmd = "Copilot",
       config = function()
         require("copilot").setup({
           panel = {
