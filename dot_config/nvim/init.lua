@@ -1001,16 +1001,17 @@ require("lazy").setup({
             },
           },
           debugger = {
-            enabled = false,
+            enabled = true,
             run_via_dap = true,
             exception_breakpoints = {},
             register_configurations = function(paths)
-              require("dap").adapters.dart = {
+              local dap = require("dap")
+              dap.adapters.dart = {
                 type = "executable",
-                command = "dart",
+                command = paths.flutter_bin,
                 args = { "debug_adapter" },
               }
-              require("dap").configurations.dart = {}
+              dap.configurations.dart = {}
               require("dap.ext.vscode").load_launchjs()
             end,
           },
