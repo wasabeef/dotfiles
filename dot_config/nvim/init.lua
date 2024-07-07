@@ -587,7 +587,9 @@ require("lazy").setup({
       "petertriho/nvim-scrollbar",
       event = { "BufRead", "BufNewFile" },
       config = function()
-        require("scrollbar").setup()
+        require("scrollbar").setup({
+          handle = {color = '#445588'},
+        })
       end,
     },
 
