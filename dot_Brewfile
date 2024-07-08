@@ -79,6 +79,8 @@ cask "font-noto-sans"
 cask "font-noto-sans-cjk"
 # Web browser
 cask "google-chrome"
+# Utility to hide menu bar items
+cask "hiddenbar"
 # Tool to optimise images to a smaller size
 cask "imageoptim"
 # JetBrains tools manager
