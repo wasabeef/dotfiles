@@ -3,13 +3,27 @@
 **Required**  
 
 - Brew
-  - `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-  - `/opt/homebrew/bin/brew bundle --global`
+  ```sh
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ```
+  ```sh
+  /opt/homebrew/bin/brew bundle --global
+  ```
 - chsh
-  - `vi /etc/shells`
-  - `chsh -s /opt/homebrew/bin/zsh`
+  ```sh
+  vi /etc/shells
+  ```
+  ```sh
+  chsh -s /opt/homebrew/bin/zsh
+  ```
 - chezmoi
-  - `chezmoi init https://github.com/wasabeef/dotfiles.git`
-  - `chezmoi apply`
+  ```sh
+  chezmoi init https://github.com/wasabeef/dotfiles.git
+  ```
+  ```sh
+  chezmoi apply
+  ```
 - asdf
-  - `awk '{print $1}' .tool-versions | xargs -I {} asdf plugin add {}`
+  ```sh
+  awk '{print $1}' .tool-versions | xargs -I {} asdf plugin add {}
+  ```
