@@ -1,11 +1,16 @@
 # dotfiles
 
-**Required**  
+**Required**
 
 - Brew
   ```sh
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   ```
+  export
+  ```sh
+  brew bundle dump --global --force --describe
+  ```
+  import
   ```sh
   /opt/homebrew/bin/brew bundle --global
   ```
