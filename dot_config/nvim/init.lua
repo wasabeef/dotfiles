@@ -211,16 +211,16 @@ vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
 -- 前回開いたファイルのカーソル位置を復旧する
-vim.api.nvim_create_autocmd("BufReadPost", {
-  group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
-  pattern = "*",
-  callback = function()
-    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
-    if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
-      vim.api.nvim_win_set_cursor(0, { row, col })
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--   group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
+--   pattern = "*",
+--   callback = function()
+--     local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+--     if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
+--       vim.api.nvim_win_set_cursor(0, { row, col })
+--     end
+--   end,
+-- })
 
 -- LSP
 -- nvim-lspconfig と flutter-tools で利用する
@@ -334,6 +334,18 @@ require("lazy").setup({
         dashboard.opts.opts.noautocmd = true
         alpha.setup(dashboard.opts)
       end,
+    },
+
+    -- スクリーンセイバー
+    {
+      "folke/drop.nvim",
+      event = "VeryLazy",
+      opts = {
+        theme = "auto",
+        screensaver = 1000 * 60 * 5, -- 5 minutes
+        filetypes = { "alpha" },
+        winblend = 100
+      },
     },
 
     -- スムーススクロール
@@ -1250,6 +1262,7 @@ require("lazy").setup({
       end,
     },
 
+    -- 非アクティブな LSP クライアントを自動的に停止
     {
       "zeioth/garbage-day.nvim",
       dependencies = "neovim/nvim-lspconfig",
