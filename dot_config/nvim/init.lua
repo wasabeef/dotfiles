@@ -849,7 +849,9 @@ require("lazy").setup({
 
         require("telescope").setup({
           defaults = {
-            -- initial_mode = "normal",
+            initial_mode = "insert",
+            prompt_prefix = " ",
+            selection_caret = "󰁕 ",
             file_ignore_patterns = {
               "node_modules",
               ".git/",
@@ -863,7 +865,7 @@ require("lazy").setup({
               "--column",
               "--smart-case",
               "--trim",
-              "--hidden",
+              -- "--hidden",
               "--glob",
               "!**/.git/*",
             },
@@ -928,7 +930,7 @@ require("lazy").setup({
               file_browser = {
                 theme = "ivy",
                 hijack_netrw = true,
-                hidden = true,
+                -- hidden = true,
                 git_status = true,
                 respect_gitignore = false,
               },
