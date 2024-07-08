@@ -344,7 +344,7 @@ require("lazy").setup({
         theme = "auto",
         screensaver = 1000 * 60 * 5, -- 5 minutes
         filetypes = { "alpha" },
-        winblend = 100
+        winblend = 100,
       },
     },
 
@@ -519,6 +519,27 @@ require("lazy").setup({
         open_mapping = "<C-t>",
         direction = "float",
       },
+    },
+
+    -- コマンドと検索 UI
+    {
+      "folke/noice.nvim",
+      dependencies = {
+        "MunifTanjim/nui.nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+        require("noice").setup({
+          lsp = { progress = { enabled = false } },
+          messages = { enabled = false },
+          notify = { enabled = false },
+          popupmenu = { enabled = false },
+          health = { enabled = false },
+          cmdline = {
+            enabled = true,
+          },
+        })
+      end,
     },
 
     -- 通知
