@@ -641,6 +641,8 @@ require("lazy").setup({
         vim.g.ale_sign_column_always = 1
         vim.g.ale_lint_on_save = 0
         vim.g.ale_linters = {
+          sh = { "shellcheck" },
+          lua = { "stylua" },
           markdown = { "textlint" },
           json = { "jq", "jsonlint", "cspell" },
           yaml = { "yamllint" },
@@ -648,17 +650,17 @@ require("lazy").setup({
         }
         vim.g.ale_fixers = {
           ["*"] = { "trim_whitespace" },
-          lua = { "stylua" },
           sh = { "shfmt" },
           bash = { "shfmt" },
           zsh = { "shfmt" },
+          lua = { "stylua" },
           markdown = { "prettier" },
+          json = { "prettier" },
           yaml = { "prettier" },
           html = { "prettier" },
           css = { "prettier" },
           -- less = {'prettier'},
           -- scss = {'prettier'},
-          json = { "prettier" },
           -- xml = {'xmllint'},
           -- vue = {'prettier'},
           -- svelte = {'prettier'},
