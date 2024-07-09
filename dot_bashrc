@@ -1,4 +1,5 @@
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
+# bash
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
+# [ -f ~/.fzf.bash ] && source ~/.fzf.bash

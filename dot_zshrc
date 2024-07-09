@@ -44,7 +44,6 @@ linux*)
 darwin*)
   # HomeBrew
   # eval "$(/opt/homebrew/bin/brew shellenv)"
-  # export GRADLE_HOME=$(asdf where gradle)
   export HOMEBREW_PREFIX="/opt/homebrew"
   export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
   export HOMEBREW_REPOSITORY="/opt/homebrew"
@@ -102,7 +101,7 @@ export GOROOT=$(go env GOROOT)
 export GOBIN=$GOROOT/bin
 export PATH=$GOBIN:$PATH
 
-# bun completions
+# Bun
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 ## Maestro

@@ -397,13 +397,13 @@ require("lazy").setup({
     -- コメントアウト
     {
       "numToStr/Comment.nvim",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
     },
 
     -- 括弧
     {
       "tpope/vim-surround",
-      event = "VeryLazy",
+      event = "InsertEnter",
     },
 
     -- ペア
@@ -416,19 +416,19 @@ require("lazy").setup({
     -- EditorConfig
     {
       "editorconfig/editorconfig-vim",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
     },
 
     -- 引数の入れ替え g> g< gs
     {
       "machakann/vim-swap",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
     },
 
     -- Incremental Search
     {
       "kevinhwang91/nvim-hlslens",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         require("hlslens").setup()
       end,
@@ -437,7 +437,7 @@ require("lazy").setup({
     -- 置換
     {
       "chrisgrieser/nvim-rip-substitute",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       keys = {
         {
           "<C-/>",
@@ -464,7 +464,7 @@ require("lazy").setup({
     {
       "phaazon/hop.nvim",
       branch = "v2",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         require("hop").setup({ keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 })
         vim.api.nvim_set_keymap("n", "ff", ":HopPattern<CR>", { noremap = true })
@@ -480,7 +480,7 @@ require("lazy").setup({
     -- カーソル位置ハイライト
     {
       "RRethy/vim-illuminate",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         require("illuminate").configure({
           providers = {
@@ -512,7 +512,7 @@ require("lazy").setup({
     -- コピーハイライト
     {
       "machakann/vim-highlightedyank",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
     },
 
     -- 空白文字ハイライト
@@ -575,7 +575,7 @@ require("lazy").setup({
       dependencies = {
         "nvim-lua/plenary.nvim",
       },
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       opts = {
         order_buffers = "lastused",
         width = 0.4,
@@ -634,7 +634,7 @@ require("lazy").setup({
     -- Git Blame
     {
       "lewis6991/gitsigns.nvim",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         require("gitsigns").setup({
           signs = {
@@ -693,7 +693,7 @@ require("lazy").setup({
     -- Lint
     {
       "dense-analysis/ale",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         vim.g.ale_lint_on_enter = 0
         vim.g.ale_sign_column_always = 1
@@ -806,7 +806,7 @@ require("lazy").setup({
     {
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate",
-      event = "VeryLazy",
+      event = { "BufRead", "BufNewFile" },
       config = function()
         require("nvim-treesitter.configs").setup({
           -- ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
@@ -829,50 +829,15 @@ require("lazy").setup({
       end,
     },
 
-    -- コピーハイライト
-    {
-      "machakann/vim-highlightedyank",
-      event = "VeryLazy",
-    },
-
-    -- デバッグ
-    {
-      "mfussenegger/nvim-dap",
-      dependencies = {
-        "nvim-neotest/nvim-nio",
-        "rcarriga/nvim-dap-ui",
-      },
-      event = "VeryLazy",
-      config = function()
-        require("dapui").setup({
-          icons = { expanded = "▾", collapsed = "▸" },
-          layouts = {
-            {
-              elements = {
-                { id = "scopes", size = 0.25 },
-                "breakpoints",
-                "stacks",
-                "watches",
-              },
-              size = 10, -- columns
-              position = "bottom",
-            },
-          },
-        })
-      end,
-    },
-
     -- fzf ファイル・コマンド検索
     {
       "nvim-telescope/telescope.nvim", -- tag = '0.1.8',
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "mfussenegger/nvim-dap",
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
         "nvim-telescope/telescope-file-browser.nvim",
-        "nvim-telescope/telescope-dap.nvim",
         {
           "nvim-telescope/telescope-fzf-native.nvim",
           build = "make",
@@ -1021,9 +986,7 @@ require("lazy").setup({
           },
         })
         require("telescope").load_extension("ui-select")
-        require("telescope").load_extension("flutter")
         require("telescope").load_extension("notify")
-        require("telescope").load_extension("dap")
         require("telescope").load_extension("media_files")
         require("telescope").load_extension("file_browser")
         require("telescope").load_extension("fzf")
@@ -1048,7 +1011,7 @@ require("lazy").setup({
         "hrsh7th/nvim-cmp",
         "hrsh7th/cmp-nvim-lsp",
       },
-      event = { "BufReadPre", "BufNewFile" },
+      event = "VeryLazy",
       config = function()
         local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -1181,6 +1144,38 @@ require("lazy").setup({
             },
           },
         })
+
+        require("telescope").load_extension("flutter")
+      end,
+    },
+
+    -- デバッグ
+    {
+      "mfussenegger/nvim-dap",
+      dependencies = {
+        "nvim-neotest/nvim-nio",
+        "rcarriga/nvim-dap-ui",
+        "nvim-telescope/telescope-dap.nvim",
+      },
+      event = "LspAttach",
+      config = function()
+        require("dapui").setup({
+          icons = { expanded = "▾", collapsed = "▸" },
+          layouts = {
+            {
+              elements = {
+                { id = "scopes", size = 0.25 },
+                "breakpoints",
+                "stacks",
+                "watches",
+              },
+              size = 10, -- columns
+              position = "bottom",
+            },
+          },
+        })
+
+        require("telescope").load_extension("dap")
       end,
     },
 
