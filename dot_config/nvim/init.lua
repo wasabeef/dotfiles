@@ -378,9 +378,14 @@ require("lazy").setup({
 
     -- ステータスバー
     {
-      "vim-airline/vim-airline",
-      dependencies = "vim-airline/vim-airline-themes",
+      "nvim-lualine/lualine.nvim",
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
       event = "VeryLazy",
+      config = function()
+        require("lualine").setup()
+      end,
     },
 
     -- ウィンドウサイズ変更
@@ -422,14 +427,37 @@ require("lazy").setup({
 
     -- Incremental Search
     {
-      "haya14busa/is.vim",
+      "kevinhwang91/nvim-hlslens",
       event = "VeryLazy",
+      config = function()
+        require("hlslens").setup()
+      end,
     },
 
-    -- リアルタイム置換
+    -- 置換
     {
-      "markonm/traces.vim",
+      "chrisgrieser/nvim-rip-substitute",
       event = "VeryLazy",
+      keys = {
+        {
+          "<C-/>",
+          function()
+            require("rip-substitute").sub()
+          end,
+          mode = { "n", "x" },
+          desc = " rip",
+        },
+      },
+      opts = {
+        popupWin = {
+          border = "rounded",
+          position = "top",
+        },
+        prefill = {
+          normal = false,
+        },
+        notificationOnSuccess = true,
+      },
     },
 
     -- カーソルジャンプ
@@ -543,6 +571,27 @@ require("lazy").setup({
 
     -- バッファ操作
     {
+      "j-morano/buffer_manager.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      event = "VeryLazy",
+      opts = {
+        order_buffers = "lastused",
+        width = 0.4,
+        height = 0.3,
+      },
+      keys = {
+        {
+          "[]",
+          function()
+            require("buffer_manager.ui").toggle_quick_menu()
+          end,
+        },
+      },
+    },
+
+    {
       "akinsho/bufferline.nvim",
       dependencies = "nvim-tree/nvim-web-devicons",
       event = { "BufRead", "BufNewFile" },
@@ -563,7 +612,6 @@ require("lazy").setup({
         })
         vim.api.nvim_set_keymap("n", "[[", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", "]]", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "[]", ":BufferLinePick<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", "][", ":BufferLinePickClose<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", "\\][", ":BufferLineCloseLeft<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", "\\[]", ":BufferLineCloseRight<CR>", { noremap = true, silent = true })
@@ -597,6 +645,15 @@ require("lazy").setup({
             changedelete = { text = "~" },
             untracked = { text = "┆" },
           },
+          signs_staged = {
+            add = { text = "┃" },
+            change = { text = "┃" },
+            delete = { text = "_" },
+            topdelete = { text = "‾" },
+            changedelete = { text = "~" },
+            untracked = { text = "┆" },
+          },
+          signs_staged_enable = true,
           signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
           numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
           linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
@@ -712,6 +769,7 @@ require("lazy").setup({
         require("nvim-tree").setup({
           on_attach = on_attach,
           view = {
+            signcolumn = "yes",
             float = {
               enable = true,
               open_win_config = {
@@ -719,6 +777,16 @@ require("lazy").setup({
                 width = 45,
               },
             },
+          },
+          diagnostics = {
+            enable = true,
+            icons = {
+              hint = "",
+              info = "",
+              warning = "",
+              error = "",
+            },
+            show_on_dirs = true,
           },
           renderer = {
             group_empty = true,
@@ -966,6 +1034,44 @@ require("lazy").setup({
       end,
     },
 
+    -----------------------------------------------------------------------
+    -- LSP
+    -----------------------------------------------------------------------
+
+    -- LSP Management
+    {
+      "neovim/nvim-lspconfig",
+      dependencies = {
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+
+        "hrsh7th/nvim-cmp",
+        "hrsh7th/cmp-nvim-lsp",
+      },
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+        require("mason").setup()
+        require("mason-lspconfig").setup()
+        require("mason-lspconfig").setup_handlers({
+          function(server_name)
+            require("lspconfig")[server_name].setup({
+              on_attach = global_on_attach,
+              capabilities = capabilities,
+            })
+          end,
+        })
+
+        -- false : do not show error/warning/etc.. by virtual text
+        vim.lsp.handlers["textDocument/publishDiagnostics"] =
+          vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { separator = true })
+        vim.lsp.handlers["textDocument/signatureHelp"] =
+          vim.lsp.with(vim.lsp.handlers.signature_help, { separator = true })
+      end,
+    },
+
     -- Flutter
     {
       "akinsho/flutter-tools.nvim",
@@ -973,7 +1079,7 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
         "stevearc/dressing.nvim",
       },
-      event = "VeryLazy",
+      event = { "BufReadPre", "BufNewFile" },
       config = function()
         require("flutter-tools").setup({
           flutter_path = nil,
@@ -1078,14 +1184,10 @@ require("lazy").setup({
       end,
     },
 
-    -----------------------------------------------------------------------
-    -- LSP
-    -----------------------------------------------------------------------
-
     -- LSP ポップアップ
     {
       "rmagatti/goto-preview",
-      event = "VeryLazy",
+      event = "LspAttach",
       config = function()
         require("goto-preview").setup({
           height = 40,
@@ -1102,7 +1204,7 @@ require("lazy").setup({
     -- エラーメッセージ
     {
       "folke/trouble.nvim",
-      event = "VeryLazy",
+      event = "LspAttach",
       opts = {
         position = "bottom",
         height = 5,
@@ -1181,7 +1283,7 @@ require("lazy").setup({
     -- LSP Symbol Search
     {
       "liuchengxu/vista.vim",
-      event = "VeryLazy",
+      event = "LspAttach",
       config = function()
         vim.g.vista_default_executive = "nvim_lsp"
         vim.g.vista_renderer_enable_icon = 1
@@ -1196,7 +1298,7 @@ require("lazy").setup({
       dependencies = {
         "nvim-telescope/telescope.nvim",
       },
-      event = "VeryLazy",
+      event = "LspAttach",
       config = function()
         require("actions-preview").setup({
           diff = {
@@ -1230,45 +1332,11 @@ require("lazy").setup({
       end,
     },
 
-    -- LSP Management
-    {
-      "neovim/nvim-lspconfig",
-      dependencies = {
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
-
-        "hrsh7th/nvim-cmp",
-        "hrsh7th/cmp-nvim-lsp",
-      },
-      event = "VeryLazy",
-      config = function()
-        local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-        require("mason").setup()
-        require("mason-lspconfig").setup()
-        require("mason-lspconfig").setup_handlers({
-          function(server_name)
-            require("lspconfig")[server_name].setup({
-              on_attach = global_on_attach,
-              capabilities = capabilities,
-            })
-          end,
-        })
-
-        -- false : do not show error/warning/etc.. by virtual text
-        vim.lsp.handlers["textDocument/publishDiagnostics"] =
-          vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
-        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { separator = true })
-        vim.lsp.handlers["textDocument/signatureHelp"] =
-          vim.lsp.with(vim.lsp.handlers.signature_help, { separator = true })
-      end,
-    },
-
     -- 非アクティブな LSP クライアントを自動的に停止
     {
       "zeioth/garbage-day.nvim",
       dependencies = "neovim/nvim-lspconfig",
-      event = "VeryLazy",
+      event = "LspAttach",
     },
 
     -- LSP cmp
@@ -1289,7 +1357,7 @@ require("lazy").setup({
 
         "onsails/lspkind-nvim",
       },
-      event = "VeryLazy",
+      event = "LspAttach",
       config = function()
         local cmp = require("cmp")
         local types = require("cmp.types")
@@ -1381,7 +1449,7 @@ require("lazy").setup({
     -- LSP Navigation
     {
       "dnlhc/glance.nvim",
-      event = "VeryLazy",
+      event = "LspAttach",
       config = function()
         -- Lua configuration
         local glance = require("glance")
@@ -1475,7 +1543,7 @@ require("lazy").setup({
       dependencies = {
         "zbirenbaum/copilot-cmp",
       },
-      event = "InsertEnter",
+      event = { "InsertEnter", "LspAttach" },
       cmd = "Copilot",
       config = function()
         require("copilot").setup({
