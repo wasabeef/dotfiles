@@ -264,13 +264,16 @@ require("lazy").setup({
       end,
     },
 
+    -- アイコン
+    {
+      "nvim-tree/nvim-web-devicons",
+      event = "VimEnter",
+    },
+
     -- スタート画面
     {
       "goolord/alpha-nvim",
       event = "VimEnter",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
       config = function()
         local alpha = require("alpha")
         local dashboard = require("alpha.themes.dashboard")
@@ -379,9 +382,6 @@ require("lazy").setup({
     -- ステータスバー
     {
       "nvim-lualine/lualine.nvim",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
       event = "VeryLazy",
       config = function()
         require("lualine").setup()
@@ -593,7 +593,6 @@ require("lazy").setup({
 
     {
       "akinsho/bufferline.nvim",
-      dependencies = "nvim-tree/nvim-web-devicons",
       event = { "BufRead", "BufNewFile" },
       config = function()
         vim.opt.termguicolors = true
@@ -741,9 +740,6 @@ require("lazy").setup({
     {
       "nvim-tree/nvim-tree.lua",
       version = "*",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
       event = "VeryLazy",
       config = function()
         local function on_attach(bufnr)
