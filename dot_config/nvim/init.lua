@@ -180,9 +180,6 @@ vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 
--- Spaceを押した後にrを押すと :%s/// が自動で入力される
--- vim.api.nvim_set_keymap('n', '<Leader>r', ':%s///g<Left><Left><Left>', { noremap = true })
-
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
 vim.api.nvim_set_keymap("c", "<C-n>", 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
@@ -382,9 +379,75 @@ require("lazy").setup({
     -- ステータスバー
     {
       "nvim-lualine/lualine.nvim",
+      dependencies = {
+        "linrongbin16/lsp-progress.nvim",
+      },
       event = "VeryLazy",
       config = function()
-        require("lualine").setup()
+        require("lsp-progress").setup()
+        local lualine = require("lualine")
+        local config = {
+          options = {
+            component_separators = {},
+            section_separators = {},
+          },
+          sections = {
+            lualine_a = { "branch" },
+            lualine_b = { "filename" },
+            lualine_c = {
+              "'%='",
+              {
+                "diff",
+                symbols = { added = "  ", modified = "  ", removed = "  " },
+                separator = " ",
+              },
+              {
+                "diagnostics",
+                sources = { "nvim_diagnostic" },
+                symbols = { error = "  ", warn = "  ", info = "  ", hint = "  " },
+              },
+            },
+            lualine_x = {
+              function()
+                return require("lsp-progress").progress({
+                  format = function(messages)
+                    local active_clients = vim.lsp.get_active_clients()
+                    local client_count = #active_clients
+                    if #messages > 0 then
+                      return " LSP:" .. client_count .. " " .. table.concat(messages, " ")
+                    end
+                    if #active_clients <= 0 then
+                      return " LSP:" .. client_count
+                    else
+                      local client_names = {}
+                      for i, client in ipairs(active_clients) do
+                        if client and client.name ~= "" then
+                          table.insert(client_names, "[" .. client.name .. "]")
+                          print("client[" .. i .. "]:" .. vim.inspect(client.name))
+                        end
+                      end
+                      return " LSP:" .. client_count .. " " .. table.concat(client_names, " ")
+                    end
+                  end,
+                })
+              end,
+            },
+            lualine_y = { "encoding" },
+            lualine_z = {
+              "filetype",
+              "searchcount",
+            },
+          },
+          inactive_sections = {
+            lualine_a = {},
+            lualine_b = {},
+            lualine_c = {},
+            lualine_x = {},
+            lualine_y = {},
+            lualine_z = {},
+          },
+        }
+        lualine.setup(config)
       end,
     },
 
@@ -777,10 +840,10 @@ require("lazy").setup({
           diagnostics = {
             enable = true,
             icons = {
-              hint = "",
-              info = "",
-              warning = "",
-              error = "",
+              hint = " ",
+              info = " ",
+              warning = " ",
+              error = " ",
             },
             show_on_dirs = true,
           },
