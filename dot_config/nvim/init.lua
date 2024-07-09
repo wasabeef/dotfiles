@@ -505,6 +505,7 @@ require("lazy").setup({
       "akinsho/toggleterm.nvim",
       event = "VeryLazy",
       keys = {
+        { "<C-t>t", "<Cmd>ToggleTerm direction=float<CR>" },
         { "<C-t>f", "<Cmd>ToggleTerm direction=float<CR>" },
         { "<C-t>v", "<Cmd>ToggleTerm direction=vertical<CR>" },
         { "<C-t>h", "<Cmd>ToggleTerm direction=horizontal<CR>" },
@@ -645,7 +646,7 @@ require("lazy").setup({
           lua = { "stylua" },
           markdown = { "textlint" },
           json = { "jq", "jsonlint", "cspell" },
-          yaml = { "yamllint" },
+          yaml = { "yamllint", "actionlint" },
           go = { "gofmt", "gopls" },
         }
         vim.g.ale_fixers = {
@@ -704,7 +705,6 @@ require("lazy").setup({
           vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Node"))
           vim.keymap.set("n", "s", "", opts(""))
           vim.keymap.set("n", "sl", "<c-w>l", opts(""))
-          vim.keymap.set("n", "<c-t>", "<cmd>ToggleTerm<CR>", opts("ToggleTerm"))
         end
 
         vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
