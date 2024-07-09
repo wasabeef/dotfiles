@@ -432,8 +432,9 @@ require("lazy").setup({
                 })
               end,
             },
-            lualine_y = { "encoding" },
+            lualine_y = {},
             lualine_z = {
+              "encoding",
               "filetype",
               "searchcount",
             },
@@ -1305,33 +1306,6 @@ require("lazy").setup({
         --   "<cmd>Trouble qflist toggle<cr>",
         --   desc = "Quickfix List (Trouble)",
         -- },
-      },
-    },
-
-    -- LSP Status
-    {
-      "j-hui/fidget.nvim",
-      event = {
-        "LspAttach",
-      },
-      opts = {
-        progress = {
-          display = {
-            progress_icon = {
-              pattern = "moon",
-            },
-          },
-        },
-        notification = {
-          window = {
-            border = "rounded",
-          },
-        },
-      },
-      integration = {
-        ["nvim-tree"] = {
-          enable = true,
-        },
       },
     },
 
