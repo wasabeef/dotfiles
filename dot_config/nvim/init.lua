@@ -521,27 +521,6 @@ require("lazy").setup({
       },
     },
 
-    -- コマンドと検索 UI
-    {
-      "folke/noice.nvim",
-      dependencies = {
-        "MunifTanjim/nui.nvim",
-      },
-      event = "VeryLazy",
-      config = function()
-        require("noice").setup({
-          lsp = { progress = { enabled = false } },
-          messages = { enabled = false },
-          notify = { enabled = false },
-          popupmenu = { enabled = false },
-          health = { enabled = false },
-          cmdline = {
-            enabled = true,
-          },
-        })
-      end,
-    },
-
     -- 通知
     {
       "rcarriga/nvim-notify",

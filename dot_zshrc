@@ -42,7 +42,7 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     ## Android
     export ANDROID_HOME="$HOME/Android/sdk"
     export ANDROID_SDK_ROOT="$HOME/Android/sdk"
-    export PATH=$ANDROID_HOME/platform-tools:$PATH 
+    export PATH=$ANDROID_HOME/platform-tools:$PATH
     export PATH=$ANDROID_HOME/tools:$PATH
     export PATH=$ANDROID_HOME/tools/bin:$PATH
     export PATH=$ANDROID_HOME/emulator:$PATH
@@ -65,17 +65,17 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     . ~/.asdf/plugins/java/set-java-home.zsh
     export JAVA_HOME=$(/usr/libexec/java_home)
     export JDK_HOME=${JAVA_HOME}
-    
+
     ## Android
     export ANDROID_HOME="$HOME/Android/sdk"
     export ANDROID_SDK_ROOT="$HOME/Android/sdk"
-    export PATH=$ANDROID_HOME/platform-tools:$PATH 
+    export PATH=$ANDROID_HOME/platform-tools:$PATH
     export PATH=$ANDROID_HOME/tools:$PATH
     export PATH=$ANDROID_HOME/tools/bin:$PATH
     export PATH=$ANDROID_HOME/emulator:$PATH
     export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-    
-    
+
+
     ## Clang/LLVM
     # export LLVM_PATH="$(brew --prefix llvm)"
     # export LLVM_PATH="/opt/homebrew/opt/llvm"
@@ -102,13 +102,13 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 ## GCP
 export PATH=$HOME/google-cloud-sdk/bin:$PATH
-    
+
 ## Fastlane
 export PATH=$HOME/.fastlane/bin:$PATH
-    
+
 ## Yarn
 # export PATH="$(yarn global bin):$PATH"
-        
+
 ## Rust
 export PATH=$HOME/.cargo/bin:$PATH
 
@@ -150,6 +150,7 @@ alias emu='emulator @$(emulator -list-avds | peco)'
 alias emu-ls='avdmanager list avd'
 alias simu='open -a Simulator'
 alias simu-ls='xcrun simctl list'
+alias chez='chezmoi'
 
 # Zsh Plugin Manager
 if [[ -x `which sheldon` ]]; then
