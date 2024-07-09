@@ -36,7 +36,6 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
 linux*)
-
   # asdf
   . $HOME/.asdf/asdf.sh
   . ~/.asdf/plugins/java/set-java-home.zsh
@@ -144,11 +143,6 @@ if [[ -x $(which sheldon) ]]; then
   eval "$(sheldon source)"
 fi
 
-# zsh compile
-if [ ~/.zshrc -nt ~/.zshrc.zwc ]; then
-   zcompile ~/.zshrc
-fi
-
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
@@ -158,4 +152,3 @@ fi
 ## Completion scripts setup. Remove the following line to uninstall
 # [[ -f /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
-
