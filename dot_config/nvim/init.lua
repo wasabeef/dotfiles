@@ -889,7 +889,8 @@ require("lazy").setup({
           { noremap = true, silent = true }
         )
 
-        require("telescope").setup({
+        local telescope = require("telescope")
+        telescope.setup({
           defaults = {
             initial_mode = "insert",
             prompt_prefix = " ",
@@ -985,11 +986,11 @@ require("lazy").setup({
             },
           },
         })
-        require("telescope").load_extension("ui-select")
-        require("telescope").load_extension("notify")
-        require("telescope").load_extension("media_files")
-        require("telescope").load_extension("file_browser")
-        require("telescope").load_extension("fzf")
+        telescope.load_extension("ui-select")
+        telescope.load_extension("notify")
+        telescope.load_extension("media_files")
+        telescope.load_extension("file_browser")
+        telescope.load_extension("fzf")
         require("simulators").setup({
           android_emulator = true,
           apple_simulator = true,
@@ -1534,45 +1535,22 @@ require("lazy").setup({
 
     -- LSP Copilot
     {
-      "zbirenbaum/copilot.lua",
+      "zbirenbaum/copilot-cmp",
       dependencies = {
-        "zbirenbaum/copilot-cmp",
+        "zbirenbaum/copilot.lua",
       },
-      event = { "InsertEnter", "LspAttach" },
+      event = "InsertEnter",
       cmd = "Copilot",
       config = function()
         require("copilot").setup({
           panel = {
-            enabled = true,
-            auto_refresh = false,
-            keymap = {
-              jump_prev = "[[",
-              jump_next = "]]",
-              accept = "<CR>",
-              refresh = "gr",
-              open = "<M-CR>",
-            },
-            layout = {
-              position = "bottom", -- | top | left | right
-              ratio = 0.4,
-            },
+            enabled = false,
           },
           suggestion = {
-            enabled = true,
-            auto_trigger = false,
-            hide_during_completion = true,
-            debounce = 75,
-            keymap = {
-              accept = "<M-a>",
-              accept_word = false,
-              accept_line = false,
-              next = "<M-]>",
-              prev = "<M-[>",
-              dismiss = "<M-c>",
-            },
+            enabled = false,
           },
           filetypes = {
-            yaml = false,
+            yaml = true,
             markdown = false,
             help = false,
             gitcommit = false,
@@ -1580,11 +1558,22 @@ require("lazy").setup({
             hgcommit = false,
             svn = false,
             cvs = false,
-            ["."] = false,
+            ["."] = true,
           },
-          copilot_node_command = "node", -- Node.js version must be > 18.x
+          copilot_node_command = vim.env.HOME .. "/.asdf/shims/node",
           server_opts_overrides = {},
         })
+        require("copilot.api").register_status_notification_handler(function(data)
+          local ns = vim.api.nvim_create_namespace("user.copilot")
+          vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+          if vim.fn.mode() == "i" and data.status == "InProgress" then
+            vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line(".") - 1, 0, {
+              virt_text = { { "  Thinking...", "Comment" } },
+              virt_text_pos = "eol",
+              hl_mode = "combine",
+            })
+          end
+        end)
         require("copilot_cmp").setup({
           method = "getCompletionsCycling",
         })
