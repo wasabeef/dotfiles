@@ -94,6 +94,8 @@ vim.o.colorcolumn = "80"
 -- True Color
 vim.o.termguicolors = true
 
+vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
 if vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
   vim.o.shell = "pwsh"
   vim.o.shellcmdflag = "-c"
@@ -338,18 +340,6 @@ require("lazy").setup({
       end,
     },
 
-    -- スクリーンセイバー
-    {
-      "folke/drop.nvim",
-      event = "VeryLazy",
-      opts = {
-        theme = "auto",
-        screensaver = 1000 * 60 * 5, -- 5 minutes
-        filetypes = { "alpha" },
-        winblend = 100,
-      },
-    },
-
     -- スムーススクロール
     {
       "karb94/neoscroll.nvim",
@@ -388,13 +378,42 @@ require("lazy").setup({
       config = function()
         require("lsp-progress").setup()
         local lualine = require("lualine")
+        local colors = {
+          blue = "#80a0ff",
+          cyan = "#79dac8",
+          black = "#080808",
+          white = "#c6c6c6",
+          red = "#ff5189",
+          violet = "#d183e8",
+          grey = "#303030",
+        }
+
+        local bubbles_theme = {
+          normal = {
+            a = { fg = colors.black, bg = colors.violet },
+            b = { fg = colors.white, bg = colors.grey },
+            c = { fg = colors.white },
+          },
+
+          insert = { a = { fg = colors.black, bg = colors.blue } },
+          visual = { a = { fg = colors.black, bg = colors.cyan } },
+          replace = { a = { fg = colors.black, bg = colors.red } },
+
+          inactive = {
+            a = { fg = colors.white, bg = colors.black },
+            b = { fg = colors.white, bg = colors.black },
+            c = { fg = colors.white },
+          },
+        }
+
         local config = {
           options = {
-            component_separators = {},
-            section_separators = {},
+            theme = bubbles_theme,
+            component_separators = "",
+            section_separators = { left = "", right = "" },
           },
           sections = {
-            lualine_a = { "branch" },
+            lualine_a = { { "branch", separator = { left = "" }, right_padding = 2 } },
             lualine_b = { "filename" },
             lualine_c = {
               "'%='",
@@ -435,9 +454,8 @@ require("lazy").setup({
             },
             lualine_y = {},
             lualine_z = {
-              "encoding",
-              "filetype",
-              "searchcount",
+              { "encoding", separator = { left = "" }, right_padding = 2 },
+              { "filetype", separator = { right = "" }, left_padding = 2 },
             },
           },
           inactive_sections = {
