@@ -256,7 +256,7 @@ end
 
 require("lazy").setup({
   spec = {
-    -- カラー
+    -- テーマ
     {
       "EdenEast/nightfox.nvim",
       lazy = false,
@@ -608,6 +608,39 @@ require("lazy").setup({
           use_treesitter = true,
         },
         indent = { enable = true },
+      },
+    },
+
+    -- カラーハイライト
+    {
+      "NvChad/nvim-colorizer.lua",
+      event = { "BufReadPre", "BufNewFile" },
+      opts = {
+        filetypes = { "*" },
+        user_default_options = {
+          RGB = true, -- #RGB hex codes
+          RRGGBB = true, -- #RRGGBB hex codes
+          names = false, -- "Name" codes like Blue or blue
+          RRGGBBAA = true, -- #RRGGBBAA hex codes
+          AARRGGBB = true, -- 0xAARRGGBB hex codes
+          rgb_fn = false, -- CSS rgb() and rgba() functions
+          hsl_fn = false, -- CSS hsl() and hsla() functions
+          css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+          css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+          -- Available modes for `mode`: foreground, background,  virtualtext
+          mode = "virtualtext", -- Set the display mode.
+          -- Available methods are false / true / "normal" / "lsp" / "both"
+          -- True is same as normal
+          tailwind = false, -- Enable tailwind colors
+          -- parsers can contain values used in |user_default_options|
+          sass = { enable = false, parsers = { "css" } }, -- Enable sass colors
+          virtualtext = "󱓻󱓻󱓻",
+          -- update color values even if buffer is not focused
+          -- example use: cmp_menu, cmp_docs
+          always_update = false,
+        },
+        -- all the sub-options of filetypes apply to buftypes
+        buftypes = {},
       },
     },
 
@@ -1133,8 +1166,8 @@ require("lazy").setup({
           },
           decorations = {
             statusline = {
-              app_version = true,
-              device = true,
+              app_version = false,
+              device = false,
               project_config = false,
             },
           },
@@ -1177,11 +1210,6 @@ require("lazy").setup({
           lsp = {
             color = {
               enabled = false,
-              background = false,
-              background_color = nil,
-              foreground = false,
-              virtual_text = true,
-              virtual_text_str = "⚡",
             },
             on_attach = function(client, bufnr)
               local bufopts = { noremap = true, silent = true, buffer = bufnr }
@@ -1378,13 +1406,6 @@ require("lazy").setup({
       end,
     },
 
-    -- 非アクティブな LSP クライアントを自動的に停止
-    {
-      "zeioth/garbage-day.nvim",
-      dependencies = "neovim/nvim-lspconfig",
-      event = "LspAttach",
-    },
-
     -- LSP cmp
     {
       "hrsh7th/nvim-cmp",
@@ -1418,7 +1439,7 @@ require("lazy").setup({
         cmp.setup({
           completion = {
             autocomplete = {
-              types.cmp.TriggerEvent.TextChanged,
+              types.cmp.TriggerEvent.InsertEnter,
               types.cmp.TriggerEvent.TextChanged,
             },
             completeopt = "longest,menu,menuone,noselect,noinsert,preview",
@@ -1608,7 +1629,7 @@ require("lazy").setup({
             hgcommit = false,
             svn = false,
             cvs = false,
-            ["."] = true,
+            ["."] = false,
           },
           copilot_node_command = vim.env.HOME .. "/.asdf/shims/node",
           server_opts_overrides = {},
