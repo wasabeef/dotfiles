@@ -91,6 +91,8 @@ vim.o.gdefault = true
 vim.o.signcolumn = "yes"
 -- LineLength 80 に色を付ける
 vim.o.colorcolumn = "80"
+-- True Color
+vim.o.termguicolors = true
 
 if vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
   vim.o.shell = "pwsh"
@@ -420,10 +422,9 @@ require("lazy").setup({
                       return " LSP:" .. client_count
                     else
                       local client_names = {}
-                      for i, client in ipairs(active_clients) do
+                      for _, client in ipairs(active_clients) do
                         if client and client.name ~= "" then
                           table.insert(client_names, "[" .. client.name .. "]")
-                          print("client[" .. i .. "]:" .. vim.inspect(client.name))
                         end
                       end
                       return " LSP:" .. client_count .. " " .. table.concat(client_names, " ")
@@ -803,7 +804,6 @@ require("lazy").setup({
     -- ファイルツリー
     {
       "nvim-tree/nvim-tree.lua",
-      version = "*",
       event = "VeryLazy",
       config = function()
         local function on_attach(bufnr)
@@ -891,7 +891,7 @@ require("lazy").setup({
 
     -- fzf ファイル・コマンド検索
     {
-      "nvim-telescope/telescope.nvim", -- tag = '0.1.8',
+      "nvim-telescope/telescope.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
@@ -1151,7 +1151,7 @@ require("lazy").setup({
           },
           dev_tools = {
             autostart = false,
-            auto_open_browser = false,
+            auto_open_browser = true,
           },
           outline = {
             open_cmd = "rightbelow 50vnew",
