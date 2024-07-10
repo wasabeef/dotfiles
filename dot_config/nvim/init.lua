@@ -660,7 +660,6 @@ require("lazy").setup({
       "akinsho/bufferline.nvim",
       event = { "BufRead", "BufNewFile" },
       config = function()
-        vim.opt.termguicolors = true
         require("bufferline").setup({
           options = {
             separator_style = "slant",
