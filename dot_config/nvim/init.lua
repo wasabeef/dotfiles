@@ -188,6 +188,21 @@ vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
 vim.api.nvim_set_keymap("c", "<C-n>", 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
 vim.api.nvim_set_keymap("c", "<C-p>", 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
+
+-- LSP
+vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
+vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
+vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
+vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
+vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
+vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
+vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
+-- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
+vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
+vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
+vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
+
 -- ---------------------------------------------------------
 
 -- 不要なプラグインを停止する
@@ -222,37 +237,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
   end,
 })
-
--- LSP
--- nvim-lspconfig と flutter-tools で利用する
-vim.opt.completeopt = { "menu", "menuone", "noselect" }
-local global_on_attach = function(_, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  -- LSP Debugging
-  vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
-  -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
-  vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
-  vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
-  vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
-  -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set("n", "<Leader>a", "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
-  vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
-  vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
-
-  -- Debugging
-  vim.keymap.set("n", "<Leader>b", "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>bc", "<cmd>lua require('dap').continue()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>bi", "<cmd>lua require('dap').step_into()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>bo", "<cmd>lua require('dap').step_over()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>br", "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
-  vim.keymap.set("n", "<Leader>bu", "<cmd>lua require('dapui').toggle()<CR>", bufopts)
-end
 
 require("lazy").setup({
   spec = {
@@ -1128,12 +1112,16 @@ require("lazy").setup({
       config = function()
         local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+        local on_attach = function(_, bufnr)
+          vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+        end
+
         require("mason").setup()
         require("mason-lspconfig").setup()
         require("mason-lspconfig").setup_handlers({
           function(server_name)
             require("lspconfig")[server_name].setup({
-              on_attach = global_on_attach,
+              on_attach = on_attach,
               capabilities = capabilities,
             })
 
@@ -1145,7 +1133,7 @@ require("lazy").setup({
               return output
             end
             require("lspconfig")["sourcekit"].setup({
-              on_attach = global_on_attach,
+              on_attach = on_attach,
               capabilities = capabilities,
               cmd = {
                 "sourcekit-lsp",
@@ -1189,7 +1177,7 @@ require("lazy").setup({
           root_patterns = { ".git", "pubspec.yaml" },
           ui = {
             border = "rounded",
-            notification_style = 'native',
+            notification_style = "native",
           },
           decorations = {
             statusline = {
@@ -1224,7 +1212,6 @@ require("lazy").setup({
           dev_log = {
             enabled = true,
             notify_errors = false,
-            -- open_cmd = "botright 80vsplit",
             open_cmd = "botright 20split",
           },
           dev_tools = {
@@ -1239,7 +1226,7 @@ require("lazy").setup({
             color = {
               enabled = false,
             },
-            on_attach = function(client, bufnr)
+            on_attach = function(_, bufnr)
               local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
               vim.keymap.set(
@@ -1259,8 +1246,6 @@ require("lazy").setup({
               end
               vim.api.nvim_create_user_command("TelescopeFindFlutterFiles", find_flutter_files, {})
               vim.keymap.set("n", "<C-i>", "<cmd>TelescopeFindFlutterFiles<CR>", { noremap = true, silent = true })
-
-              global_on_attach(client, bufnr)
             end,
             capabilities = function(config)
               config.specificThingIDontWant = false
@@ -1293,6 +1278,15 @@ require("lazy").setup({
       },
       event = "LspAttach",
       config = function()
+        -- Debugging
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        vim.keymap.set("n", "<Leader>b", "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bc", "<cmd>lua require('dap').continue()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bi", "<cmd>lua require('dap').step_into()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bo", "<cmd>lua require('dap').step_over()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>br", "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bu", "<cmd>lua require('dapui').toggle()<CR>", bufopts)
+
         require("dapui").setup({
           icons = { expanded = "▾", collapsed = "▸" },
           layouts = {
@@ -1402,6 +1396,9 @@ require("lazy").setup({
       },
       event = "LspAttach",
       config = function()
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        vim.keymap.set("n", "<Leader>a", "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
+
         require("actions-preview").setup({
           diff = {
             algorithm = "histogram",
