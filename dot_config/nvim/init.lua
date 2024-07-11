@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-global
 
+vim.api.nvim_command("hi DiagnosticError guibg=NONE")
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
@@ -634,7 +635,7 @@ require("lazy").setup({
           tailwind = false, -- Enable tailwind colors
           -- parsers can contain values used in |user_default_options|
           sass = { enable = false, parsers = { "css" } }, -- Enable sass colors
-          virtualtext = "󱓻󱓻󱓻",
+          virtualtext = "",
           -- update color values even if buffer is not focused
           -- example use: cmp_menu, cmp_docs
           always_update = false,
@@ -769,7 +770,7 @@ require("lazy").setup({
           },
           signs_staged_enable = true,
           signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-          numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+          numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
           linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
           word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
           watch_gitdir = {
@@ -819,6 +820,7 @@ require("lazy").setup({
           json = { "jq", "jsonlint", "cspell" },
           yaml = { "yamllint", "actionlint" },
           go = { "gofmt", "gopls" },
+          swift = { "swiftlint" },
         }
         vim.g.ale_fixers = {
           ["*"] = { "trim_whitespace" },
@@ -846,6 +848,7 @@ require("lazy").setup({
           dart = { "dart-format" },
           go = { "gofmt", "goimports" },
           graphql = { "prettier" },
+          swift = { "swiftformat" },
         }
         vim.api.nvim_set_keymap("n", "<Leader>f", ":ALEFix<CR>", { noremap = true, silent = true })
       end,
@@ -1133,6 +1136,31 @@ require("lazy").setup({
             require("lspconfig")[server_name].setup({
               on_attach = global_on_attach,
               capabilities = capabilities,
+            })
+
+            -- SourceKit-LSP
+            local function execute(cmd)
+              local file = assert(io.popen(cmd, "r"))
+              local output = file:read("*a")
+              file:close()
+              return output
+            end
+            local iPhoneSimulatorSDKPath = execute("xcrun --sdk iphonesimulator --show-sdk-path"):gsub("\n", "")
+            local iPhoneSimulatorSDKVersion = execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
+            require("lspconfig")["sourcekit"].setup({
+              on_attach = global_on_attach,
+              capabilities = capabilities,
+              cmd = {
+                "sourcekit-lsp",
+                "-Xswiftc",
+                "-sdk",
+                "-Xswiftc",
+                iPhoneSimulatorSDKPath, -- "`xcrun --sdk iphonesimulator --show-sdk-path`"
+                "-Xswiftc",
+                "-target",
+                "-Xswiftc",
+                "x86_64-apple-ios" .. iPhoneSimulatorSDKVersion .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
+              },
             })
           end,
         })
