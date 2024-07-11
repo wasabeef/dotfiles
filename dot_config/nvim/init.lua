@@ -1,6 +1,5 @@
 ---@diagnostic disable: undefined-global
 
-vim.api.nvim_command("hi DiagnosticError guibg=NONE")
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
