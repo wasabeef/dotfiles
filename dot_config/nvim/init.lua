@@ -280,8 +280,8 @@ require("lazy").setup({
         local dashboard = require("alpha.themes.dashboard")
         dashboard.section.header.val = {
           -- Using img2art
-          [[⣺⣿⣿⣿⣿⣿⣿⡿⠿⣿⠛⣧⣟⣤⣯⡽⢛⠛⠘⣏⢄⠚⠏⣿⠻⣶⣿⢟⣟⢛⣏⣿⣽⣿⣿⣿⣿⣯⣿⡛⠿⠿⢶⣽⣿⣿⣿⢿⣿⣿⢿⢿⠿⠟⢹⣿⠷⣋⣲⠿⢶⠦⢯⡀⢰⢚⡟⠷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-          [[⠛⠟⠛⣿⣿⣿⡷⢶⣤⣤⡾⣟⣑⠀⡍⢈⠀⢇⠠⠈⡠⠐⡤⡅⢩⠺⢿⣿⡷⢿⣷⣿⢿⡿⡧⣔⣤⣉⣾⢿⢿⣷⣦⣉⣽⡭⣽⠧⡐⠰⢱⡚⠒⠐⠓⠈⠛⠈⠉⠭⠑⠈⠀⠠⠀⠐⠘⠭⠿⣋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡛⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
+          [[⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⠛⣧⣟⣤⣯⡽⢛⠛⠘⣏⢄⠚⠏⣿⠻⣶⣿⢟⣟⢛⣏⣿⣽⣿⣿⣿⣿⣯⣿⡛⠿⠿⢶⣽⣿⣿⣿⢿⣿⣿⢿⢿⠿⠟⢹⣿⠷⣋⣲⠿⢶⠦⢯⡀⢰⢚⡟⠷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
+          [[⣿⠟⠛⣿⣿⣿⡷⢶⣤⣤⡾⣟⣑⠀⡍⢈⠀⢇⠠⠈⡠⠐⡤⡅⢩⠺⢿⣿⡷⢿⣷⣿⢿⡿⡧⣔⣤⣉⣾⢿⢿⣷⣦⣉⣽⡭⣽⠧⡐⠰⢱⡚⠒⠐⠓⠈⠛⠈⠉⠭⠑⠈⠀⠠⠀⠐⠘⠭⠿⣋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡛⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
           [[⣿⢠⣼⠿⣩⣦⡼⠟⠉⠁⣄⣌⢁⠦⠚⠈⠔⠤⠡⠶⠺⠂⠅⠰⣀⢀⣰⣿⣽⣷⣪⠀⣽⠄⣚⠈⣀⣾⡰⣶⣦⣜⠝⢯⣟⠑⣦⣲⠯⠁⠈⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⢔⣀⠰⣇⠊⣿⣛⢿⣿⣿⣿⣿⣏⣩⣿⣿⣿⣿⣿⣿⣿⣿⣦⣌⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
           [[⣿⢸⢯⡾⣹⠟⠛⠀⠀⢘⠉⠙⠀⠀⠀⠀⠈⠐⠀⠊⠀⠀⠀⠀⠀⢨⣿⣽⡷⢏⠛⠛⠖⣪⡍⠀⢀⡉⢻⣻⣿⣿⣽⣞⠿⢲⡥⢔⣙⣧⣴⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠂⡀⣋⠲⢻⣃⣮⣿⠙⢱⡆⢀⡌⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
           [[⣿⣞⡿⢇⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠩⢛⡿⢩⣶⣀⢀⡄⢠⡚⠿⣦⠾⠣⠾⣯⢿⡝⠍⢛⣟⢦⣿⣱⠟⠇⡖⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠂⠀⢈⣉⠡⢉⣸⠩⢮⣥⠌⠛⠛⠁⠿⣿⡫⣭⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
@@ -1144,8 +1144,6 @@ require("lazy").setup({
               file:close()
               return output
             end
-            local iPhoneSimulatorSDKPath = execute("xcrun --sdk iphonesimulator --show-sdk-path"):gsub("\n", "")
-            local iPhoneSimulatorSDKVersion = execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
             require("lspconfig")["sourcekit"].setup({
               on_attach = global_on_attach,
               capabilities = capabilities,
@@ -1154,11 +1152,13 @@ require("lazy").setup({
                 "-Xswiftc",
                 "-sdk",
                 "-Xswiftc",
-                iPhoneSimulatorSDKPath, -- "`xcrun --sdk iphonesimulator --show-sdk-path`"
+                execute("xcrun --sdk iphonesimulator --show-sdk-path"):gsub("\n", ""), -- "`xcrun --sdk iphonesimulator --show-sdk-path`"
                 "-Xswiftc",
                 "-target",
                 "-Xswiftc",
-                "x86_64-apple-ios" .. iPhoneSimulatorSDKVersion .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
+                "x86_64-apple-ios"
+                  .. execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
+                  .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
               },
             })
           end,
@@ -1189,7 +1189,7 @@ require("lazy").setup({
           root_patterns = { ".git", "pubspec.yaml" },
           ui = {
             border = "rounded",
-            -- notification_style = 'native',
+            notification_style = 'native',
           },
           decorations = {
             statusline = {
@@ -1224,7 +1224,8 @@ require("lazy").setup({
           dev_log = {
             enabled = true,
             notify_errors = false,
-            open_cmd = "tabedit",
+            -- open_cmd = "botright 80vsplit",
+            open_cmd = "botright 20split",
           },
           dev_tools = {
             autostart = false,
