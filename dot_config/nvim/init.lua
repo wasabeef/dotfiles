@@ -761,13 +761,10 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("nvim-treesitter.configs").setup({
-          -- ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
           sync_install = false,
           auto_install = false,
-          ignore_install = { "dart" },
           highlight = {
             enable = true,
-            -- disable = { "dart" },
             disable = function(_, buf)
               local max_filesize = 100 * 1024 -- 100 KB
               local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
@@ -1253,6 +1250,7 @@ require("lazy").setup({
               analysisExcludedFolders = {
                 vim.fn.expand("$HOME/.pub-cache"),
                 vim.fn.expand("$HOME/.asdf/installs/flutter"),
+                vim.fn.expand("$HOME/.asdf/installs/dart"),
               },
               renameFilesWithClasses = "prompt",
               enableSnippets = false,
