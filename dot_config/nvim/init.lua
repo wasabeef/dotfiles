@@ -1197,8 +1197,8 @@ require("lazy").setup({
             },
           },
           debugger = {
-            enabled = false,
-            run_via_dap = false,
+            enabled = true,
+            run_via_dap = true,
             exception_breakpoints = {},
             register_configurations = function(paths)
               local dap = require("dap")
