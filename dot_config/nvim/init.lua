@@ -1117,7 +1117,7 @@ require("lazy").setup({
 
         "hrsh7th/cmp-nvim-lsp",
       },
-      ft = { "swift" },
+      event = "VeryLazy",
       config = function()
         local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -1125,45 +1125,45 @@ require("lazy").setup({
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
         end
 
+        local lspconfig = require("lspconfig")
         require("mason").setup()
         require("mason-lspconfig").setup()
         require("mason-lspconfig").setup_handlers({
           function(server_name)
-            -- require("lspconfig")[server_name].setup({
-            --   on_attach = on_attach,
-            --   capabilities = capabilities,
-            -- })
-
-            -- SourceKit-LSP
-            local function execute(cmd)
-              local file = assert(io.popen(cmd, "r"))
-              local output = file:read("*a")
-              file:close()
-              return output
+            -- dartls を除く (flutter-tools.nvim で行う)
+            if server_name ~= "dartls" then
+              lspconfig[server_name].setup({
+                on_attach = on_attach,
+                capabilities = capabilities,
+              })
             end
-            require("lspconfig")["sourcekit"].setup({
-              on_attach = on_attach,
-              capabilities = capabilities,
-              cmd = {
-                "sourcekit-lsp",
-                "-Xswiftc",
-                "-sdk",
-                "-Xswiftc",
-                execute("xcrun --sdk iphonesimulator --show-sdk-path"):gsub("\n", ""), -- "`xcrun --sdk iphonesimulator --show-sdk-path`"
-                "-Xswiftc",
-                "-target",
-                "-Xswiftc",
-                "x86_64-apple-ios"
-                  .. execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
-                  .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
-              },
-            })
           end,
         })
 
-        -- false : do not show error/warning/etc.. by virtual text
-        -- vim.lsp.handlers["textDocument/publishDiagnostics"] =
-        --   vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
+        -- SourceKit-LSP
+        local function execute(cmd)
+          local file = assert(io.popen(cmd, "r"))
+          local output = file:read("*a")
+          file:close()
+          return output
+        end
+        lspconfig.sourcekit.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+          cmd = {
+            "sourcekit-lsp",
+            "-Xswiftc",
+            "-sdk",
+            "-Xswiftc",
+            execute("xcrun --sdk iphonesimulator --show-sdk-path"):gsub("\n", ""), -- "`xcrun --sdk iphonesimulator --show-sdk-path`"
+            "-Xswiftc",
+            "-target",
+            "-Xswiftc",
+            "x86_64-apple-ios"
+              .. execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
+              .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
+          },
+        })
       end,
     },
 
@@ -1176,6 +1176,7 @@ require("lazy").setup({
         "hrsh8th/cmp-nvim-lsp",
       },
       ft = { "dart" },
+      event = "VeryLazy",
       config = function()
         require("flutter-tools").setup({
           flutter_path = nil,
@@ -1278,7 +1279,7 @@ require("lazy").setup({
 
         "onsails/lspkind-nvim",
       },
-      event = "InsertEnter",
+      event = { "InsertEnter", "LspAttach" },
       config = function()
         local cmp = require("cmp")
         local types = require("cmp.types")
@@ -1368,7 +1369,8 @@ require("lazy").setup({
       dependencies = {
         "zbirenbaum/copilot.lua",
       },
-      event = "InsertEnter",
+      event = { "InsertEnter", "LspAttach" },
+      fix_pairs = true,
       cmd = "Copilot",
       config = function()
         require("copilot").setup({
@@ -1397,7 +1399,7 @@ require("lazy").setup({
           vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
           if vim.fn.mode() == "i" and data.status == "InProgress" then
             vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line(".") - 1, 0, {
-              virt_text = { { "  Thinking...", "Comment" } },
+              virt_text = { { "  Thinking...", "Comment" } },
               virt_text_pos = "eol",
               hl_mode = "combine",
             })
