@@ -1,19 +1,6 @@
 ---@diagnostic disable: undefined-global
 
 -- ---------------------------------------------------------
--- Lazy.nvim セットアップ
--- ---------------------------------------------------------
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-end
-vim.opt.rtp:prepend(lazypath)
-
--- パフォーマンス
-vim.loader.enable()
-
--- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
 -- 再読み込み
@@ -189,22 +176,6 @@ vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 vim.api.nvim_set_keymap("c", "<C-n>", 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
 vim.api.nvim_set_keymap("c", "<C-p>", 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
--- LSP
-vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
--- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
-vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
-vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
-vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
-vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
-vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
-vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
--- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
-vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
-vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
-vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
-
--- ---------------------------------------------------------
-
 -- 不要なプラグインを停止する
 vim.g.did_install_default_menus = 1
 vim.g.did_install_syntax_menu = 1
@@ -226,6 +197,20 @@ vim.g.loaded_tutor_mode_plugin = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
+-- LSP
+vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
+vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
+vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
+vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
+vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
+vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
+vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
+-- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
+vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
+vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
+vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
+
 -- 前回開いたファイルのカーソル位置を復旧する
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
@@ -237,6 +222,16 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
   end,
 })
+
+-- ---------------------------------------------------------
+-- Lazy.nvim セットアップ
+-- ---------------------------------------------------------
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+end
+vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = {
@@ -321,34 +316,6 @@ require("lazy").setup({
         dashboard.section.footer.val = { "⚡" .. require("lazy").stats().loaded .. " plugins loaded." }
         dashboard.opts.opts.noautocmd = true
         alpha.setup(dashboard.opts)
-      end,
-    },
-
-    -- スムーススクロール
-    {
-      "karb94/neoscroll.nvim",
-      event = "VeryLazy",
-      config = function()
-        local neoscroll = require("neoscroll")
-        local keymap = {
-          ["<C-u>"] = function()
-            neoscroll.ctrl_u({ duration = 60 })
-          end,
-          ["<C-d>"] = function()
-            neoscroll.ctrl_d({ duration = 60 })
-          end,
-          ["<C-b>"] = function()
-            neoscroll.ctrl_b({ duration = 140 })
-          end,
-          ["<C-f>"] = function()
-            neoscroll.ctrl_f({ duration = 140 })
-          end,
-        }
-
-        local modes = { "n", "v", "x" }
-        for key, func in pairs(keymap) do
-          vim.keymap.set(modes, key, func)
-        end
       end,
     },
 
@@ -461,41 +428,80 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
+    -- スムーススクロール
+    {
+      "karb94/neoscroll.nvim",
+      event = "VeryLazy",
+      config = function()
+        local neoscroll = require("neoscroll")
+        local keymap = {
+          ["<C-u>"] = function()
+            neoscroll.ctrl_u({ duration = 60 })
+          end,
+          ["<C-d>"] = function()
+            neoscroll.ctrl_d({ duration = 60 })
+          end,
+          ["<C-b>"] = function()
+            neoscroll.ctrl_b({ duration = 140 })
+          end,
+          ["<C-f>"] = function()
+            neoscroll.ctrl_f({ duration = 140 })
+          end,
+        }
+
+        local modes = { "n", "v", "x" }
+        for key, func in pairs(keymap) do
+          vim.keymap.set(modes, key, func)
+        end
+      end,
+    },
+
+    -- スクロールバー
+    {
+      "petertriho/nvim-scrollbar",
+      event = "VeryLazy",
+      config = function()
+        require("scrollbar").setup({
+          handle = { color = "#445588" },
+        })
+      end,
+    },
+
     -- コメントアウト
     {
       "numToStr/Comment.nvim",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
     },
 
     -- 括弧
     {
       "tpope/vim-surround",
-      event = "InsertEnter",
+      event = "VeryLazy",
     },
 
     -- ペア
     {
       "windwp/nvim-autopairs",
-      event = "InsertEnter",
+      event = "VeryLazy",
       config = true,
     },
 
     -- EditorConfig
     {
       "editorconfig/editorconfig-vim",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
     },
 
     -- 引数の入れ替え g> g< gs
     {
       "machakann/vim-swap",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
     },
 
     -- Incremental Search
     {
       "kevinhwang91/nvim-hlslens",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       config = function()
         require("hlslens").setup()
       end,
@@ -504,7 +510,7 @@ require("lazy").setup({
     -- 置換
     {
       "chrisgrieser/nvim-rip-substitute",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       keys = {
         {
           "<C-/>",
@@ -531,7 +537,7 @@ require("lazy").setup({
     {
       "phaazon/hop.nvim",
       branch = "v2",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       config = function()
         require("hop").setup({ keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 })
         vim.api.nvim_set_keymap("n", "ff", ":HopPattern<CR>", { noremap = true })
@@ -547,7 +553,7 @@ require("lazy").setup({
     -- カーソル位置ハイライト
     {
       "RRethy/vim-illuminate",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       config = function()
         require("illuminate").configure({
           providers = {
@@ -579,13 +585,13 @@ require("lazy").setup({
     -- コピーハイライト
     {
       "machakann/vim-highlightedyank",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
     },
 
     -- 空白文字ハイライト
     {
       "shellRaining/hlchunk.nvim",
-      event = { "BufReadPre", "BufNewFile" },
+      event = { "BufRead", "BufNewFile" },
       opts = {
         chunk = {
           enable = true,
@@ -598,7 +604,7 @@ require("lazy").setup({
     -- カラーハイライト
     {
       "NvChad/nvim-colorizer.lua",
-      event = { "BufReadPre", "BufNewFile" },
+      event = "VeryLazy",
       opts = {
         filetypes = { "*" },
         user_default_options = {
@@ -626,215 +632,6 @@ require("lazy").setup({
         -- all the sub-options of filetypes apply to buftypes
         buftypes = {},
       },
-    },
-
-    -- インラインターミナル
-    {
-      "akinsho/toggleterm.nvim",
-      event = "VeryLazy",
-      keys = {
-        { "<C-t>t", "<Cmd>ToggleTerm direction=float<CR>" },
-        { "<C-t>f", "<Cmd>ToggleTerm direction=float<CR>" },
-        { "<C-t>v", "<Cmd>ToggleTerm direction=vertical<CR>" },
-        { "<C-t>h", "<Cmd>ToggleTerm direction=horizontal<CR>" },
-      },
-      opts = {
-        size = function(term)
-          return ({
-            horizontal = vim.o.lines * 0.3,
-            vertical = vim.o.columns * 0.35,
-          })[term.direction]
-        end,
-        open_mapping = "<C-t>",
-        direction = "float",
-      },
-    },
-
-    -- 通知
-    {
-      "rcarriga/nvim-notify",
-      event = "VeryLazy",
-      config = function()
-        vim.notify = require("notify")
-        require("notify").setup({
-          stages = "slide",
-          render = "default",
-          background_colour = "Normal",
-          level = 2, -- trace = 0, debug, info, warn, error
-          timeout = 3000,
-          fps = 60,
-          on_open = nil,
-          on_close = nil,
-        })
-      end,
-    },
-
-    -- バッファ操作
-    {
-      "j-morano/buffer_manager.nvim",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-      },
-      event = { "BufRead", "BufNewFile" },
-      opts = {
-        order_buffers = "lastused",
-        width = 0.4,
-        height = 0.3,
-      },
-      keys = {
-        {
-          "[]",
-          function()
-            require("buffer_manager.ui").toggle_quick_menu()
-          end,
-        },
-      },
-    },
-
-    {
-      "akinsho/bufferline.nvim",
-      event = { "BufRead", "BufNewFile" },
-      config = function()
-        require("bufferline").setup({
-          options = {
-            separator_style = "slant",
-            numbers = "ordinal",
-            diagnostics = "nvim_lsp",
-            max_name_length = 25,
-            tab_size = 25,
-            modified_icon = "󰆓",
-            close_icon = "",
-            left_trunc_marker = "",
-            right_trunc_marker = "",
-          },
-        })
-        vim.api.nvim_set_keymap("n", "[[", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "]]", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "][", ":BufferLinePickClose<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\][", ":BufferLineCloseLeft<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\[]", ":BufferLineCloseRight<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\\\", ":bd<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\\\ ", ":bp<CR>", { noremap = true, silent = true })
-      end,
-    },
-
-    -- スクロールバー
-    {
-      "petertriho/nvim-scrollbar",
-      event = { "BufRead", "BufNewFile" },
-      config = function()
-        require("scrollbar").setup({
-          handle = { color = "#445588" },
-        })
-      end,
-    },
-
-    -- Git Blame
-    {
-      "lewis6991/gitsigns.nvim",
-      event = { "BufRead", "BufNewFile" },
-      config = function()
-        require("gitsigns").setup({
-          signs = {
-            add = { text = "┃" },
-            change = { text = "┃" },
-            delete = { text = "_" },
-            topdelete = { text = "‾" },
-            changedelete = { text = "~" },
-            untracked = { text = "┆" },
-          },
-          signs_staged = {
-            add = { text = "┃" },
-            change = { text = "┃" },
-            delete = { text = "_" },
-            topdelete = { text = "‾" },
-            changedelete = { text = "~" },
-            untracked = { text = "┆" },
-          },
-          signs_staged_enable = true,
-          signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-          numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
-          linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-          word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
-          watch_gitdir = {
-            follow_files = true,
-          },
-          auto_attach = true,
-          attach_to_untracked = false,
-          current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
-          current_line_blame_opts = {
-            virt_text = true,
-            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-            delay = 1000,
-            ignore_whitespace = false,
-            virt_text_priority = 100,
-          },
-          current_line_blame_formatter = "<author>, <author_time:%R> - <summary>",
-          sign_priority = 6,
-          update_debounce = 100,
-          status_formatter = nil, -- Use default
-          max_file_length = 40000, -- Disable if file is longer than this (in lines)
-          preview_config = {
-            -- Options passed to nvim_open_win
-            border = "single",
-            style = "minimal",
-            relative = "cursor",
-            row = 0,
-            col = 1,
-          },
-        })
-        -- スクロールバーにも表示
-        require("scrollbar.handlers.gitsigns").setup()
-      end,
-    },
-
-    -- Lint
-    {
-      "dense-analysis/ale",
-      event = { "BufRead", "BufNewFile" },
-      config = function()
-        vim.g.ale_lint_on_enter = 0
-        vim.g.ale_sign_column_always = 1
-        vim.g.ale_lint_on_save = 0
-        vim.g.ale_linters = {
-          sh = { "shellcheck" },
-          lua = { "stylua" },
-          markdown = { "textlint" },
-          json = { "jq", "jsonlint", "cspell" },
-          yaml = { "yamllint", "actionlint" },
-          go = { "gofmt", "gopls" },
-          swift = { "swiftlint" },
-        }
-        vim.g.ale_fixers = {
-          ["*"] = { "trim_whitespace" },
-          sh = { "shfmt" },
-          bash = { "shfmt" },
-          zsh = { "shfmt" },
-          lua = { "stylua" },
-          markdown = { "prettier" },
-          json = { "prettier" },
-          yaml = { "prettier" },
-          html = { "prettier" },
-          css = { "prettier" },
-          -- less = {'prettier'},
-          -- scss = {'prettier'},
-          -- xml = {'xmllint'},
-          -- vue = {'prettier'},
-          -- svelte = {'prettier'},
-          -- astro = {'prettier'},
-          javascript = { "prettier", "eslint" },
-          javascriptreact = { "prettier", "eslint", "stylelint" },
-          typescript = { "prettier", "tslint", "eslint" },
-          typescriptreact = { "prettier", "tslint", "eslint", "stylelint" },
-          java = { "eclipselsp" },
-          kotlin = { "ktlint" },
-          dart = { "dart-format" },
-          go = { "gofmt", "goimports" },
-          graphql = { "prettier" },
-          swift = { "swiftformat" },
-        }
-        vim.api.nvim_set_keymap("n", "<Leader>f", ":ALEFix<CR>", { noremap = true, silent = true })
-      end,
     },
 
     -- ファイルツリー
@@ -898,17 +695,76 @@ require("lazy").setup({
       end,
     },
 
+    -- Git Blame
+    {
+      "lewis6991/gitsigns.nvim",
+      event = "VeryLazy",
+      config = function()
+        require("gitsigns").setup({
+          signs = {
+            add = { text = "┃" },
+            change = { text = "┃" },
+            delete = { text = "_" },
+            topdelete = { text = "‾" },
+            changedelete = { text = "~" },
+            untracked = { text = "┆" },
+          },
+          signs_staged = {
+            add = { text = "┃" },
+            change = { text = "┃" },
+            delete = { text = "_" },
+            topdelete = { text = "‾" },
+            changedelete = { text = "~" },
+            untracked = { text = "┆" },
+          },
+          signs_staged_enable = true,
+          signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+          numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
+          linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+          word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+          watch_gitdir = {
+            follow_files = true,
+          },
+          auto_attach = true,
+          attach_to_untracked = false,
+          current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+          current_line_blame_opts = {
+            virt_text = true,
+            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+            delay = 1000,
+            ignore_whitespace = false,
+            virt_text_priority = 100,
+          },
+          current_line_blame_formatter = "<author>, <author_time:%R> - <summary>",
+          sign_priority = 6,
+          update_debounce = 100,
+          status_formatter = nil, -- Use default
+          max_file_length = 40000, -- Disable if file is longer than this (in lines)
+          preview_config = {
+            -- Options passed to nvim_open_win
+            border = "single",
+            style = "minimal",
+            relative = "cursor",
+            row = 0,
+            col = 1,
+          },
+        })
+        -- スクロールバーにも表示
+        require("scrollbar.handlers.gitsigns").setup()
+      end,
+    },
+
     -- コードハイライト
     {
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate",
-      event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       config = function()
         require("nvim-treesitter.configs").setup({
           -- ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
           sync_install = false,
-          auto_install = true,
-          -- ignore_install = { "dart" },
+          auto_install = false,
+          ignore_install = { "dart" },
           highlight = {
             enable = true,
             -- disable = { "dart" },
@@ -932,12 +788,6 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
-        "dimaportenko/telescope-simulators.nvim",
-        "nvim-telescope/telescope-file-browser.nvim",
-        {
-          "nvim-telescope/telescope-fzf-native.nvim",
-          build = "make",
-        },
       },
       event = "VeryLazy",
       config = function()
@@ -1065,32 +915,195 @@ require("lazy").setup({
                 end
               end,
             },
-            extensions = {
-              file_browser = {
-                theme = "ivy",
-                hijack_netrw = true,
-                -- hidden = true,
-                git_status = true,
-                respect_gitignore = false,
-              },
-              fzf = {
-                fuzzy = true, -- false will only do exact matching
-                override_generic_sorter = true, -- override the generic sorter
-                override_file_sorter = true, -- override the file sorter
-                case_mode = "smart_case", -- or "ignore_case" or "respect_case"
-              },
-            },
           },
         })
         telescope.load_extension("ui-select")
-        telescope.load_extension("notify")
         telescope.load_extension("media_files")
-        telescope.load_extension("file_browser")
-        telescope.load_extension("fzf")
-        require("simulators").setup({
-          android_emulator = true,
-          apple_simulator = true,
+      end,
+    },
+
+    -- コードアクション、差分修正
+    {
+      "aznhe21/actions-preview.nvim",
+      dependencies = {
+        "nvim-telescope/telescope.nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        vim.keymap.set("n", "<Leader>a", "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
+
+        require("actions-preview").setup({
+          diff = {
+            algorithm = "histogram",
+            -- 差分がある部分の前後に表示する行数。git diff --unified=<n>相当
+            ctxlen = 3,
+            -- 同一ファイルの差分塊間の行数がこれ以下なら全部表示する。git diff --inter-hunk-context=<lines>相当
+            interhunkctxlen = 0,
+            -- あらゆるスペースの変更を無視する。trueならgit diff --ignore-all-space相当
+            ignore_whitespace = false,
+            -- 行頭や連続するスペースの変更を無視する。trueならgit diff --ignore-space-change相当
+            ignore_whitespace_change = false,
+            -- 行末スペースの変更を無視する。trueならgit diff --ignore-space-at-eol相当
+            ignore_whitespace_change_at_eol = false,
+            -- 改行前のCR（\r）を無視する。trueならgit diff --ignore-cr-at-eol相当
+            ignore_cr_at_eol = false,
+            -- 連続した空行の変更を無視する。trueならgit diff --ignore-blank-lines相当
+            ignore_blank_lines = false,
+            -- 差分のズレを抑制する。trueならgit diff --indent-heuristic相当。actions-preview.nvimではデフォルト無効
+            indent_heuristic = false,
+          },
+          telescope = require("telescope.themes").get_dropdown({
+            color_devicons = true,
+            layout_strategy = "vertical",
+            layout_config = {
+              width = 0.5,
+              height = 0.75,
+            },
+          }),
         })
+      end,
+    },
+
+    -- Lint
+    {
+      "dense-analysis/ale",
+      event = "VeryLazy",
+      config = function()
+        -- vim.g.ale_virtualtext_cursor = 'disabled'
+        vim.g.ale_lint_on_enter = 0
+        vim.g.ale_sign_column_always = 0
+        vim.g.ale_set_highlights = 0
+        vim.g.ale_lint_on_save = 0
+        vim.g.ale_linters_explicit = 1
+        vim.g.ale_linters = {
+          sh = { "shellcheck" },
+          lua = { "stylua" },
+          markdown = { "textlint" },
+          json = { "jq", "jsonlint", "cspell" },
+          yaml = { "yamllint", "actionlint" },
+          go = { "gofmt", "gopls" },
+          swift = { "swiftlint" },
+        }
+        vim.g.ale_fixers = {
+          ["*"] = { "trim_whitespace" },
+          sh = { "shfmt" },
+          bash = { "shfmt" },
+          zsh = { "shfmt" },
+          lua = { "stylua" },
+          markdown = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          html = { "prettier" },
+          css = { "prettier" },
+          less = { "prettier" },
+          scss = { "prettier" },
+          xml = { "xmllint" },
+          vue = { "prettier" },
+          svelte = { "prettier" },
+          astro = { "prettier" },
+          javascript = { "prettier", "eslint" },
+          javascriptreact = { "prettier", "eslint", "stylelint" },
+          typescript = { "prettier", "tslint", "eslint" },
+          typescriptreact = { "prettier", "tslint", "eslint", "stylelint" },
+          java = { "eclipselsp" },
+          kotlin = { "ktlint" },
+          dart = { "dart-format" },
+          go = { "gofmt", "goimports" },
+          graphql = { "prettier" },
+          swift = { "swiftformat" },
+        }
+        vim.api.nvim_set_keymap("n", "<Leader>f", ":ALEFix<CR>", { noremap = true, silent = true })
+      end,
+    },
+
+    -- インラインターミナル
+    {
+      "akinsho/toggleterm.nvim",
+      event = "VeryLazy",
+      keys = {
+        { "<C-t>t", "<Cmd>ToggleTerm direction=float<CR>" },
+        { "<C-t>f", "<Cmd>ToggleTerm direction=float<CR>" },
+        { "<C-t>v", "<Cmd>ToggleTerm direction=vertical<CR>" },
+        { "<C-t>h", "<Cmd>ToggleTerm direction=horizontal<CR>" },
+      },
+      opts = {
+        size = function(term)
+          return ({
+            horizontal = vim.o.lines * 0.3,
+            vertical = vim.o.columns * 0.35,
+          })[term.direction]
+        end,
+        open_mapping = "<C-t>",
+        direction = "float",
+      },
+    },
+
+    -- 通知
+    {
+      "rcarriga/nvim-notify",
+      event = "VeryLazy",
+      config = function()
+        vim.notify = require("notify")
+        require("notify").setup({
+          stages = "slide",
+          render = "default",
+          background_colour = "Normal",
+          level = 2, -- trace = 0, debug, info, warn, error
+          timeout = 3000,
+          fps = 60,
+          on_open = nil,
+          on_close = nil,
+        })
+      end,
+    },
+
+    -- バッファ操作
+    {
+      "j-morano/buffer_manager.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      event = { "BufReadPre", "BufNewFile" },
+      opts = {
+        order_buffers = "lastused",
+        width = 0.4,
+        height = 0.3,
+      },
+      keys = {
+        {
+          "[]",
+          function()
+            require("buffer_manager.ui").toggle_quick_menu()
+          end,
+        },
+      },
+    },
+
+    {
+      "akinsho/bufferline.nvim",
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        require("bufferline").setup({
+          options = {
+            separator_style = "slant",
+            numbers = "ordinal",
+            -- diagnostics = "nvim_lsp",
+            max_name_length = 25,
+            tab_size = 25,
+            modified_icon = "󰆓",
+            close_icon = "",
+            left_trunc_marker = "",
+            right_trunc_marker = "",
+          },
+        })
+        vim.api.nvim_set_keymap("n", "[[", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "]]", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "][", ":BufferLinePickClose<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "\\][", ":BufferLineCloseLeft<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "\\[]", ":BufferLineCloseRight<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "\\\\", ":bd<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "\\\\ ", ":bp<CR>", { noremap = true, silent = true })
       end,
     },
 
@@ -1105,12 +1118,11 @@ require("lazy").setup({
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
 
-        "hrsh7th/nvim-cmp",
         "hrsh7th/cmp-nvim-lsp",
       },
-      event = "VeryLazy",
+      ft = { "swift" },
       config = function()
-        local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+        local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
         local on_attach = function(_, bufnr)
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -1120,10 +1132,10 @@ require("lazy").setup({
         require("mason-lspconfig").setup()
         require("mason-lspconfig").setup_handlers({
           function(server_name)
-            require("lspconfig")[server_name].setup({
-              on_attach = on_attach,
-              capabilities = capabilities,
-            })
+            -- require("lspconfig")[server_name].setup({
+            --   on_attach = on_attach,
+            --   capabilities = capabilities,
+            -- })
 
             -- SourceKit-LSP
             local function execute(cmd)
@@ -1153,11 +1165,8 @@ require("lazy").setup({
         })
 
         -- false : do not show error/warning/etc.. by virtual text
-        vim.lsp.handlers["textDocument/publishDiagnostics"] =
-          vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
-        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { separator = true })
-        vim.lsp.handlers["textDocument/signatureHelp"] =
-          vim.lsp.with(vim.lsp.handlers.signature_help, { separator = true })
+        -- vim.lsp.handlers["textDocument/publishDiagnostics"] =
+        --   vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
       end,
     },
 
@@ -1167,8 +1176,9 @@ require("lazy").setup({
       dependencies = {
         "nvim-lua/plenary.nvim",
         "stevearc/dressing.nvim",
+        "hrsh8th/cmp-nvim-lsp",
       },
-      event = { "BufReadPre", "BufNewFile" },
+      ft = { "dart" },
       config = function()
         require("flutter-tools").setup({
           flutter_path = nil,
@@ -1187,8 +1197,8 @@ require("lazy").setup({
             },
           },
           debugger = {
-            enabled = true,
-            run_via_dap = true,
+            enabled = false,
+            run_via_dap = false,
             exception_breakpoints = {},
             register_configurations = function(paths)
               local dap = require("dap")
@@ -1228,7 +1238,6 @@ require("lazy").setup({
             },
             on_attach = function(_, bufnr)
               local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
               vim.keymap.set(
                 "n",
                 "<Leader>m",
@@ -1236,26 +1245,14 @@ require("lazy").setup({
                 bufopts
               )
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
-
-              local function find_flutter_files()
-                local flutter_sdk_path = vim.fn.system("asdf where flutter | tr -d '\\n'")
-                require("telescope.builtin").find_files({
-                  prompt_title = "Find Flutter Files",
-                  search_dirs = { flutter_sdk_path },
-                })
-              end
-              vim.api.nvim_create_user_command("TelescopeFindFlutterFiles", find_flutter_files, {})
-              vim.keymap.set("n", "<C-i>", "<cmd>TelescopeFindFlutterFiles<CR>", { noremap = true, silent = true })
             end,
-            capabilities = function(config)
-              config.specificThingIDontWant = false
-              return config
-            end,
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
             settings = {
-              showTodos = true,
+              showTodos = false,
               completeFunctionCalls = true,
               analysisExcludedFolders = {
                 vim.fn.expand("$HOME/.pub-cache"),
+                vim.fn.expand("$HOME/.asdf/installs/flutter"),
               },
               renameFilesWithClasses = "prompt",
               enableSnippets = false,
@@ -1265,169 +1262,6 @@ require("lazy").setup({
         })
 
         require("telescope").load_extension("flutter")
-      end,
-    },
-
-    -- デバッグ
-    {
-      "mfussenegger/nvim-dap",
-      dependencies = {
-        "nvim-neotest/nvim-nio",
-        "rcarriga/nvim-dap-ui",
-        "nvim-telescope/telescope-dap.nvim",
-      },
-      event = "LspAttach",
-      config = function()
-        -- Debugging
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "<Leader>b", "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>bc", "<cmd>lua require('dap').continue()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>bi", "<cmd>lua require('dap').step_into()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>bo", "<cmd>lua require('dap').step_over()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>br", "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>bu", "<cmd>lua require('dapui').toggle()<CR>", bufopts)
-
-        require("dapui").setup({
-          icons = { expanded = "▾", collapsed = "▸" },
-          layouts = {
-            {
-              elements = {
-                { id = "scopes", size = 0.25 },
-                "breakpoints",
-                "stacks",
-                "watches",
-              },
-              size = 10, -- columns
-              position = "bottom",
-            },
-          },
-        })
-
-        require("telescope").load_extension("dap")
-      end,
-    },
-
-    -- LSP ポップアップ
-    {
-      "rmagatti/goto-preview",
-      event = "LspAttach",
-      config = function()
-        require("goto-preview").setup({
-          height = 40,
-          width = 160,
-        })
-
-        -- LSP Popup
-        vim.keymap.set("n", "<Leader>d", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>i", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
-        vim.keymap.set("n", "<Leader>t", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
-      end,
-    },
-
-    -- エラーメッセージ
-    {
-      "folke/trouble.nvim",
-      event = "LspAttach",
-      opts = {
-        position = "bottom",
-        height = 5,
-        -- auto_open = true,
-        auto_close = true,
-      },
-      cmd = "Trouble",
-      keys = {
-        {
-          "<leader>te",
-          "<cmd>Trouble diagnostics toggle<cr>",
-          desc = "Diagnostics (Trouble)",
-        },
-        -- vim.keymap.set('n', '<Leader>te', "<cmd>TroubleToggle<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>tw', "<cmd>TroubleToggle workspace_diagnostics<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>td', "<cmd>TroubleToggle document_diagnostics<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>tq', "<cmd>TroubleToggle quickfix<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>tl', "<cmd>TroubleToggle loclist<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>tR', "<cmd>TroubleToggle lsp_references<CR>", bufopts)
-
-        -- {
-        --   "<leader>xX",
-        --   "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        --   desc = "Buffer Diagnostics (Trouble)",
-        -- },
-        -- {
-        --   "<leader>cs",
-        --   "<cmd>Trouble symbols toggle focus=false<cr>",
-        --   desc = "Symbols (Trouble)",
-        -- },
-        -- {
-        --   "<leader>cl",
-        --   "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        --   desc = "LSP Definitions / references / ... (Trouble)",
-        -- },
-        -- {
-        --   "<leader>xL",
-        --   "<cmd>Trouble loclist toggle<cr>",
-        --   desc = "Location List (Trouble)",
-        -- },
-        -- {
-        --   "<leader>xQ",
-        --   "<cmd>Trouble qflist toggle<cr>",
-        --   desc = "Quickfix List (Trouble)",
-        -- },
-      },
-    },
-
-    -- LSP Symbol Search
-    {
-      "liuchengxu/vista.vim",
-      event = "LspAttach",
-      config = function()
-        vim.g.vista_default_executive = "nvim_lsp"
-        vim.g.vista_renderer_enable_icon = 1
-        vim.g.vista_sidebar_position = "rightbelow 50vnew"
-        vim.api.nvim_set_keymap("n", "<Leader>v", "<cmd>Vista!!<CR>", { noremap = true, silent = true })
-      end,
-    },
-
-    -- コードアクション、差分修正
-    {
-      "aznhe21/actions-preview.nvim",
-      dependencies = {
-        "nvim-telescope/telescope.nvim",
-      },
-      event = "LspAttach",
-      config = function()
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "<Leader>a", "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
-
-        require("actions-preview").setup({
-          diff = {
-            algorithm = "histogram",
-            -- 差分がある部分の前後に表示する行数。git diff --unified=<n>相当
-            ctxlen = 3,
-            -- 同一ファイルの差分塊間の行数がこれ以下なら全部表示する。git diff --inter-hunk-context=<lines>相当
-            interhunkctxlen = 0,
-            -- あらゆるスペースの変更を無視する。trueならgit diff --ignore-all-space相当
-            ignore_whitespace = false,
-            -- 行頭や連続するスペースの変更を無視する。trueならgit diff --ignore-space-change相当
-            ignore_whitespace_change = false,
-            -- 行末スペースの変更を無視する。trueならgit diff --ignore-space-at-eol相当
-            ignore_whitespace_change_at_eol = false,
-            -- 改行前のCR（\r）を無視する。trueならgit diff --ignore-cr-at-eol相当
-            ignore_cr_at_eol = false,
-            -- 連続した空行の変更を無視する。trueならgit diff --ignore-blank-lines相当
-            ignore_blank_lines = false,
-            -- 差分のズレを抑制する。trueならgit diff --indent-heuristic相当。actions-preview.nvimではデフォルト無効
-            indent_heuristic = false,
-          },
-          telescope = require("telescope.themes").get_dropdown({
-            color_devicons = true,
-            layout_strategy = "vertical",
-            layout_config = {
-              width = 0.5,
-              height = 0.75,
-            },
-          }),
-        })
       end,
     },
 
@@ -1441,15 +1275,12 @@ require("lazy").setup({
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-cmdline",
 
-        "hrsh7th/cmp-vsnip",
-        "hrsh7th/vim-vsnip",
-        "hrsh7th/vim-vsnip-integ",
         "hrsh7th/cmp-nvim-lsp-signature-help",
         "hrsh7th/cmp-nvim-lsp-document-symbol",
 
         "onsails/lspkind-nvim",
       },
-      event = "LspAttach",
+      event = "InsertEnter",
       config = function()
         local cmp = require("cmp")
         local types = require("cmp.types")
@@ -1470,11 +1301,6 @@ require("lazy").setup({
             completeopt = "longest,menu,menuone,noselect,noinsert,preview",
             keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]],
             keyword_length = 1,
-          },
-          snippet = {
-            expand = function(args)
-              vim.fn["vsnip#anonymous"](args.body)
-            end,
           },
           window = {
             completion = cmp.config.window.bordered({
@@ -1582,6 +1408,62 @@ require("lazy").setup({
         require("copilot_cmp").setup({
           method = "getCompletionsCycling",
         })
+      end,
+    },
+
+    -- デバッグ
+    {
+      "mfussenegger/nvim-dap",
+      dependencies = {
+        "nvim-neotest/nvim-nio",
+        "rcarriga/nvim-dap-ui",
+        "nvim-telescope/telescope-dap.nvim",
+      },
+      event = "LspAttach",
+      config = function()
+        -- Debugging
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        vim.keymap.set("n", "<Leader>b", "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bc", "<cmd>lua require('dap').continue()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bi", "<cmd>lua require('dap').step_into()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bo", "<cmd>lua require('dap').step_over()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>br", "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>bu", "<cmd>lua require('dapui').toggle()<CR>", bufopts)
+
+        require("dapui").setup({
+          icons = { expanded = "▾", collapsed = "▸" },
+          layouts = {
+            {
+              elements = {
+                { id = "scopes", size = 0.25 },
+                "breakpoints",
+                "stacks",
+                "watches",
+              },
+              size = 10, -- columns
+              position = "bottom",
+            },
+          },
+        })
+
+        require("telescope").load_extension("dap")
+      end,
+    },
+
+    -- LSP ポップアップ
+    {
+      "rmagatti/goto-preview",
+      event = "VeryLazy",
+      config = function()
+        require("goto-preview").setup({
+          height = 40,
+          width = 160,
+        })
+
+        -- LSP Popup
+        vim.keymap.set("n", "<Leader>d", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>i", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>t", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
       end,
     },
   },
