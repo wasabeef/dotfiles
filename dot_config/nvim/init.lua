@@ -47,8 +47,8 @@ vim.o.errorbells = false
 vim.o.showmatch = true
 -- 対応する括弧を表示する時間（最小設定）
 vim.o.matchtime = 1
--- ステータス行を常に表示
-vim.o.laststatus = 2
+-- ステータスを常に表示、複数バッファでも一つ
+vim.o.laststatus = 3
 -- ファイル名補完
 vim.o.wildmode = "list:longest"
 -- 空白文字の表示
@@ -82,11 +82,6 @@ vim.o.colorcolumn = "80"
 vim.o.termguicolors = true
 
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
-
-if vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
-  vim.o.shell = "pwsh"
-  vim.o.shellcmdflag = "-c"
-end
 
 -- ---------------------------------------------------------
 -- キーマップ
@@ -222,28 +217,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
   end,
 })
-
--- vim.diagnostic.config({
---   underline = true,
---   update_in_insert = true,
---   severity_sort = false,
---
---   float = { style = "minimal" },
---
---   -- virtual_text はエラー以上のみ
---   virtual_text = {
---     severity = vim.diagnostic.severity.ERROR,
---   },
---   -- signcolumn のアイコンを変える
---   signs = {
---     text = {
---       [vim.diagnostic.severity.ERROR] = " ",
---       [vim.diagnostic.severity.WARN] = " ",
---       [vim.diagnostic.severity.HINT] = " ",
---       [vim.diagnostic.severity.INFO] = " ",
---     },
---   },
--- })
 
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
@@ -383,7 +356,7 @@ require("lazy").setup({
           options = {
             theme = bubbles_theme,
             component_separators = "",
-            section_separators = { left = "", right = "" },
+            section_separators = { right = "", left = "" },
           },
           sections = {
             lualine_a = { { "branch", separator = { left = "" }, right_padding = 2 } },
@@ -970,6 +943,7 @@ require("lazy").setup({
             -- 差分のズレを抑制する。trueならgit diff --indent-heuristic相当。actions-preview.nvimではデフォルト無効
             indent_heuristic = false,
           },
+          backend = { "telescope" },
           telescope = require("telescope.themes").get_dropdown({
             color_devicons = true,
             layout_strategy = "vertical",
@@ -1301,15 +1275,60 @@ require("lazy").setup({
       },
       event = { "InsertEnter", "LspAttach" },
       config = function()
+        vim.diagnostic.config({
+          -- virtual_text はエラー以上のみ
+          virtual_text = {
+            severity = vim.diagnostic.severity.ERROR,
+          },
+          -- signcolumn のアイコンを変える
+          signs = {
+            text = {
+              [vim.diagnostic.severity.ERROR] = " ",
+              [vim.diagnostic.severity.WARN] = " ",
+              [vim.diagnostic.severity.HINT] = " ",
+              [vim.diagnostic.severity.INFO] = " ",
+            },
+          },
+        })
+
         local cmp = require("cmp")
         local types = require("cmp.types")
         local lspkind = require("lspkind")
 
         lspkind.init({
+          mode = "symbol_text",
           symbol_map = {
             Copilot = "",
+            Text = "󰉿",
+            Method = "󰆧",
+            Function = "󰊕",
+            Constructor = "",
+            Field = "󰜢",
+            Variable = "󰀫",
+            Class = "󰠱",
+            Interface = "",
+            Module = "",
+            Property = "󰜢",
+            Unit = "󰑭",
+            Value = "󰎠",
+            Enum = "",
+            Keyword = "󰌋",
+            Snippet = "",
+            Color = "󰏘",
+            File = "󰈙",
+            Reference = "󰈇",
+            Folder = "󰉋",
+            EnumMember = "",
+            Constant = "󰏿",
+            Struct = "󰙅",
+            Event = "",
+            Operator = "󰆕",
+            TypeParameter = "",
           },
         })
+
+        vim.opt.completeopt = { "menu", "menuone", "noselect" }
+        vim.o.completefunc = 'v:lua.require("cmp").complete()'
 
         cmp.setup({
           completion = {
@@ -1323,28 +1342,34 @@ require("lazy").setup({
           },
           window = {
             completion = cmp.config.window.bordered({
-              border = "single",
               border = "rounded",
-              max_width = 80, -- 最大幅を 80 に設定
+              -- max_width = 80,
               winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
             }),
             documentation = cmp.config.window.bordered({
-              border = "single",
+              border = "rounded",
             }),
           },
           formatting = {
-            format = lspkind.cmp_format({
-              mode = "symbol",
-              maxwidth = 50,
-              ellipsis_char = "...",
-              before = function(_, vim_item)
-                return vim_item
-              end,
-            }),
+            expandable_indicator = true,
+            fields = { "kind", "abbr", "menu" },
+            format = function(entry, vim_item)
+              local kind = lspkind.cmp_format({
+                ellipsis_char = "…",
+                maxwidth = 50,
+                mode = "symbol_text",
+                with_text = true,
+              })(entry, vim_item)
+              local strings = vim.split(kind.kind, "%s", { trimempty = true })
+              kind.kind = " " .. (strings[1] or "") .. " "
+              kind.menu = "    (" .. (strings[2] or "") .. ")"
+
+              return kind
+            end,
           },
           mapping = cmp.mapping.preset.insert({
-            -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-            -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+            ["<C-f>"] = cmp.mapping.scroll_docs(4),
             ["<C-p>"] = cmp.mapping.select_prev_item(),
             ["<C-n>"] = cmp.mapping.select_next_item(),
             ["<C-Space>"] = cmp.mapping.complete(),
@@ -1361,6 +1386,7 @@ require("lazy").setup({
             { name = "buffer", group_index = 2 },
           }),
           experimental = {
+            native_menu = false,
             ghost_text = true,
           },
         })
