@@ -223,6 +223,28 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- vim.diagnostic.config({
+--   underline = true,
+--   update_in_insert = true,
+--   severity_sort = false,
+--
+--   float = { style = "minimal" },
+--
+--   -- virtual_text はエラー以上のみ
+--   virtual_text = {
+--     severity = vim.diagnostic.severity.ERROR,
+--   },
+--   -- signcolumn のアイコンを変える
+--   signs = {
+--     text = {
+--       [vim.diagnostic.severity.ERROR] = " ",
+--       [vim.diagnostic.severity.WARN] = " ",
+--       [vim.diagnostic.severity.HINT] = " ",
+--       [vim.diagnostic.severity.INFO] = " ",
+--     },
+--   },
+-- })
+
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
@@ -634,6 +656,17 @@ require("lazy").setup({
       },
     },
 
+    -- キーマップ
+    {
+      "folke/which-key.nvim",
+      event = "VeryLazy",
+      init = function()
+        vim.o.timeout = true
+        vim.o.timeoutlen = 300
+      end,
+      opts = {},
+    },
+
     -- ファイルツリー
     {
       "nvim-tree/nvim-tree.lua",
@@ -816,19 +849,6 @@ require("lazy").setup({
           "n",
           "<C-z>",
           "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-          { noremap = true, silent = true }
-        )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-;>",
-          "<cmd>Telescope file_browser path=%:p:h select_buffer=true<CR>",
-          { noremap = true }
-        )
-        vim.api.nvim_set_keymap("n", "<Leader>h", "<cmd>Telescope notify<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap(
-          "n",
-          "<Leader>s",
-          "<cmd>Telescope simulators run<CR>",
           { noremap = true, silent = true }
         )
 
@@ -1304,6 +1324,9 @@ require("lazy").setup({
           window = {
             completion = cmp.config.window.bordered({
               border = "single",
+              border = "rounded",
+              max_width = 80, -- 最大幅を 80 に設定
+              winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
             }),
             documentation = cmp.config.window.bordered({
               border = "single",
