@@ -13,24 +13,25 @@ end)()
 -- Common settings
 local config = {
 
-  -- cyberdream.nvim
+  -- kanagawa.nvim
+  force_reverse_video_cursor = true,
   colors = {
-    foreground = "#ffffff",
-    background = "#16181a",
+    foreground = "#dcd7ba",
+    background = "#1f1f28",
 
-    cursor_bg = "#ffffff",
-    cursor_fg = "#16181a",
-    cursor_border = "#ffffff",
+    cursor_bg = "#c8c093",
+    cursor_fg = "#c8c093",
+    cursor_border = "#c8c093",
 
-    selection_fg = "#ffffff",
-    selection_bg = "#3c4048",
+    selection_fg = "#c8c093",
+    selection_bg = "#2d4f67",
 
-    scrollbar_thumb = "#16181a",
-    split = "#16181a",
+    scrollbar_thumb = "#16161d",
+    split = "#16161d",
 
-    ansi = { "#16181a", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
-    brights = { "#3c4048", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
-    indexed = { [16] = "#ffbd5e", [17] = "#ff6e5e" },
+    ansi = { "#090618", "#c34043", "#76946a", "#c0a36e", "#7e9cd8", "#957fb8", "#6a9589", "#c8c093" },
+    brights = { "#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba" },
+    indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
   },
 
   font = wezterm.font_with_fallback({

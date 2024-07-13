@@ -232,10 +232,25 @@ require("lazy").setup({
   spec = {
     -- テーマ
     {
-      "scottmckendry/cyberdream.nvim",
+      "rebelot/kanagawa.nvim",
       lazy = false,
+      priority = 1000,
       config = function()
-        vim.cmd("colorscheme cyberdream")
+        require("kanagawa").setup({
+          compile = true, -- 変更したら :KanagawaCompile が必要
+          undercurl = false,
+          commentStyle = { italic = false },
+          keywordStyle = { italic = false },
+          transparent = false,
+          dimInactive = false,
+          terminalColors = true,
+          theme = "dragon",
+          background = {
+            dark = "dragon",
+            light = "dragon",
+          },
+        })
+        vim.cmd("colorscheme kanagawa")
       end,
     },
 
@@ -612,7 +627,7 @@ require("lazy").setup({
           enable = true,
           use_treesitter = true,
         },
-        indent = { enable = true },
+        indent = { enable = false },
       },
     },
 
@@ -820,6 +835,7 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
+        "dimaportenko/telescope-simulators.nvim",
       },
       event = "VeryLazy",
       config = function()
@@ -847,12 +863,13 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').commands()<CR>",
           { noremap = true, silent = true }
         )
-        -- vim.api.nvim_set_keymap(
-        --   "n",
-        --   "<C-m>",
-        --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-        --   { noremap = true, silent = true }
-        -- )
+        vim.api.nvim_set_keymap(
+          "n",
+          "<C-z>",
+          "<cmd>lua require('telescope.builtin').keymaps()<CR>",
+          { noremap = true, silent = true }
+        )
+        vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
 
         local telescope = require("telescope")
         telescope.setup({
@@ -938,6 +955,10 @@ require("lazy").setup({
         })
         telescope.load_extension("ui-select")
         telescope.load_extension("media_files")
+        require("simulators").setup({
+          android_emulator = true,
+          apple_simulator = true,
+        })
       end,
     },
 
