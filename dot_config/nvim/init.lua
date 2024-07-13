@@ -637,6 +637,15 @@ require("lazy").setup({
         vim.o.timeout = true
         vim.o.timeoutlen = 300
       end,
+      keys = {
+        {
+          "<leader>?",
+          function()
+            require("which-key").show({ global = true })
+          end,
+          desc = "Buffer Local Keymaps (which-key)",
+        },
+      },
       opts = {},
     },
 
@@ -818,12 +827,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').commands()<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-z>",
-          "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-          { noremap = true, silent = true }
-        )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-m>",
+        --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
 
         local telescope = require("telescope")
         telescope.setup({
@@ -985,6 +994,7 @@ require("lazy").setup({
           markdown = { "prettier" },
           json = { "prettier" },
           yaml = { "prettier" },
+          toml = { "dprint" },
           html = { "prettier" },
           css = { "prettier" },
           less = { "prettier" },
@@ -1132,6 +1142,14 @@ require("lazy").setup({
               })
             end
           end,
+        })
+
+        -- typo-lsp
+        lspconfig.typos_lsp.setup({
+          init_options = {
+            config = "$HOME/.config/nvim/typos.toml",
+            diagnosticSeverity = "Warning",
+          },
         })
 
         -- SourceKit-LSP
