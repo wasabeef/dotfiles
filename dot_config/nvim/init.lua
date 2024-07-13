@@ -233,8 +233,7 @@ require("lazy").setup({
     -- テーマ
     {
       "rebelot/kanagawa.nvim",
-      lazy = false,
-      priority = 1000,
+      event = "VimEnter",
       config = function()
         require("kanagawa").setup({
           compile = true, -- 変更したら :KanagawaCompile が必要
