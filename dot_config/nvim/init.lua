@@ -745,13 +745,14 @@ require("lazy").setup({
       end,
     },
 
-    -- nvim-tree でファイツ名変更した場合などに自動で更新
+    -- nvim-tree でファイル名変更した場合などに自動で更新
     {
       "antosha417/nvim-lsp-file-operations",
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-tree.lua",
       },
+      event = "VeryLazy",
       config = function()
         require("lsp-file-operations").setup()
       end,
