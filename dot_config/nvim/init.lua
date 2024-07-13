@@ -457,6 +457,25 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
+    -- 中央寄せ
+    {
+      "shortcuts/no-neck-pain.nvim",
+      -- event = "VeryLazy",
+      config = function()
+        require("no-neck-pain").setup({
+          autocmds = {
+            enableOnVimEnter = true,
+          },
+          width = 170,
+          buffers = {
+            right = {
+              enabled = false,
+            },
+          },
+        })
+      end,
+    },
+
     -- スムーススクロール
     {
       "karb94/neoscroll.nvim",
@@ -845,6 +864,7 @@ require("lazy").setup({
       "nvim-telescope/telescope.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
+        { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
@@ -927,6 +947,15 @@ require("lazy").setup({
                 end,
               },
             },
+            extensions = {
+              fzf = {
+                fuzzy = true, -- false will only do exact matching
+                override_generic_sorter = true, -- override the generic sorter
+                override_file_sorter = true, -- override the file sorter
+                case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+                -- the default case_mode is "smart_case"
+              },
+            },
             preview = {
               treesitter = false,
               mime_hook = function(filepath, bufnr, opts)
@@ -965,6 +994,7 @@ require("lazy").setup({
             },
           },
         })
+        telescope.load_extension("fzf")
         telescope.load_extension("ui-select")
         telescope.load_extension("media_files")
         require("simulators").setup({
@@ -1203,6 +1233,12 @@ require("lazy").setup({
 
         -- typo-lsp
         lspconfig.typos_lsp.setup({
+          on_attach = function(client, bufnr)
+            local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
+            if filetype == "log" then
+              client.stop()
+            end
+          end,
           init_options = {
             config = "$HOME/.config/nvim/typos.toml",
             diagnosticSeverity = "Warning",
