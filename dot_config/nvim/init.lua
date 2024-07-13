@@ -302,6 +302,8 @@ require("lazy").setup({
           dashboard.button("i", "   Edit init.lua", ":e $MYVIMRC <CR>"),
           dashboard.button("z", "   Edit .zshrc", ":e ~/.zshrc <CR>"),
           dashboard.button("w", "   Edit .wezterm.lua", ":e ~/.wezterm.lua <CR>"),
+          dashboard.button("t", "   Edit .typos.toml", ":e ~/.config/nvim/typos.toml <CR>"),
+          dashboard.button("d", "   Edit dprint.json", ":e ~/.config/nvim/dprint.json <CR>"),
           dashboard.button("m", "󱌣   Mason", ":Mason<CR>"),
           dashboard.button("l", "󰒲   Lazy", ":Lazy<CR>"),
           dashboard.button("u", "󰂖   Update plugins", "<cmd>lua require('lazy').sync()<CR>"),
@@ -312,6 +314,17 @@ require("lazy").setup({
         dashboard.opts.opts.noautocmd = true
         alpha.setup(dashboard.opts)
       end,
+    },
+
+    -- スクリーンセーバー
+    {
+      "folke/drop.nvim",
+      event = "VeryLazy",
+      opts = {
+        theme = "auto",
+        max = 50,
+        screensaver = 1000 * 60 * 5,
+      },
     },
 
     -- ステータスバー
@@ -993,7 +1006,7 @@ require("lazy").setup({
           lua = { "stylua" },
           markdown = { "prettier" },
           json = { "prettier" },
-          yaml = { "prettier" },
+          yaml = { "dprint" },
           toml = { "dprint" },
           html = { "prettier" },
           css = { "prettier" },
@@ -1258,7 +1271,7 @@ require("lazy").setup({
             end,
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
             settings = {
-              showTodos = false,
+              showTodos = true,
               completeFunctionCalls = true,
               analysisExcludedFolders = {
                 vim.fn.expand("$HOME/.pub-cache"),

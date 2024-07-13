@@ -9,4 +9,6 @@ check-filename = true
 [files]
 extend-exclude = [
   ".git/",
+  "~/.asdf/installs/flutter",
+  "~/.asdf/installs/dart",
 ]
