@@ -232,10 +232,10 @@ require("lazy").setup({
   spec = {
     -- テーマ
     {
-      "EdenEast/nightfox.nvim",
+      "scottmckendry/cyberdream.nvim",
       lazy = false,
       config = function()
-        vim.cmd("colorscheme duskfox")
+        vim.cmd("colorscheme cyberdream")
       end,
     },
 
@@ -309,7 +309,7 @@ require("lazy").setup({
           dashboard.button("i", "   Edit init.lua", ":e $MYVIMRC <CR>"),
           dashboard.button("z", "   Edit .zshrc", ":e ~/.zshrc <CR>"),
           dashboard.button("w", "   Edit .wezterm.lua", ":e ~/.wezterm.lua <CR>"),
-          dashboard.button("t", "   Edit .typos.toml", ":e ~/.config/nvim/typos.toml <CR>"),
+          dashboard.button("t", "   Edit typos.toml", ":e ~/.config/nvim/typos.toml <CR>"),
           dashboard.button("d", "   Edit dprint.json", ":e ~/.config/nvim/dprint.json <CR>"),
           dashboard.button("m", "󱌣   Mason", ":Mason<CR>"),
           dashboard.button("l", "󰒲   Lazy", ":Lazy<CR>"),
@@ -1151,7 +1151,11 @@ require("lazy").setup({
 
         local lspconfig = require("lspconfig")
         require("mason").setup()
-        require("mason-lspconfig").setup()
+        require("mason-lspconfig").setup({
+          ensure_installed = {
+            "typos_lsp",
+          },
+        })
         require("mason-lspconfig").setup_handlers({
           function(server_name)
             -- dartls を除く (flutter-tools.nvim で行う)
