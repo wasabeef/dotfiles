@@ -745,6 +745,18 @@ require("lazy").setup({
       end,
     },
 
+    -- nvim-tree でファイツ名変更した場合などに自動で更新
+    {
+      "antosha417/nvim-lsp-file-operations",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-tree.lua",
+      },
+      config = function()
+        require("lsp-file-operations").setup()
+      end,
+    },
+
     -- Git Blame
     {
       "lewis6991/gitsigns.nvim",
