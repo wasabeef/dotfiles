@@ -165,6 +165,8 @@ vim.api.nvim_set_keymap("v", "<C-Up>", '"zx<Up>"zP`[V`]', { noremap = true })
 vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
+-- Ctrl + m を無効
+vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -888,12 +890,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-p>",
-          "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
-          { noremap = true, silent = true }
-        )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-p>",
+        --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
         vim.api.nvim_set_keymap(
           "n",
           "<C-g>",
@@ -908,7 +910,7 @@ require("lazy").setup({
         )
         vim.api.nvim_set_keymap(
           "n",
-          "<C-z>",
+          "<C-m>",
           "<cmd>lua require('telescope.builtin').keymaps()<CR>",
           { noremap = true, silent = true }
         )
@@ -1012,6 +1014,17 @@ require("lazy").setup({
           android_emulator = true,
           apple_simulator = true,
         })
+      end,
+    },
+
+    -- クリップボード履歴
+    {
+      "ptdewey/yankbank-nvim",
+      keys = {
+        { "<Leader>p", "<cmd>YankBank<CR>", desc = "Open YankBank" },
+      },
+      config = function()
+        require("yankbank").setup()
       end,
     },
 
