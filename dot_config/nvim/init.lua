@@ -890,12 +890,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>",
           { noremap = true, silent = true }
         )
-        -- vim.api.nvim_set_keymap(
-        --   "n",
-        --   "<C-p>",
-        --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
-        --   { noremap = true, silent = true }
-        -- )
+        vim.api.nvim_set_keymap(
+          "n",
+          "<C-p>",
+          "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
+          { noremap = true, silent = true }
+        )
         vim.api.nvim_set_keymap(
           "n",
           "<C-g>",
