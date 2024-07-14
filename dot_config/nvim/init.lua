@@ -1020,11 +1020,9 @@ require("lazy").setup({
     -- クリップボード履歴
     {
       "ptdewey/yankbank-nvim",
-      keys = {
-        { "<Leader>p", "<cmd>YankBank<CR>", desc = "Open YankBank" },
-      },
       config = function()
         require("yankbank").setup()
+        vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
       end,
     },
 
