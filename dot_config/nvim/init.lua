@@ -229,6 +229,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  checker = { enabled = false },
   spec = {
     -- テーマ
     {
@@ -328,12 +329,25 @@ require("lazy").setup({
           dashboard.button("m", "󱌣   Mason", ":Mason<CR>"),
           dashboard.button("l", "󰒲   Lazy", ":Lazy<CR>"),
           dashboard.button("u", "󰂖   Update plugins", "<cmd>lua require('lazy').sync()<CR>"),
-          -- dashboard.button("q", "   Quit NVIM", ":qa<CR>"),
+          dashboard.button("q", "   Quit NVIM", ":qa<CR>"),
         }
 
-        dashboard.section.footer.val = { "⚡" .. require("lazy").stats().loaded .. " plugins loaded." }
-        dashboard.opts.opts.noautocmd = true
         alpha.setup(dashboard.opts)
+
+        vim.api.nvim_create_autocmd("User", {
+          callback = function()
+            local stats = require("lazy").stats()
+            local ms = math.floor(stats.startuptime * 100) / 100
+            dashboard.section.footer.val = "⚡ Lazy "
+              .. stats.loaded
+              .. "/"
+              .. stats.count
+              .. " plugins loaded in "
+              .. ms
+              .. "ms"
+            pcall(vim.cmd.AlphaRedraw)
+          end,
+        })
       end,
     },
 
@@ -344,7 +358,7 @@ require("lazy").setup({
       opts = {
         theme = "auto",
         max = 50,
-        screensaver = 1000 * 60 * 5,
+        screensaver = 1000 * 60 * 15, -- 15 minutes
       },
     },
 
@@ -353,6 +367,7 @@ require("lazy").setup({
       "nvim-lualine/lualine.nvim",
       dependencies = {
         "linrongbin16/lsp-progress.nvim",
+        "AndreM222/copilot-lualine",
       },
       event = "VeryLazy",
       config = function()
@@ -366,11 +381,12 @@ require("lazy").setup({
           red = "#ff5189",
           violet = "#d183e8",
           grey = "#303030",
+          caloriemate = "#fabe00",
         }
 
         local bubbles_theme = {
           normal = {
-            a = { fg = colors.black, bg = colors.violet },
+            a = { fg = colors.black, bg = colors.caloriemate },
             b = { fg = colors.white, bg = colors.grey },
             c = { fg = colors.white },
           },
@@ -394,7 +410,7 @@ require("lazy").setup({
           },
           sections = {
             lualine_a = { { "branch", separator = { left = "" }, right_padding = 2 } },
-            lualine_b = { "filename" },
+            lualine_b = { { "filename", path = 1 } },
             lualine_c = {
               "'%='",
               {
@@ -434,8 +450,8 @@ require("lazy").setup({
             },
             lualine_y = {},
             lualine_z = {
-              { "encoding", separator = { left = "" }, right_padding = 2 },
-              { "filetype", separator = { right = "" }, left_padding = 2 },
+              "copilot",
+              { "filetype", separator = { left = "", right = "" }, right_padding = 2, left_padding = 2 },
             },
           },
           inactive_sections = {
@@ -482,6 +498,21 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         local neoscroll = require("neoscroll")
+        neoscroll.setup({
+          mappings = { -- Keys to be mapped to their corresponding default scrolling animation
+            "<C-u>",
+            "<C-d>",
+            "<C-b>",
+            "<C-f>",
+            "<C-y>",
+            "<C-e>",
+            "zt",
+            "zz",
+            "zb",
+          },
+          hide_cursor = false,
+          performance_mode = true,
+        })
         local keymap = {
           ["<C-u>"] = function()
             neoscroll.ctrl_u({ duration = 60 })
@@ -510,7 +541,7 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("scrollbar").setup({
-          handle = { color = "#445588" },
+          handle = { color = "#006df2" },
         })
       end,
     },
@@ -680,26 +711,6 @@ require("lazy").setup({
         -- all the sub-options of filetypes apply to buftypes
         buftypes = {},
       },
-    },
-
-    -- キーマップ
-    {
-      "folke/which-key.nvim",
-      event = "VeryLazy",
-      init = function()
-        vim.o.timeout = true
-        vim.o.timeoutlen = 300
-      end,
-      keys = {
-        {
-          "<leader>?",
-          function()
-            require("which-key").show({ global = true })
-          end,
-          desc = "Buffer Local Keymaps (which-key)",
-        },
-      },
-      opts = {},
     },
 
     -- ファイルツリー
@@ -1063,7 +1074,7 @@ require("lazy").setup({
           sh = { "shellcheck" },
           lua = { "stylua" },
           markdown = { "textlint" },
-          json = { "jq", "jsonlint", "cspell" },
+          json = { "jq", "jsonlint" },
           yaml = { "yamllint", "actionlint" },
           go = { "gofmt", "gopls" },
           swift = { "swiftlint" },
@@ -1201,6 +1212,7 @@ require("lazy").setup({
       dependencies = {
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
 
         "hrsh7th/cmp-nvim-lsp",
       },
@@ -1214,10 +1226,28 @@ require("lazy").setup({
 
         local lspconfig = require("lspconfig")
         require("mason").setup()
-        require("mason-lspconfig").setup({
+        require("mason-lspconfig").setup()
+        require("mason-tool-installer").setup({
           ensure_installed = {
-            "typos_lsp",
+            "typos-lsp",
+            "prettier",
+            "actionlint",
+            "goimports",
+            "gopls",
+            "graphql-language-service-cli",
+            "ktlint",
+            "lua-language-server",
+            "shellcheck",
+            "shfmt",
+            "swiftlint",
+            "typescript-language-server",
+            "yamlfmt",
+            "yamllint",
           },
+          auto_update = true,
+          run_on_start = true,
+          start_delay = 3000,
+          debounce_hours = 5,
         })
         require("mason-lspconfig").setup_handlers({
           function(server_name)
@@ -1367,6 +1397,20 @@ require("lazy").setup({
 
         require("telescope").load_extension("flutter")
       end,
+    },
+
+    -- LSP のガベージコレクション
+    {
+      "zeioth/garbage-day.nvim",
+      dependencies = "neovim/nvim-lspconfig",
+      event = "VeryLazy",
+      opts = {
+        excluded_lsp_clients = {},
+        aggressive_mode = false,
+        grace_period = 60 * 15, -- 15 minutes
+        wakeup_delay = 10,
+        notifications = true,
+      },
     },
 
     -- LSP cmp
@@ -1627,5 +1671,4 @@ require("lazy").setup({
       end,
     },
   },
-  checker = { enabled = true },
 })
