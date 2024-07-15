@@ -669,6 +669,15 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
+    -- クリップボード履歴
+    {
+      "ptdewey/yankbank-nvim",
+      config = function()
+        require("yankbank").setup()
+        vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
+      end,
+    },
+
     -- 空白文字ハイライト
     {
       "shellRaining/hlchunk.nvim",
@@ -1017,15 +1026,6 @@ require("lazy").setup({
       end,
     },
 
-    -- クリップボード履歴
-    {
-      "ptdewey/yankbank-nvim",
-      config = function()
-        require("yankbank").setup()
-        vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
-      end,
-    },
-
     -- コードアクション、差分修正
     {
       "aznhe21/actions-preview.nvim",
@@ -1335,8 +1335,8 @@ require("lazy").setup({
           },
           decorations = {
             statusline = {
-              app_version = false,
-              device = false,
+              device = true, -- {flutter_tools_decorations.app_version} lualine
+              app_version = true, -- {flutter_tools_decorations.device} lualine
               project_config = false,
             },
           },
