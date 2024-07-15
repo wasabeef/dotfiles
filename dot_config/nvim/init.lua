@@ -890,6 +890,7 @@ require("lazy").setup({
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
+        "jonarrien/telescope-cmdline.nvim",
       },
       event = "VeryLazy",
       config = function()
@@ -924,6 +925,7 @@ require("lazy").setup({
           { noremap = true, silent = true }
         )
         vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
 
         local telescope = require("telescope")
         telescope.setup({
@@ -977,6 +979,19 @@ require("lazy").setup({
                 case_mode = "smart_case", -- or "ignore_case" or "respect_case"
                 -- the default case_mode is "smart_case"
               },
+              cmdline = {
+                picker = {
+                  layout_config = {
+                    width = 120,
+                    height = 25,
+                  },
+                },
+                mappings = {
+                  complete = "<Tab>",
+                  run_selection = "<C-CR>",
+                  run_input = "<CR>",
+                },
+              },
             },
             preview = {
               treesitter = false,
@@ -1023,6 +1038,7 @@ require("lazy").setup({
           android_emulator = true,
           apple_simulator = true,
         })
+        telescope.load_extension("cmdline")
       end,
     },
 
@@ -1075,6 +1091,11 @@ require("lazy").setup({
       "dense-analysis/ale",
       event = "VeryLazy",
       config = function()
+        vim.g.ale_sign_error = "🔥"
+        vim.g.ale_sign_warning = "🧐"
+        vim.g.ale_sign_error = "e"
+        vim.g.ale_sign_warning = "w"
+        vim.g.ale_sign_info = "i"
         -- vim.g.ale_virtualtext_cursor = 'disabled'
         vim.g.ale_lint_on_enter = 0
         vim.g.ale_sign_column_always = 0
@@ -1419,7 +1440,7 @@ require("lazy").setup({
         excluded_lsp_clients = {},
         aggressive_mode = false,
         grace_period = 60 * 15, -- 15 minutes
-        wakeup_delay = 10,
+        wakeup_delay = 5000,
         notifications = true,
       },
     },
