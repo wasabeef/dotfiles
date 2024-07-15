@@ -918,12 +918,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').commands()<CR>",
           { noremap = true, silent = true }
         )
-        -- vim.api.nvim_set_keymap(
-        --   "n",
-        --   "<C-m>",
-        --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-        --   { noremap = true, silent = true }
-        -- )
+        vim.api.nvim_set_keymap(
+          "n",
+          "<C-m>",
+          "<cmd>lua require('telescope.builtin').keymaps()<CR>",
+          { noremap = true, silent = true }
+        )
         vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
 
@@ -951,9 +951,6 @@ require("lazy").setup({
               "!**/.git/*",
             },
             mappings = {
-              n = {
-                ["<C-m>"] = custom_actions.show_melos_tasks, -- ノーマルモードで Ctrl+m を押すと Melos タスク一覧が表示される
-              },
               i = {
                 ["<C-q>"] = "close",
                 ["<Tab>"] = function(prompt_bufnr)
