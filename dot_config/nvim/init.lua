@@ -909,7 +909,6 @@ require("lazy").setup({
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
         "jonarrien/telescope-cmdline.nvim",
-        "lpoto/telescope-tasks.nvim",
       },
       event = "VeryLazy",
       config = function()
@@ -999,16 +998,6 @@ require("lazy").setup({
                 -- the default case_mode is "smart_case"
               },
               cmdline = {},
-              tasks = {
-                theme = "ivy",
-                output = {
-                  style = "float", -- "split" | "float" | "tab"
-                  layout = "center", -- "left" | "right" | "center" | "below" | "above"
-                  scale = 0.4, -- output window to editor size ratio
-                },
-                env = {},
-                binary = {},
-              },
             },
             preview = {
               treesitter = false,
@@ -1056,7 +1045,6 @@ require("lazy").setup({
           apple_simulator = true,
         })
         telescope.load_extension("cmdline")
-        telescope.load_extension("tasks")
       end,
     },
 
