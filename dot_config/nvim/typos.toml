@@ -9,9 +9,14 @@ check-filename = true
 [files]
 extend-exclude = [
   ".git/",
+  "node_modules/",
+  "~/.pub-cache",
   "~/.asdf/installs/flutter",
   "~/.asdf/installs/dart",
 ]
 
 [type.log]
+check-file = false
+
+[type.toggleterm]
 check-file = false

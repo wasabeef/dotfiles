@@ -1323,7 +1323,11 @@ require("lazy").setup({
           },
         })
         overseer.setup({
-          strategy = "toggleterm",
+          strategy = {
+            "toggleterm",
+            quit_on_exit = "success",
+            dap = false,
+          },
         })
         vim.api.nvim_set_keymap("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
       end,
@@ -1395,7 +1399,7 @@ require("lazy").setup({
         lspconfig.typos_lsp.setup({
           on_attach = function(client, bufnr)
             local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
-            if filetype == "log" then
+            if filetype == "log" or filetype == "toggleterm" then
               client.stop()
             end
           end,
