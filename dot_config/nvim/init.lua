@@ -1250,6 +1250,17 @@ require("lazy").setup({
       config = function()
         local overseer = require("overseer")
 
+        -- Git
+        overseer.register_template({
+          name = "git pull origin main",
+          builder = function()
+            return {
+              cmd = "git",
+              args = { "pull", "origin", "main" },
+            }
+          end,
+        })
+
         -- Melos
         overseer.register_template({
           name = "melos run",
@@ -1257,7 +1268,6 @@ require("lazy").setup({
             return {
               cmd = "melos",
               args = { "run" },
-              name = "Melos: tasks",
             }
           end,
           condition = {
@@ -1270,7 +1280,6 @@ require("lazy").setup({
             return {
               cmd = "melos",
               args = { "run", "refresh" },
-              name = "Melos: refresh",
             }
           end,
           condition = {
@@ -1283,7 +1292,6 @@ require("lazy").setup({
             return {
               cmd = "melos",
               args = { "run", "get" },
-              name = "Melos: pub get",
             }
           end,
           condition = {
@@ -1296,8 +1304,6 @@ require("lazy").setup({
             return {
               cmd = "melos",
               args = { "run", "pod" },
-              name = "Melos: pod install",
-
             }
           end,
           condition = {
@@ -1310,7 +1316,6 @@ require("lazy").setup({
             return {
               cmd = "melos",
               args = { "run", "gen" },
-              name = "Melos: Generate files",
             }
           end,
           condition = {
