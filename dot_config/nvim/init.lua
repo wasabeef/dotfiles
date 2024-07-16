@@ -242,7 +242,10 @@ require("lazy").setup({
           compile = true, -- 変更したら :KanagawaCompile が必要
           undercurl = false,
           commentStyle = { italic = false },
+          functionStyle = { italic = false },
           keywordStyle = { italic = false },
+          statementStyle = { italic = false },
+          typeStyle = { italic = false },
           transparent = false,
           dimInactive = false,
           terminalColors = true,
@@ -672,6 +675,7 @@ require("lazy").setup({
     -- クリップボード履歴
     {
       "ptdewey/yankbank-nvim",
+      event = "VeryLazy",
       config = function()
         require("yankbank").setup()
         vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
@@ -864,6 +868,20 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("nvim-treesitter.configs").setup({
+          ensure_installed = {
+            "dart",
+            "lua",
+            "graphql",
+            "bash",
+            "swift",
+            "kotlin",
+            "go",
+            "json",
+            "json5",
+            "typescript",
+            "css",
+            "html",
+          },
           sync_install = false,
           auto_install = false,
           highlight = {
@@ -891,6 +909,7 @@ require("lazy").setup({
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
         "jonarrien/telescope-cmdline.nvim",
+        "lpoto/telescope-tasks.nvim",
       },
       event = "VeryLazy",
       config = function()
@@ -980,6 +999,16 @@ require("lazy").setup({
                 -- the default case_mode is "smart_case"
               },
               cmdline = {},
+              tasks = {
+                theme = "ivy",
+                output = {
+                  style = "float", -- "split" | "float" | "tab"
+                  layout = "center", -- "left" | "right" | "center" | "below" | "above"
+                  scale = 0.4, -- output window to editor size ratio
+                },
+                env = {},
+                binary = {},
+              },
             },
             preview = {
               treesitter = false,
@@ -1027,6 +1056,7 @@ require("lazy").setup({
           apple_simulator = true,
         })
         telescope.load_extension("cmdline")
+        telescope.load_extension("tasks")
       end,
     },
 
@@ -1222,6 +1252,90 @@ require("lazy").setup({
       end,
     },
 
+    {
+      "stevearc/overseer.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope.nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+        local overseer = require("overseer")
+
+        -- Melos
+        overseer.register_template({
+          name = "melos run",
+          builder = function()
+            return {
+              cmd = "melos",
+              args = { "run" },
+              name = "Melos: tasks",
+            }
+          end,
+          condition = {
+            filetype = { "dart", "yaml", "alpha" },
+          },
+        })
+        overseer.register_template({
+          name = "melos run refresh",
+          builder = function()
+            return {
+              cmd = "melos",
+              args = { "run", "refresh" },
+              name = "Melos: refresh",
+            }
+          end,
+          condition = {
+            filetype = { "dart", "yaml", "alpha" },
+          },
+        })
+        overseer.register_template({
+          name = "melos run get",
+          builder = function()
+            return {
+              cmd = "melos",
+              args = { "run", "get" },
+              name = "Melos: pub get",
+            }
+          end,
+          condition = {
+            filetype = { "dart", "yaml", "alpha" },
+          },
+        })
+        overseer.register_template({
+          name = "melos run pod",
+          builder = function()
+            return {
+              cmd = "melos",
+              args = { "run", "pod" },
+              name = "Melos: pod install",
+
+            }
+          end,
+          condition = {
+            filetype = { "dart", "yaml", "alpha" },
+          },
+        })
+        overseer.register_template({
+          name = "melos run gen",
+          builder = function()
+            return {
+              cmd = "melos",
+              args = { "run", "gen" },
+              name = "Melos: Generate files",
+            }
+          end,
+          condition = {
+            filetype = { "dart", "yaml", "alpha" },
+          },
+        })
+        overseer.setup({
+          strategy = "toggleterm",
+        })
+        vim.api.nvim_set_keymap("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
+      end,
+    },
+
     -----------------------------------------------------------------------
     -- LSP
     -----------------------------------------------------------------------
@@ -1249,18 +1363,21 @@ require("lazy").setup({
         require("mason-lspconfig").setup()
         require("mason-tool-installer").setup({
           ensure_installed = {
+            -- LSP
             "typos-lsp",
+            "gopls",
+            "lua-language-server",
+            "typescript-language-server",
+            "graphql-language-service-cli",
+
+            -- Formatter
             "prettier",
             "actionlint",
             "goimports",
-            "gopls",
-            "graphql-language-service-cli",
             "ktlint",
-            "lua-language-server",
             "shellcheck",
             "shfmt",
             "swiftlint",
-            "typescript-language-server",
             "yamlfmt",
             "yamllint",
           },
