@@ -8,7 +8,7 @@
   ```
   export
   ```sh
-  brew bundle dump --global --force --describe
+  brew bundle dump --global --force
   ```
   import
   ```sh
