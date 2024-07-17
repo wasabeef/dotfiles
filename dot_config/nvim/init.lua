@@ -1396,8 +1396,8 @@ require("lazy").setup({
           },
           decorations = {
             statusline = {
-              device = true, -- {flutter_tools_decorations.app_version} lualine
-              app_version = true, -- {flutter_tools_decorations.device} lualine
+              device = false, -- {flutter_tools_decorations.app_version} lualine
+              app_version = false, -- {flutter_tools_decorations.device} lualine
               project_config = false,
             },
           },
