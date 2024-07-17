@@ -166,7 +166,7 @@ vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 -- Ctrl + m を無効
-vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -363,7 +363,7 @@ require("lazy").setup({
       opts = {
         theme = "auto",
         max = 50,
-        screensaver = 1000 * 60 * 15, -- 15 minutes
+        screensaver = 1000 * 60 * 30, -- 15 minutes
       },
     },
 
@@ -478,24 +478,24 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
-    -- 中央寄せ
-    {
-      "shortcuts/no-neck-pain.nvim",
-      -- event = "VeryLazy",
-      config = function()
-        require("no-neck-pain").setup({
-          autocmds = {
-            enableOnVimEnter = true,
-          },
-          width = 170,
-          buffers = {
-            right = {
-              enabled = false,
-            },
-          },
-        })
-      end,
-    },
+    -- -- 中央寄せ
+    -- {
+    --   "shortcuts/no-neck-pain.nvim",
+    --   -- event = "VeryLazy",
+    --   config = function()
+    --     require("no-neck-pain").setup({
+    --       autocmds = {
+    --         enableOnVimEnter = true,
+    --       },
+    --       width = 170,
+    --       buffers = {
+    --         right = {
+    --           enabled = false,
+    --         },
+    --       },
+    --     })
+    --   end,
+    -- },
 
     -- スムーススクロール
     {
@@ -936,12 +936,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').commands()<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-m>",
-          "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-          { noremap = true, silent = true }
-        )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-m>",
+        --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
         vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
 
@@ -1161,14 +1161,11 @@ require("lazy").setup({
         { "<C-t>h", "<Cmd>ToggleTerm direction=horizontal<CR>" },
       },
       opts = {
-        size = function(term)
-          return ({
-            horizontal = vim.o.lines * 0.3,
-            vertical = vim.o.columns * 0.35,
-          })[term.direction]
-        end,
         open_mapping = "<C-t>",
         direction = "float",
+        float_opts = {
+          winblend = 20,
+        },
       },
     },
 
@@ -1260,6 +1257,7 @@ require("lazy").setup({
             }
           end,
         })
+
         overseer.setup({
           strategy = {
             "toggleterm",
@@ -1477,9 +1475,9 @@ require("lazy").setup({
       dependencies = "neovim/nvim-lspconfig",
       event = "VeryLazy",
       opts = {
-        excluded_lsp_clients = {},
+        excluded_lsp_clients = { "copilot" },
         aggressive_mode = false,
-        grace_period = 60 * 15, -- 15 minutes
+        grace_period = 60 * 30, -- 30 minutes
         wakeup_delay = 5000,
         notifications = true,
       },
