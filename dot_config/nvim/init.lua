@@ -1260,72 +1260,10 @@ require("lazy").setup({
             }
           end,
         })
-
-        -- Melos
-        overseer.register_template({
-          name = "melos run",
-          builder = function()
-            return {
-              cmd = "melos",
-              args = { "run" },
-            }
-          end,
-          condition = {
-            filetype = { "dart", "yaml", "alpha" },
-          },
-        })
-        overseer.register_template({
-          name = "melos run refresh",
-          builder = function()
-            return {
-              cmd = "melos",
-              args = { "run", "refresh" },
-            }
-          end,
-          condition = {
-            filetype = { "dart", "yaml", "alpha" },
-          },
-        })
-        overseer.register_template({
-          name = "melos run get",
-          builder = function()
-            return {
-              cmd = "melos",
-              args = { "run", "get" },
-            }
-          end,
-          condition = {
-            filetype = { "dart", "yaml", "alpha" },
-          },
-        })
-        overseer.register_template({
-          name = "melos run pod",
-          builder = function()
-            return {
-              cmd = "melos",
-              args = { "run", "pod" },
-            }
-          end,
-          condition = {
-            filetype = { "dart", "yaml", "alpha" },
-          },
-        })
-        overseer.register_template({
-          name = "melos run gen",
-          builder = function()
-            return {
-              cmd = "melos",
-              args = { "run", "gen" },
-            }
-          end,
-          condition = {
-            filetype = { "dart", "yaml", "alpha" },
-          },
-        })
         overseer.setup({
           strategy = {
             "toggleterm",
-            quit_on_exit = "success",
+            -- quit_on_exit = "success",
             dap = false,
           },
         })
