@@ -204,7 +204,7 @@ vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
 -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
-vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
+-- vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts) -- use trouble
 vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
 vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
 
@@ -477,25 +477,6 @@ require("lazy").setup({
       "simeji/winresizer",
       event = "VeryLazy",
     },
-
-    -- -- 中央寄せ
-    -- {
-    --   "shortcuts/no-neck-pain.nvim",
-    --   -- event = "VeryLazy",
-    --   config = function()
-    --     require("no-neck-pain").setup({
-    --       autocmds = {
-    --         enableOnVimEnter = true,
-    --       },
-    --       width = 170,
-    --       buffers = {
-    --         right = {
-    --           enabled = false,
-    --         },
-    --       },
-    --     })
-    --   end,
-    -- },
 
     -- スムーススクロール
     {
@@ -881,6 +862,8 @@ require("lazy").setup({
             "typescript",
             "css",
             "html",
+            "markdown",
+            "markdown_inline",
           },
           sync_install = false,
           auto_install = false,
@@ -1090,6 +1073,35 @@ require("lazy").setup({
           }),
         })
       end,
+    },
+
+    -- Diagnostics
+    {
+      "folke/trouble.nvim",
+      event = "VeryLazy",
+      opts = {
+        modes = {
+          preview_float = {
+            mode = "diagnostics",
+            preview = {
+              type = "float",
+              relative = "editor",
+              border = "rounded",
+              title = "Trouble",
+              title_pos = "center",
+              position = { 0, -2 },
+              size = { width = 0.3, height = 0.3 },
+            },
+          },
+        },
+      },
+      keys = {
+        {
+          "<Leader>e",
+          "<cmd>Trouble preview_float toggle filter.buf=0<CR>",
+          desc = "Diagnostics (Trouble)",
+        },
+      },
     },
 
     -- Lint
@@ -1501,10 +1513,11 @@ require("lazy").setup({
       event = { "InsertEnter", "LspAttach" },
       config = function()
         vim.diagnostic.config({
-          -- virtual_text はエラー以上のみ
-          virtual_text = {
-            severity = vim.diagnostic.severity.ERROR,
-          },
+          -- virtual_text は非表示
+          -- virtual_text = {
+          --   severity = vim.diagnostic.severity.ERROR,
+          -- },
+          virtual_text = false,
           -- signcolumn のアイコンを変える
           signs = {
             text = {
