@@ -1109,8 +1109,8 @@ require("lazy").setup({
       "dense-analysis/ale",
       event = "VeryLazy",
       config = function()
-        vim.g.ale_sign_error = "🔥"
-        vim.g.ale_sign_warning = "🧐"
+        -- vim.g.ale_sign_error = "🔥"
+        -- vim.g.ale_sign_warning = "🧐"
         -- vim.g.ale_sign_error = "e"
         -- vim.g.ale_sign_warning = "w"
         -- vim.g.ale_sign_info = "i"
@@ -1137,7 +1137,7 @@ require("lazy").setup({
           lua = { "stylua" },
           markdown = { "prettier" },
           json = { "prettier" },
-          yaml = { "dprint" },
+          yaml = { "prettier" },
           toml = { "dprint" },
           html = { "prettier" },
           css = { "prettier" },
