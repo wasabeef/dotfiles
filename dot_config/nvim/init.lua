@@ -249,10 +249,10 @@ require("lazy").setup({
           transparent = false,
           dimInactive = false,
           terminalColors = true,
-          theme = "dragon",
+          theme = "wave",
           background = {
-            dark = "dragon",
-            light = "dragon",
+            dark = "wave",
+            light = "wave",
           },
         })
         vim.cmd("colorscheme kanagawa")
@@ -864,6 +864,7 @@ require("lazy").setup({
             "html",
             "markdown",
             "markdown_inline",
+            "yaml",
           },
           sync_install = false,
           auto_install = false,
@@ -1482,18 +1483,18 @@ require("lazy").setup({
     },
 
     -- LSP のガベージコレクション
-    {
-      "zeioth/garbage-day.nvim",
-      dependencies = "neovim/nvim-lspconfig",
-      event = "VeryLazy",
-      opts = {
-        excluded_lsp_clients = { "copilot" },
-        aggressive_mode = false,
-        grace_period = 60 * 30, -- 30 minutes
-        wakeup_delay = 5000,
-        notifications = true,
-      },
-    },
+    -- {
+    --   "zeioth/garbage-day.nvim",
+    --   dependencies = "neovim/nvim-lspconfig",
+    --   event = "VeryLazy",
+    --   opts = {
+    --     excluded_lsp_clients = { "copilot" },
+    --     aggressive_mode = false,
+    --     grace_period = 60 * 30, -- 30 minutes
+    --     wakeup_delay = 5000,
+    --     notifications = true,
+    --   },
+    -- },
 
     -- LSP cmp
     {

@@ -38,16 +38,33 @@ local config = {
     "Cascadia Code",
     "JetBrains Mono",
   }),
+
+  animation_fps = 60,
+  max_fps = 60,
+  front_end = "WebGpu",
+  webgpu_power_preference = "HighPerformance",
+
+  -- window
+  integrated_title_button_style = "Windows",
+  window_decorations = "INTEGRATED_BUTTONS|RESIZE",
   window_background_opacity = 1,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
+  window_frame = {
+    active_titlebar_bg = "#0F2536",
+    inactive_titlebar_bg = "#0F2536",
+  },
 
+  -- tab bar
   use_fancy_tab_bar = true,
-  hide_tab_bar_if_only_one_tab = true,
+  hide_tab_bar_if_only_one_tab = false,
 
-  front_end = "OpenGL",
+  -- cursor
+  default_cursor_style = "BlinkingBlock",
+  cursor_blink_ease_in = "Constant",
+  cursor_blink_ease_out = "Constant",
+  cursor_blink_rate = 500,
 
   leader = { key = "Space", mods = "SHIFT|CTRL" },
-
   keys = {
     -- Window
     { key = "n", mods = "SHIFT|CTRL", action = wezterm.action.ToggleFullScreen },
