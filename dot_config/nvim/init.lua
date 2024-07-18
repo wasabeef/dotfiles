@@ -913,12 +913,12 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').live_grep()<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-x>",
-          "<cmd>lua require('telescope.builtin').commands()<CR>",
-          { noremap = true, silent = true }
-        )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-x>",
+        --   "<cmd>lua require('telescope.builtin').commands()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
         -- vim.api.nvim_set_keymap(
         --   "n",
         --   "<C-m>",
