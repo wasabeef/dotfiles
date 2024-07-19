@@ -1,72 +1,43 @@
 tap "eddieantonio/eddieantonio"
 tap "homebrew/bundle"
-# Extendable version manager with support for Ruby, Node.js, Erlang & more
 brew "asdf"
-# Image format providing lossless and lossy compression for web images
 brew "webp"
-# Versatile and fast Unicode/ASCII/ANSI graphics renderer
 brew "chafa"
-# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
-# Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
-# Simple, fast and user-friendly alternative to find
+brew "dprint"
 brew "fd"
-# Command-line fuzzy finder written in Go
 brew "fzf"
-# GNU compiler collection
 brew "gcc"
-# GitHub command-line tool
 brew "gh"
-# Distributed revision control system
 brew "git"
-# Git extension for versioning large files
 brew "git-lfs"
-# Lightweight and flexible command-line JSON processor
 brew "jq"
-# SIXEL encoder/decoder implementation
 brew "libsixel"
-# Clone of ls with colorful output, file type icons, and more
 brew "lsd"
-# Language Server for the Lua language
 brew "lua-language-server"
-# Utility for directing compilation
 brew "make"
-# Ambitious Vim-fork focused on extensibility and agility
+brew "mise"
 brew "neovim"
-# Search tool like grep and The Silver Searcher
 brew "ripgrep"
-# Fast, configurable, shell plugin manager
 brew "sheldon"
-# Opinionated Lua code formatter
 brew "stylua"
-# Code-search similar to ack
+brew "swiftformat"
 brew "the_silver_searcher"
-# Text interface for Git repositories
 brew "tig"
-# Simple terminal image viewer written in Rust
+brew "tree"
 brew "viu"
-# Internet file retriever
 brew "wget"
-# UNIX shell (command interpreter)
+brew "yq"
 brew "zsh"
-# Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
-# It's like cat(1), but for images
 brew "eddieantonio/eddieantonio/imgcat"
-# Password manager that keeps all passwords secure behind one password
 cask "1password"
-# Application uninstaller
 cask "appcleaner"
-# User-friendly GUI app for Homebrew
 cask "applite"
-# Two-factor authentication software
 cask "authy"
-# Desktop password and login vault
 cask "bitwarden"
-# Clipboard extension app
 cask "clipy"
-# Voice and text chat software
 cask "discord"
 cask "font-cascadia-code"
 cask "font-jetbrains-mono"
@@ -77,25 +48,15 @@ cask "font-m-plus-1p"
 cask "font-m-plus-2"
 cask "font-noto-sans"
 cask "font-noto-sans-cjk"
-# Web browser
 cask "google-chrome"
-# Utility to hide menu bar items
 cask "hiddenbar"
-# Tool to optimise images to a smaller size
 cask "imageoptim"
-# JetBrains tools manager
 cask "jetbrains-toolbox"
-# Open-source keystroke visualiser
 cask "keycastr"
-# Client program for the OpenVPN Access Server
+cask "meetingbar"
 cask "openvpn-connect"
-# Team communication and collaboration software
 cask "slack"
-# Video game digital distribution service
 cask "steam"
-# GPU-accelerated cross-platform terminal emulator and multiplexer
 cask "wezterm"
-# Install and switch between multiple versions of Xcode
 cask "xcodes"
-# Video communication and virtual meeting platform
 cask "zoom"

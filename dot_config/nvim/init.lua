@@ -165,6 +165,8 @@ vim.api.nvim_set_keymap("v", "<C-Up>", '"zx<Up>"zP`[V`]', { noremap = true })
 vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
+-- Ctrl + m を無効
+-- vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -202,7 +204,7 @@ vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
 -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
-vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts)
+-- vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts) -- use trouble
 vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
 vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
 
@@ -229,13 +231,31 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  checker = { enabled = false },
   spec = {
     -- テーマ
     {
-      "scottmckendry/cyberdream.nvim",
-      lazy = false,
+      "rebelot/kanagawa.nvim",
+      event = "VimEnter",
       config = function()
-        vim.cmd("colorscheme cyberdream")
+        require("kanagawa").setup({
+          compile = true, -- 変更したら :KanagawaCompile が必要
+          undercurl = false,
+          commentStyle = { italic = false },
+          functionStyle = { italic = false },
+          keywordStyle = { italic = false },
+          statementStyle = { italic = false },
+          typeStyle = { italic = false },
+          transparent = false,
+          dimInactive = false,
+          terminalColors = true,
+          theme = "wave",
+          background = {
+            dark = "wave",
+            light = "wave",
+          },
+        })
+        vim.cmd("colorscheme kanagawa")
       end,
     },
 
@@ -314,12 +334,25 @@ require("lazy").setup({
           dashboard.button("m", "󱌣   Mason", ":Mason<CR>"),
           dashboard.button("l", "󰒲   Lazy", ":Lazy<CR>"),
           dashboard.button("u", "󰂖   Update plugins", "<cmd>lua require('lazy').sync()<CR>"),
-          -- dashboard.button("q", "   Quit NVIM", ":qa<CR>"),
+          dashboard.button("q", "   Quit NVIM", ":qa<CR>"),
         }
 
-        dashboard.section.footer.val = { "⚡" .. require("lazy").stats().loaded .. " plugins loaded." }
-        dashboard.opts.opts.noautocmd = true
         alpha.setup(dashboard.opts)
+
+        vim.api.nvim_create_autocmd("User", {
+          callback = function()
+            local stats = require("lazy").stats()
+            local ms = math.floor(stats.startuptime * 100) / 100
+            dashboard.section.footer.val = "⚡ Lazy "
+              .. stats.loaded
+              .. "/"
+              .. stats.count
+              .. " plugins loaded in "
+              .. ms
+              .. "ms"
+            pcall(vim.cmd.AlphaRedraw)
+          end,
+        })
       end,
     },
 
@@ -330,7 +363,7 @@ require("lazy").setup({
       opts = {
         theme = "auto",
         max = 50,
-        screensaver = 1000 * 60 * 5,
+        screensaver = 1000 * 60 * 30, -- 15 minutes
       },
     },
 
@@ -339,6 +372,7 @@ require("lazy").setup({
       "nvim-lualine/lualine.nvim",
       dependencies = {
         "linrongbin16/lsp-progress.nvim",
+        "AndreM222/copilot-lualine",
       },
       event = "VeryLazy",
       config = function()
@@ -352,11 +386,12 @@ require("lazy").setup({
           red = "#ff5189",
           violet = "#d183e8",
           grey = "#303030",
+          caloriemate = "#fabe00",
         }
 
         local bubbles_theme = {
           normal = {
-            a = { fg = colors.black, bg = colors.violet },
+            a = { fg = colors.black, bg = colors.caloriemate },
             b = { fg = colors.white, bg = colors.grey },
             c = { fg = colors.white },
           },
@@ -380,7 +415,7 @@ require("lazy").setup({
           },
           sections = {
             lualine_a = { { "branch", separator = { left = "" }, right_padding = 2 } },
-            lualine_b = { "filename" },
+            lualine_b = { { "filename", path = 1 } },
             lualine_c = {
               "'%='",
               {
@@ -420,8 +455,8 @@ require("lazy").setup({
             },
             lualine_y = {},
             lualine_z = {
-              { "encoding", separator = { left = "" }, right_padding = 2 },
-              { "filetype", separator = { right = "" }, left_padding = 2 },
+              "copilot",
+              { "filetype", separator = { left = "", right = "" }, right_padding = 2, left_padding = 2 },
             },
           },
           inactive_sections = {
@@ -449,6 +484,21 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         local neoscroll = require("neoscroll")
+        neoscroll.setup({
+          mappings = { -- Keys to be mapped to their corresponding default scrolling animation
+            "<C-u>",
+            "<C-d>",
+            "<C-b>",
+            "<C-f>",
+            "<C-y>",
+            "<C-e>",
+            "zt",
+            "zz",
+            "zb",
+          },
+          hide_cursor = false,
+          performance_mode = true,
+        })
         local keymap = {
           ["<C-u>"] = function()
             neoscroll.ctrl_u({ duration = 60 })
@@ -477,7 +527,7 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("scrollbar").setup({
-          handle = { color = "#445588" },
+          handle = { color = "#006df2" },
         })
       end,
     },
@@ -603,6 +653,16 @@ require("lazy").setup({
       event = "VeryLazy",
     },
 
+    -- クリップボード履歴
+    {
+      "ptdewey/yankbank-nvim",
+      event = "VeryLazy",
+      config = function()
+        require("yankbank").setup()
+        vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
+      end,
+    },
+
     -- 空白文字ハイライト
     {
       "shellRaining/hlchunk.nvim",
@@ -612,7 +672,7 @@ require("lazy").setup({
           enable = true,
           use_treesitter = true,
         },
-        indent = { enable = true },
+        indent = { enable = false },
       },
     },
 
@@ -647,26 +707,6 @@ require("lazy").setup({
         -- all the sub-options of filetypes apply to buftypes
         buftypes = {},
       },
-    },
-
-    -- キーマップ
-    {
-      "folke/which-key.nvim",
-      event = "VeryLazy",
-      init = function()
-        vim.o.timeout = true
-        vim.o.timeoutlen = 300
-      end,
-      keys = {
-        {
-          "<leader>?",
-          function()
-            require("which-key").show({ global = true })
-          end,
-          desc = "Buffer Local Keymaps (which-key)",
-        },
-      },
-      opts = {},
     },
 
     -- ファイルツリー
@@ -727,6 +767,19 @@ require("lazy").setup({
             ignore = false,
           },
         })
+      end,
+    },
+
+    -- nvim-tree でファイル名変更した場合などに自動で更新
+    {
+      "antosha417/nvim-lsp-file-operations",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-tree.lua",
+      },
+      event = "VeryLazy",
+      config = function()
+        require("lsp-file-operations").setup()
       end,
     },
 
@@ -796,6 +849,23 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("nvim-treesitter.configs").setup({
+          ensure_installed = {
+            "dart",
+            "lua",
+            "graphql",
+            "bash",
+            "swift",
+            "kotlin",
+            "go",
+            "json",
+            "json5",
+            "typescript",
+            "css",
+            "html",
+            "markdown",
+            "markdown_inline",
+            "yaml",
+          },
           sync_install = false,
           auto_install = false,
           highlight = {
@@ -818,8 +888,11 @@ require("lazy").setup({
       "nvim-telescope/telescope.nvim",
       dependencies = {
         "nvim-lua/plenary.nvim",
+        { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
+        "dimaportenko/telescope-simulators.nvim",
+        "jonarrien/telescope-cmdline.nvim",
       },
       event = "VeryLazy",
       config = function()
@@ -841,18 +914,20 @@ require("lazy").setup({
           "<cmd>lua require('telescope.builtin').live_grep()<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
-          "n",
-          "<C-x>",
-          "<cmd>lua require('telescope.builtin').commands()<CR>",
-          { noremap = true, silent = true }
-        )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-x>",
+        --   "<cmd>lua require('telescope.builtin').commands()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
         -- vim.api.nvim_set_keymap(
         --   "n",
         --   "<C-m>",
         --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
         --   { noremap = true, silent = true }
         -- )
+        vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
 
         local telescope = require("telescope")
         telescope.setup({
@@ -898,6 +973,16 @@ require("lazy").setup({
                 end,
               },
             },
+            extensions = {
+              fzf = {
+                fuzzy = true, -- false will only do exact matching
+                override_generic_sorter = true, -- override the generic sorter
+                override_file_sorter = true, -- override the file sorter
+                case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+                -- the default case_mode is "smart_case"
+              },
+              cmdline = {},
+            },
             preview = {
               treesitter = false,
               mime_hook = function(filepath, bufnr, opts)
@@ -936,8 +1021,14 @@ require("lazy").setup({
             },
           },
         })
+        telescope.load_extension("fzf")
         telescope.load_extension("ui-select")
         telescope.load_extension("media_files")
+        require("simulators").setup({
+          android_emulator = true,
+          apple_simulator = true,
+        })
+        telescope.load_extension("cmdline")
       end,
     },
 
@@ -985,11 +1076,45 @@ require("lazy").setup({
       end,
     },
 
+    -- Diagnostics
+    {
+      "folke/trouble.nvim",
+      event = "VeryLazy",
+      opts = {
+        modes = {
+          preview_float = {
+            mode = "diagnostics",
+            preview = {
+              type = "float",
+              relative = "editor",
+              border = "rounded",
+              title = "Trouble",
+              title_pos = "center",
+              position = { 0, -2 },
+              size = { width = 0.3, height = 0.3 },
+            },
+          },
+        },
+      },
+      keys = {
+        {
+          "<Leader>e",
+          "<cmd>Trouble preview_float toggle filter.buf=0<CR>",
+          desc = "Diagnostics (Trouble)",
+        },
+      },
+    },
+
     -- Lint
     {
       "dense-analysis/ale",
       event = "VeryLazy",
       config = function()
+        -- vim.g.ale_sign_error = "🔥"
+        -- vim.g.ale_sign_warning = "🧐"
+        -- vim.g.ale_sign_error = "e"
+        -- vim.g.ale_sign_warning = "w"
+        -- vim.g.ale_sign_info = "i"
         -- vim.g.ale_virtualtext_cursor = 'disabled'
         vim.g.ale_lint_on_enter = 0
         vim.g.ale_sign_column_always = 0
@@ -1000,7 +1125,7 @@ require("lazy").setup({
           sh = { "shellcheck" },
           lua = { "stylua" },
           markdown = { "textlint" },
-          json = { "jq", "jsonlint", "cspell" },
+          json = { "jq", "jsonlint" },
           yaml = { "yamllint", "actionlint" },
           go = { "gofmt", "gopls" },
           swift = { "swiftlint" },
@@ -1013,7 +1138,7 @@ require("lazy").setup({
           lua = { "stylua" },
           markdown = { "prettier" },
           json = { "prettier" },
-          yaml = { "dprint" },
+          yaml = { "prettier" },
           toml = { "dprint" },
           html = { "prettier" },
           css = { "prettier" },
@@ -1049,14 +1174,11 @@ require("lazy").setup({
         { "<C-t>h", "<Cmd>ToggleTerm direction=horizontal<CR>" },
       },
       opts = {
-        size = function(term)
-          return ({
-            horizontal = vim.o.lines * 0.3,
-            vertical = vim.o.columns * 0.35,
-          })[term.direction]
-        end,
         open_mapping = "<C-t>",
         direction = "float",
+        float_opts = {
+          winblend = 20,
+        },
       },
     },
 
@@ -1128,6 +1250,38 @@ require("lazy").setup({
       end,
     },
 
+    {
+      "stevearc/overseer.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope.nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+        local overseer = require("overseer")
+
+        -- Git
+        overseer.register_template({
+          name = "git pull origin main",
+          builder = function()
+            return {
+              cmd = "git",
+              args = { "pull", "origin", "main" },
+            }
+          end,
+        })
+
+        overseer.setup({
+          strategy = {
+            "toggleterm",
+            -- quit_on_exit = "success",
+            dap = false,
+          },
+        })
+        vim.api.nvim_set_keymap("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
+      end,
+    },
+
     -----------------------------------------------------------------------
     -- LSP
     -----------------------------------------------------------------------
@@ -1138,6 +1292,7 @@ require("lazy").setup({
       dependencies = {
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
 
         "hrsh7th/cmp-nvim-lsp",
       },
@@ -1151,10 +1306,31 @@ require("lazy").setup({
 
         local lspconfig = require("lspconfig")
         require("mason").setup()
-        require("mason-lspconfig").setup({
+        require("mason-lspconfig").setup()
+        require("mason-tool-installer").setup({
           ensure_installed = {
-            "typos_lsp",
+            -- LSP
+            "typos-lsp",
+            "gopls",
+            "lua-language-server",
+            "typescript-language-server",
+            "graphql-language-service-cli",
+
+            -- Formatter
+            "prettier",
+            "actionlint",
+            "goimports",
+            "ktlint",
+            "shellcheck",
+            "shfmt",
+            "swiftlint",
+            "yamlfmt",
+            "yamllint",
           },
+          auto_update = true,
+          run_on_start = true,
+          start_delay = 3000,
+          debounce_hours = 5,
         })
         require("mason-lspconfig").setup_handlers({
           function(server_name)
@@ -1170,6 +1346,12 @@ require("lazy").setup({
 
         -- typo-lsp
         lspconfig.typos_lsp.setup({
+          on_attach = function(client, bufnr)
+            local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
+            if filetype == "log" or filetype == "toggleterm" then
+              client.stop()
+            end
+          end,
           init_options = {
             config = "$HOME/.config/nvim/typos.toml",
             diagnosticSeverity = "Warning",
@@ -1225,8 +1407,8 @@ require("lazy").setup({
           },
           decorations = {
             statusline = {
-              app_version = false,
-              device = false,
+              device = false, -- {flutter_tools_decorations.app_version} lualine
+              app_version = false, -- {flutter_tools_decorations.device} lualine
               project_config = false,
             },
           },
@@ -1300,6 +1482,20 @@ require("lazy").setup({
       end,
     },
 
+    -- LSP のガベージコレクション
+    -- {
+    --   "zeioth/garbage-day.nvim",
+    --   dependencies = "neovim/nvim-lspconfig",
+    --   event = "VeryLazy",
+    --   opts = {
+    --     excluded_lsp_clients = { "copilot" },
+    --     aggressive_mode = false,
+    --     grace_period = 60 * 30, -- 30 minutes
+    --     wakeup_delay = 5000,
+    --     notifications = true,
+    --   },
+    -- },
+
     -- LSP cmp
     {
       "hrsh7th/nvim-cmp",
@@ -1318,10 +1514,11 @@ require("lazy").setup({
       event = { "InsertEnter", "LspAttach" },
       config = function()
         vim.diagnostic.config({
-          -- virtual_text はエラー以上のみ
-          virtual_text = {
-            severity = vim.diagnostic.severity.ERROR,
-          },
+          -- virtual_text は非表示
+          -- virtual_text = {
+          --   severity = vim.diagnostic.severity.ERROR,
+          -- },
+          virtual_text = false,
           -- signcolumn のアイコンを変える
           signs = {
             text = {
@@ -1558,5 +1755,4 @@ require("lazy").setup({
       end,
     },
   },
-  checker = { enabled = true },
 })

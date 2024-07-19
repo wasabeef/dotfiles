@@ -13,40 +13,58 @@ end)()
 -- Common settings
 local config = {
 
-  -- cyberdream.nvim
+  -- kanagawa.nvim
+  force_reverse_video_cursor = true,
   colors = {
-    foreground = "#ffffff",
-    background = "#16181a",
+    foreground = "#dcd7ba",
+    background = "#1f1f28",
 
-    cursor_bg = "#ffffff",
-    cursor_fg = "#16181a",
-    cursor_border = "#ffffff",
+    cursor_bg = "#c8c093",
+    cursor_fg = "#c8c093",
+    cursor_border = "#c8c093",
 
-    selection_fg = "#ffffff",
-    selection_bg = "#3c4048",
+    selection_fg = "#c8c093",
+    selection_bg = "#2d4f67",
 
-    scrollbar_thumb = "#16181a",
-    split = "#16181a",
+    scrollbar_thumb = "#16161d",
+    split = "#16161d",
 
-    ansi = { "#16181a", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
-    brights = { "#3c4048", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
-    indexed = { [16] = "#ffbd5e", [17] = "#ff6e5e" },
+    ansi = { "#090618", "#c34043", "#76946a", "#c0a36e", "#7e9cd8", "#957fb8", "#6a9589", "#c8c093" },
+    brights = { "#727169", "#e82424", "#98bb6c", "#e6c384", "#7fb4ca", "#938aa9", "#7aa89f", "#dcd7ba" },
+    indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
   },
 
   font = wezterm.font_with_fallback({
     "Cascadia Code",
     "JetBrains Mono",
   }),
+
+  animation_fps = 60,
+  max_fps = 60,
+  front_end = "WebGpu",
+  webgpu_power_preference = "HighPerformance",
+
+  -- window
+  integrated_title_button_style = "Windows",
+  window_decorations = "INTEGRATED_BUTTONS|RESIZE",
   window_background_opacity = 1,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0 },
+  window_frame = {
+    active_titlebar_bg = "#0F2536",
+    inactive_titlebar_bg = "#0F2536",
+  },
 
+  -- tab bar
   use_fancy_tab_bar = true,
-  hide_tab_bar_if_only_one_tab = true,
+  hide_tab_bar_if_only_one_tab = false,
 
-  front_end = "OpenGL",
+  -- cursor
+  default_cursor_style = "BlinkingBlock",
+  cursor_blink_ease_in = "Constant",
+  cursor_blink_ease_out = "Constant",
+  cursor_blink_rate = 500,
 
   leader = { key = "Space", mods = "SHIFT|CTRL" },
-
   keys = {
     -- Window
     { key = "n", mods = "SHIFT|CTRL", action = wezterm.action.ToggleFullScreen },
