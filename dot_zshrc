@@ -36,6 +36,14 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
 linux*)
+  # HomeBrew
+  export HOMEBREW="/home/linuxbrew/.linuxbrew/"
+  export HOMEBREW_REPOSITORY=$HOMEBREW
+  export HOMEBREW_CELLAR="$HOMEBREW/Cellar"
+  export PATH="$HOMEBREW/bin:$HOMEBREW/sbin${PATH+:$PATH}"
+  export MANPATH="$HOMEBREW/share/man${MANPATH+:$MANPATH}:"
+  export INFOPATH="$HOMEBREW/share/info:${INFOPATH:-}"
+
   # asdf
   . $HOME/.asdf/asdf.sh
   . ~/.asdf/plugins/java/set-java-home.zsh
