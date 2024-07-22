@@ -363,7 +363,7 @@ require("lazy").setup({
       opts = {
         theme = "auto",
         max = 50,
-        screensaver = 1000 * 60 * 30, -- 15 minutes
+        screensaver = 1000 * 60 * 15, -- 15 minutes
       },
     },
 
@@ -845,26 +845,47 @@ require("lazy").setup({
     -- コードハイライト
     {
       "nvim-treesitter/nvim-treesitter",
+      dependencies = {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+      },
       build = ":TSUpdate",
       event = "VeryLazy",
+      init = function(plugin)
+        -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
+        -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
+        -- no longer trigger the **nvim-treeitter** module to be loaded in time.
+        -- Luckily, the only thins that those plugins need are the custom queries, which we make available
+        -- during startup.
+        -- CODE FROM LazyVim (thanks folke!) https://github.com/LazyVim/LazyVim/commit/1e1b68d633d4bd4faa912ba5f49ab6b8601dc0c9
+        require("lazy.core.loader").add_to_rtp(plugin)
+        pcall(require, "nvim-treesitter.query_predicates")
+      end,
       config = function()
         require("nvim-treesitter.configs").setup({
           ensure_installed = {
-            "dart",
             "lua",
+            "javascript",
+            "vim",
+            "vimdoc",
+            "dart",
             "graphql",
             "bash",
             "swift",
             "kotlin",
             "go",
+            "printf",
+            "regex",
             "json",
             "json5",
+            "javascript",
             "typescript",
             "css",
             "html",
             "markdown",
             "markdown_inline",
             "yaml",
+            "toml",
+            "xml",
           },
           sync_install = false,
           auto_install = false,
@@ -881,6 +902,25 @@ require("lazy").setup({
               end
             end,
             additional_vim_regex_highlighting = false,
+          },
+          textobjects = {
+            select = {
+              enable = true,
+              lookahead = true,
+              keymaps = {
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+                ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
+              },
+              selection_modes = {
+                ["@parameter.outer"] = "v", -- charwise
+                ["@function.outer"] = "V", -- linewise
+                ["@class.outer"] = "<c-v>", -- blockwise
+              },
+              include_surrounding_whitespace = true,
+            },
           },
         })
       end,
@@ -1301,7 +1341,9 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        local capabilities = require("cmp_nvim_lsp").default_capabilities({
+          textDocument = { completion = { completionItem = { snippetSupport = false } } },
+        })
 
         local on_attach = function(_, bufnr)
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
