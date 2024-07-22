@@ -1316,6 +1316,15 @@ require("lazy").setup({
             }
           end,
         })
+        overseer.register_template({
+          name = "chezmoi re-add",
+          builder = function()
+            return {
+              cmd = "chezmoi",
+              args = { "re-add" },
+            }
+          end,
+        })
 
         overseer.setup({
           strategy = {
