@@ -501,13 +501,13 @@ require("lazy").setup({
       config = function()
         local neoscroll = require("neoscroll")
         neoscroll.setup({
-          mappings = { -- Keys to be mapped to their corresponding default scrolling animation
+          mappings = {
             "<C-u>",
             "<C-d>",
             "<C-b>",
             "<C-f>",
             "<C-y>",
-            "<C-e>",
+            -- "<C-e>", -- use simeji/winresizer
             "zt",
             "zz",
             "zb",
@@ -1394,7 +1394,7 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         local capabilities = require("cmp_nvim_lsp").default_capabilities({
-          textDocument = { completion = { completionItem = { snippetSupport = false } } },
+          -- textDocument = { completion = { completionItem = { snippetSupport = false } } },
         })
 
         local on_attach = function(_, bufnr)
@@ -1560,7 +1560,7 @@ require("lazy").setup({
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
             end,
             capabilities = require("cmp_nvim_lsp").default_capabilities({
-              textDocument = { completion = { completionItem = { snippetSupport = false } } },
+              -- textDocument = { completion = { completionItem = { snippetSupport = false } } },
             }),
             settings = {
               showTodos = true,
