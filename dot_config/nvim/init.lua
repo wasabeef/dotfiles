@@ -363,7 +363,7 @@ require("lazy").setup({
       opts = {
         theme = "auto",
         max = 50,
-        screensaver = 1000 * 60 * 15, -- 15 minutes
+        screensaver = 1000 * 60 * 30, -- 30 minutes
       },
     },
 
@@ -1570,7 +1570,7 @@ require("lazy").setup({
       opts = {
         excluded_lsp_clients = { "copilot", "typos_lsp", "dartls" },
         aggressive_mode = false,
-        grace_period = 60 * 15, -- 15 minutes
+        grace_period = 60 * 30, -- 30 minutes
         wakeup_delay = 5000,
         notifications = true,
       },
