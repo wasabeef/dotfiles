@@ -1308,6 +1308,16 @@ require("lazy").setup({
 
         -- Git
         overseer.register_template({
+          name = "tig status",
+          builder = function()
+            return {
+              cmd = "tig",
+              args = { "status" },
+            }
+          end,
+        })
+
+        overseer.register_template({
           name = "git pull origin main",
           builder = function()
             return {
