@@ -147,6 +147,9 @@ if [[ -x $(which sheldon) ]]; then
   eval "$(sheldon source)"
 fi
 
+# fzf
+source <(fzf --zsh)
+
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
