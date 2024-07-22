@@ -52,8 +52,8 @@ vim.o.laststatus = 3
 -- ファイル名補完
 vim.o.wildmode = "list:longest"
 -- 空白文字の表示
-vim.o.list = true
-vim.o.listchars = "tab:▸-"
+-- vim.o.list = true
+-- vim.o.listchars = "tab:▸-"
 -- タブ文字をスペースにする
 vim.o.expandtab = true
 vim.o.tabstop = 2
@@ -682,13 +682,14 @@ require("lazy").setup({
     -- 空白文字ハイライト
     {
       "shellRaining/hlchunk.nvim",
-      event = { "BufRead", "BufNewFile" },
+      -- event = { "BufRead", "BufNewFile" },
+      event = "VeryLazy",
       opts = {
         chunk = {
           enable = true,
           use_treesitter = true,
         },
-        indent = { enable = false },
+        indent = { enable = true },
       },
     },
 
@@ -1154,12 +1155,13 @@ require("lazy").setup({
       "dense-analysis/ale",
       event = "VeryLazy",
       config = function()
+        -- vim.g.ale_echo_msg_error_str = "Err"
         -- vim.g.ale_sign_error = "🔥"
-        -- vim.g.ale_sign_warning = "🧐"
-        -- vim.g.ale_sign_error = "e"
-        -- vim.g.ale_sign_warning = "w"
-        -- vim.g.ale_sign_info = "i"
-        -- vim.g.ale_virtualtext_cursor = 'disabled'
+        -- vim.g.ale_echo_msg_warning_str = "Warn"
+        -- vim.g.ale_sign_warning = "‼️"
+        -- vim.g.ale_echo_msg_info_str = "Info"
+        -- vim.g.ale_sign_info = "🤔"
+        vim.g.ale_virtualtext_cursor = "disabled"
         vim.g.ale_lint_on_enter = 0
         vim.g.ale_sign_column_always = 0
         vim.g.ale_set_highlights = 0
@@ -1538,7 +1540,9 @@ require("lazy").setup({
               )
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
             end,
-            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            capabilities = require("cmp_nvim_lsp").default_capabilities({
+              textDocument = { completion = { completionItem = { snippetSupport = false } } },
+            }),
             settings = {
               showTodos = true,
               completeFunctionCalls = true,
