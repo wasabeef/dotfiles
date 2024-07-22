@@ -39,8 +39,9 @@ local config = {
     "JetBrains Mono",
   }),
 
-  animation_fps = 60,
-  max_fps = 60,
+  animation_fps = 120,
+  max_fps = 120,
+  prefer_egl = true,
   front_end = "WebGpu",
   webgpu_power_preference = "HighPerformance",
 

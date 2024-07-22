@@ -455,7 +455,23 @@ require("lazy").setup({
             },
             lualine_y = {},
             lualine_z = {
-              "copilot",
+              {
+                "copilot",
+                symbols = {
+                  -- spinners = require("copilot-lualine.spinners").moon
+                  -- https://github.com/AndreM222/copilot-lualine/blob/main/lua/copilot-lualine/spinners.lua
+                  spinners = {
+                    "🌒",
+                    "🌓",
+                    "🌔",
+                    "🌕",
+                    "🌖",
+                    "🌗",
+                    "🌘",
+                  },
+                },
+                -- separator = { left = "", right = "" },
+              },
               { "filetype", separator = { left = "", right = "" }, right_padding = 2, left_padding = 2 },
             },
           },
@@ -707,6 +723,13 @@ require("lazy").setup({
         -- all the sub-options of filetypes apply to buftypes
         buftypes = {},
       },
+    },
+
+    -- ログに色付け
+    {
+      "mtdl9/vim-log-highlighting",
+      event = "VeryLazy",
+      ft = "log",
     },
 
     -- ファイルツリー
@@ -1303,6 +1326,33 @@ require("lazy").setup({
       end,
     },
 
+    -- キー入力
+    {
+      "NStefan002/screenkey.nvim",
+      event = "VeryLazy",
+      config = function()
+        require("screenkey").setup({
+          win_opts = {
+            title = "Keys",
+            width = 40,
+            height = 1,
+          },
+          disable = {
+            filetypes = {
+              "alpha",
+              "log",
+              "toggleterm",
+            },
+          },
+        })
+        vim.api.nvim_create_autocmd("BufRead", {
+          group = vim.api.nvim_create_augroup("AutostartScreenkey", {}),
+          command = "Screenkey toggle",
+          desc = "Autostart Screenkey on BufRead",
+        })
+      end,
+    },
+
     -----------------------------------------------------------------------
     -- LSP
     -----------------------------------------------------------------------
@@ -1511,7 +1561,7 @@ require("lazy").setup({
       dependencies = "neovim/nvim-lspconfig",
       event = "VeryLazy",
       opts = {
-        excluded_lsp_clients = { "copilot", "typo_lsp", "dartls" },
+        excluded_lsp_clients = { "copilot", "typos_lsp", "dartls" },
         aggressive_mode = false,
         grace_period = 60 * 15, -- 15 minutes
         wakeup_delay = 5000,
@@ -1650,7 +1700,6 @@ require("lazy").setup({
           performance = {
             max_view_entries = 30,
           },
-
           experimental = {
             native_menu = false,
             ghost_text = true,
