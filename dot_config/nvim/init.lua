@@ -374,11 +374,11 @@ require("lazy").setup({
         "linrongbin16/lsp-progress.nvim",
         "AndreM222/copilot-lualine",
       },
-      event = "VeryLazy",
+      event = "VimEnter",
       config = function()
         require("lsp-progress").setup()
         local lualine = require("lualine")
-        local colors = {
+        local theme_colors = {
           blue = "#80a0ff",
           cyan = "#79dac8",
           black = "#080808",
@@ -391,31 +391,96 @@ require("lazy").setup({
 
         local bubbles_theme = {
           normal = {
-            a = { fg = colors.black, bg = colors.caloriemate, gui = 'bold'},
-            b = { fg = colors.white, bg = colors.grey },
-            c = { fg = colors.white },
+            a = { fg = theme_colors.white, bg = theme_colors.grey },
+            b = { fg = theme_colors.black, bg = theme_colors.caloriemate, gui = "bold" },
+            c = { fg = theme_colors.white },
+            x = { fg = theme_colors.white },
+            y = { fg = theme_colors.black, bg = theme_colors.caloriemate },
+            z = { fg = theme_colors.white, bg = theme_colors.grey, gui = "bold" },
           },
 
-          insert = { a = { fg = colors.black, bg = colors.blue } },
-          visual = { a = { fg = colors.black, bg = colors.cyan } },
-          replace = { a = { fg = colors.black, bg = colors.red } },
+          -- insert = { a = { fg = colors.black, bg = colors.blue } },
+          -- visual = { a = { fg = colors.black, bg = colors.cyan } },
+          -- replace = { a = { fg = colors.black, bg = colors.red } },
 
           inactive = {
-            a = { fg = colors.white, bg = colors.black },
-            b = { fg = colors.white, bg = colors.black },
-            c = { fg = colors.white },
+            a = { fg = theme_colors.white, bg = theme_colors.black },
+            b = { fg = theme_colors.white, bg = theme_colors.black },
+            c = { fg = theme_colors.white },
           },
         }
 
         local config = {
           options = {
+            disabled_filetypes = {
+              statusline = { "alpha" },
+            },
             theme = bubbles_theme,
             component_separators = "",
-            section_separators = { right = "", left = "" },
+            section_separators = { right = "", left = "" },
           },
           sections = {
-            lualine_a = { { "branch", separator = { left = "" }, padding = { left = 1, right = 1 } } },
-            lualine_b = { { "filename", path = 1 } },
+            lualine_a = {
+              {
+                function()
+                  return "󰩃"
+                end,
+                separator = { left = "" },
+                padding = { left = 1, right = 3 },
+                color = function()
+                  local evil_colors = {
+                    bg = "#1c1f24",
+                    fg = "#abb2bf",
+                    yellow = "#d19a66",
+                    cyan = "#2aa198",
+                    darkblue = "#1c1f24",
+                    green = "#98c379",
+                    orange = "#e06c75",
+                    violet = "#a9a1e1",
+                    magenta = "#c678dd",
+                    blue = "#61afef",
+                    red = "#e06c75",
+                  }
+
+                  -- auto change color according to neovims mode
+                  local mode_color = {
+                    n = evil_colors.blue,
+                    i = evil_colors.green,
+                    v = evil_colors.red,
+                    [""] = evil_colors.red,
+                    V = evil_colors.red,
+                    c = evil_colors.magenta,
+                    no = evil_colors.blue,
+                    s = evil_colors.orange,
+                    S = evil_colors.orange,
+                    [""] = evil_colors.orange,
+                    ic = evil_colors.yellow,
+                    R = evil_colors.violet,
+                    Rv = evil_colors.violet,
+                    cv = evil_colors.blue,
+                    ce = evil_colors.blue,
+                    r = evil_colors.cyan,
+                    rm = evil_colors.cyan,
+                    ["r?"] = evil_colors.cyan,
+                    ["!"] = evil_colors.blue,
+                    t = evil_colors.blue,
+                  }
+                  return { fg = mode_color[vim.fn.mode()] }
+                end,
+              },
+            },
+            lualine_b = {
+              {
+                "branch",
+                icon = " ",
+                padding = { left = 1, right = 1 },
+              },
+              {
+                "filename",
+                path = 1, -- 1: Relative path
+                separator = { right = "" },
+              },
+            },
             lualine_c = {
               "'%='",
               {
@@ -453,34 +518,44 @@ require("lazy").setup({
                 })
               end,
             },
-            lualine_y = {},
-            lualine_z = {
+            lualine_y = {
               {
                 "copilot",
                 symbols = {
                   -- spinners = require("copilot-lualine.spinners").moon
                   -- https://github.com/AndreM222/copilot-lualine/blob/main/lua/copilot-lualine/spinners.lua
                   spinners = {
-                    "🌒",
-                    "🌓",
-                    "🌔",
-                    "🌕",
-                    "🌖",
-                    "🌗",
-                    "🌘",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
+                    " ",
                   },
                 },
-                -- separator = { left = "", right = "" },
+                separator = { left = "" },
+                padding = { left = 1, right = 2 },
               },
+            },
+            lualine_z = {
               {
                 "filetype",
                 icon_only = true,
+                padding = { left = 2, right = 1 },
               },
               {
                 "filetype",
                 icons_enabled = false,
-                separator = { left = "", right = "" },
-                padding = { left = 0, right = 1 },
+                separator = { right = "" },
+                padding = { left = 0, right = 1.5 },
               },
             },
           },
@@ -737,9 +812,10 @@ require("lazy").setup({
 
     -- ログに色付け
     {
-      "mtdl9/vim-log-highlighting",
+      "fei6409/log-highlight.nvim",
       event = "VeryLazy",
       ft = "log",
+      config = true,
     },
 
     -- ファイルツリー
