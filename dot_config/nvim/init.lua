@@ -1332,18 +1332,21 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("screenkey").setup({
+          disable = {
+            filetypes = {
+              "alpha",
+              "log",
+            },
+          },
           win_opts = {
             title = "Keys",
             width = 40,
             height = 1,
           },
-          disable = {
-            filetypes = {
-              "alpha",
-              "log",
-              "toggleterm",
-            },
-          },
+          display_infront = { "Telescope*", "toggleterm" },
+          keys = {
+            ["<leader>"] = "<Leader>",
+          }
         })
         vim.api.nvim_create_autocmd("BufRead", {
           group = vim.api.nvim_create_augroup("AutostartScreenkey", {}),
