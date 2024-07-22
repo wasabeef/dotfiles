@@ -261,7 +261,7 @@ require("lazy").setup({
 
     -- アイコン
     {
-      "nvim-tree/nvim-web-devicons",
+      "DaikyXendo/nvim-material-icon",
       event = "VimEnter",
     },
 
@@ -391,7 +391,7 @@ require("lazy").setup({
 
         local bubbles_theme = {
           normal = {
-            a = { fg = colors.black, bg = colors.caloriemate },
+            a = { fg = colors.black, bg = colors.caloriemate, gui = 'bold'},
             b = { fg = colors.white, bg = colors.grey },
             c = { fg = colors.white },
           },
@@ -414,7 +414,7 @@ require("lazy").setup({
             section_separators = { right = "", left = "" },
           },
           sections = {
-            lualine_a = { { "branch", separator = { left = "" }, right_padding = 2 } },
+            lualine_a = { { "branch", separator = { left = "" }, padding = { left = 1, right = 1 } } },
             lualine_b = { { "filename", path = 1 } },
             lualine_c = {
               "'%='",
@@ -472,7 +472,16 @@ require("lazy").setup({
                 },
                 -- separator = { left = "", right = "" },
               },
-              { "filetype", separator = { left = "", right = "" }, right_padding = 2, left_padding = 2 },
+              {
+                "filetype",
+                icon_only = true,
+              },
+              {
+                "filetype",
+                icons_enabled = false,
+                separator = { left = "", right = "" },
+                padding = { left = 0, right = 1 },
+              },
             },
           },
           inactive_sections = {
@@ -517,16 +526,16 @@ require("lazy").setup({
         })
         local keymap = {
           ["<C-u>"] = function()
-            neoscroll.ctrl_u({ duration = 60 })
+            neoscroll.ctrl_u({ duration = 50 })
           end,
           ["<C-d>"] = function()
-            neoscroll.ctrl_d({ duration = 60 })
+            neoscroll.ctrl_d({ duration = 50 })
           end,
           ["<C-b>"] = function()
-            neoscroll.ctrl_b({ duration = 140 })
+            neoscroll.ctrl_b({ duration = 120 })
           end,
           ["<C-f>"] = function()
-            neoscroll.ctrl_f({ duration = 140 })
+            neoscroll.ctrl_f({ duration = 120 })
           end,
         }
 
@@ -1356,7 +1365,6 @@ require("lazy").setup({
           disable = {
             filetypes = {
               "alpha",
-              "log",
             },
           },
           win_opts = {

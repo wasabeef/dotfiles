@@ -36,6 +36,7 @@ local config = {
 
   font = wezterm.font_with_fallback({
     "Cascadia Code",
+    "Cascadia Mono",
     "JetBrains Mono",
   }),
 
