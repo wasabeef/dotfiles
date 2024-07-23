@@ -53,7 +53,7 @@ vim.o.laststatus = 3
 vim.o.wildmode = "list:longest"
 -- 空白文字の表示
 -- vim.o.list = true
--- vim.o.listchars = "tab:▸-"
+-- vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
 -- タブ文字をスペースにする
 vim.o.expandtab = true
 vim.o.tabstop = 2
@@ -80,6 +80,8 @@ vim.o.signcolumn = "yes"
 vim.o.colorcolumn = "80"
 -- True Color
 vim.o.termguicolors = true
+-- コマンドラインの高さを非表示
+vim.o.cmdheight = 0
 
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
@@ -379,20 +381,20 @@ require("lazy").setup({
         require("lsp-progress").setup()
         local lualine = require("lualine")
         local theme_colors = {
-          blue = "#80a0ff",
+          blue = "#193b73",
           cyan = "#79dac8",
           black = "#080808",
           white = "#c6c6c6",
           red = "#ff5189",
           violet = "#d183e8",
           grey = "#303030",
-          caloriemate = "#fabe00",
+          caloriemate = "#fbc114",
         }
 
         local bubbles_theme = {
           normal = {
             a = { fg = theme_colors.white, bg = theme_colors.grey },
-            b = { fg = theme_colors.black, bg = theme_colors.caloriemate, gui = "bold" },
+            b = { fg = theme_colors.white, bg = theme_colors.blue, gui = "bold" },
             c = { fg = theme_colors.white },
             x = { fg = theme_colors.white },
             y = { fg = theme_colors.black, bg = theme_colors.caloriemate },
@@ -478,6 +480,7 @@ require("lazy").setup({
               {
                 "filename",
                 path = 1, -- 1: Relative path
+                file_status = false,
                 separator = { right = "" },
               },
             },
@@ -628,6 +631,23 @@ require("lazy").setup({
       config = function()
         require("scrollbar").setup({
           handle = { color = "#006df2" },
+          excluded_filetypes = {
+            "dropbar_menu",
+          },
+        })
+      end,
+    },
+
+    -- winbar
+    {
+      "Bekaboo/dropbar.nvim",
+      dependencies = {
+        "nvim-telescope/telescope-fzf-native.nvim",
+      },
+      event = "VeryLazy",
+      config = function()
+        require("dropbar").setup({
+          background = false,
         })
       end,
     },
@@ -654,12 +674,6 @@ require("lazy").setup({
     -- EditorConfig
     {
       "editorconfig/editorconfig-vim",
-      event = "VeryLazy",
-    },
-
-    -- 引数の入れ替え g> g< gs
-    {
-      "machakann/vim-swap",
       event = "VeryLazy",
     },
 
@@ -729,9 +743,8 @@ require("lazy").setup({
           delay = 100,
           filetype_overrides = {},
           filetypes_denylist = {
-            "dirbuf",
-            "dirvish",
-            "fugitive",
+            "dropbar_menu",
+            "NvimTree",
           },
           filetypes_allowlist = {},
           modes_denylist = {},
@@ -759,22 +772,71 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("yankbank").setup()
-        vim.api.nvim_set_keymap("i", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
       end,
     },
 
-    -- 空白文字ハイライト
+    -- 引数の入れ替え g> g< gs gsl gsh gsk gsj
     {
-      "shellRaining/hlchunk.nvim",
-      -- event = { "BufRead", "BufNewFile" },
+      "machakann/vim-swap",
       event = "VeryLazy",
-      opts = {
-        chunk = {
-          enable = true,
-          use_treesitter = true,
-        },
-        indent = { enable = true },
-      },
+    },
+
+    -- テキストの分割と結合
+    {
+      "echasnovski/mini.splitjoin",
+      event = { "BufRead", "BufNewFile" },
+      config = function()
+        require("mini.splitjoin").setup({
+          mappings = {
+            toggle = "gss",
+            split = "",
+            join = "",
+          },
+        })
+      end,
+    },
+
+    -- インデント表示、Textobjects
+    {
+      "echasnovski/mini.indentscope",
+      event = { "BufRead", "BufNewFile" },
+      init = function()
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = {
+            "help",
+            "alpha",
+            "Trouble",
+            "lazy",
+            "mason",
+            "notify",
+            "toggleterm",
+            "lazyterm",
+          },
+          callback = function()
+            vim.b.miniindentscope_disable = true
+          end,
+        })
+      end,
+      config = function()
+        require("mini.indentscope").setup({
+          options = {
+            try_as_border = true,
+            indent_at_cursor = true,
+          },
+          draw = {
+            delay = 300,
+            -- animation = require("mini.indentscope").gen_animation.none(),
+          },
+          mappings = {
+            object_scope = "ii",
+            object_scope_with_border = "ai",
+            goto_top = "[i",
+            goto_bottom = "]i",
+          },
+          -- symbol = "󰍳",
+        })
+      end,
     },
 
     -- カラーハイライト
@@ -1034,16 +1096,16 @@ require("lazy").setup({
         )
         vim.api.nvim_set_keymap(
           "n",
-          "<C-p>",
-          "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
-          { noremap = true, silent = true }
-        )
-        vim.api.nvim_set_keymap(
-          "n",
           "<C-g>",
           "<cmd>lua require('telescope.builtin').live_grep()<CR>",
           { noremap = true, silent = true }
         )
+        -- vim.api.nvim_set_keymap(
+        --   "n",
+        --   "<C-p>",
+        --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
+        --   { noremap = true, silent = true }
+        -- )
         -- vim.api.nvim_set_keymap(
         --   "n",
         --   "<C-x>",
@@ -1058,6 +1120,7 @@ require("lazy").setup({
         -- )
         vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
         vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
+        vim.api.nvim_set_keymap("n", ";", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
 
         local telescope = require("telescope")
         telescope.setup({
@@ -1083,6 +1146,9 @@ require("lazy").setup({
               "!**/.git/*",
             },
             mappings = {
+              n = {
+                ["<C-q>"] = "close",
+              },
               i = {
                 ["<C-q>"] = "close",
                 ["<Tab>"] = function(prompt_bufnr)
@@ -1340,7 +1406,7 @@ require("lazy").setup({
       },
       event = { "BufReadPre", "BufNewFile" },
       opts = {
-        order_buffers = "lastused",
+        -- order_buffers = "lastused",
         width = 0.4,
         height = 0.3,
       },
@@ -1353,34 +1419,166 @@ require("lazy").setup({
         },
       },
     },
-
     {
-      "akinsho/bufferline.nvim",
+      "willothy/nvim-cokeline",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
       event = { "BufReadPre", "BufNewFile" },
+      keys = {
+        { "[[", "<Plug>(cokeline-focus-prev)", { silent = true, desc = "Prev Buffer" } },
+        { "]]", "<Plug>(cokeline-focus-next)", { silent = true, desc = "Next Buffer" } },
+        {
+          "\\][",
+          ":lua for _, buf in ipairs(vim.api.nvim_list_bufs()) do if buf ~= vim.api.nvim_get_current_buf() then vim.api.nvim_buf_delete(buf, {force = true}) end end<CR>",
+          { silent = true, desc = "Close Other Buffers" },
+        },
+        { "\\\\", "<cmd>bd<CR>", { silent = true, desc = "Close Current Buffer" } },
+      },
       config = function()
-        require("bufferline").setup({
-          options = {
-            separator_style = "slant",
-            numbers = "ordinal",
-            diagnostics = "nvim_lsp",
-            max_name_length = 25,
-            tab_size = 25,
-            modified_icon = "󰆓",
-            close_icon = "",
-            left_trunc_marker = "",
-            right_trunc_marker = "",
+        local get_hex = require("cokeline.hlgroups").get_hl_attr
+        local mappings = require("cokeline/mappings")
+
+        local comments_fg = get_hex("Comment", "fg")
+        local errors_fg = get_hex("DiagnosticError", "fg")
+        local warnings_fg = get_hex("DiagnosticWarn", "fg")
+
+        local red = vim.g.terminal_color_1
+        -- local green = vim.g.terminal_color_8
+        local yellow = vim.g.terminal_color_3
+
+        local components = {
+          space = { text = " ", truncation = { priority = 1 } },
+
+          two_spaces = { text = "  ", truncation = { priority = 1 } },
+
+          separator = {
+            text = function(buffer)
+              return buffer.index ~= 1 and "▏" or ""
+            end,
+            truncation = { priority = 1 },
+          },
+
+          devicon = {
+            text = function(buffer)
+              return (mappings.is_picking_focus() or mappings.is_picking_close()) and buffer.pick_letter .. " "
+                or buffer.devicon.icon
+            end,
+            fg = function(buffer)
+              return (mappings.is_picking_focus() and yellow)
+                or (mappings.is_picking_close() and red)
+                or buffer.devicon.color
+            end,
+            style = function(_)
+              return (mappings.is_picking_focus() or mappings.is_picking_close()) and "italic,bold" or nil
+            end,
+            truncation = { priority = 1 },
+          },
+
+          index = {
+            text = function(buffer)
+              return buffer.index .. ": "
+            end,
+            truncation = { priority = 1 },
+          },
+
+          unique_prefix = {
+            text = function(buffer)
+              return buffer.unique_prefix
+            end,
+            fg = comments_fg,
+            style = "italic",
+            truncation = { priority = 3, direction = "left" },
+          },
+
+          filename = {
+            text = function(buffer)
+              return buffer.filename
+            end,
+            style = function(buffer)
+              return ((buffer.is_focused and buffer.diagnostics.errors ~= 0) and "bold,underline")
+                or (buffer.is_focused and "bold")
+                or (buffer.diagnostics.errors ~= 0 and "underline")
+                or nil
+            end,
+            truncation = { priority = 2, direction = "left" },
+          },
+
+          diagnostics = {
+            text = function(buffer)
+              return (buffer.diagnostics.errors ~= 0 and "  " .. buffer.diagnostics.errors)
+                or (buffer.diagnostics.warnings ~= 0 and "  " .. buffer.diagnostics.warnings)
+                or ""
+            end,
+            fg = function(buffer)
+              return (buffer.diagnostics.errors ~= 0 and errors_fg)
+                or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+                or nil
+            end,
+            truncation = { priority = 1 },
+          },
+
+          close_or_unsaved = {
+            text = function(buffer)
+              return buffer.is_modified and "󰆓 " or " "
+            end,
+            fg = function(buffer)
+              return buffer.is_modified and warnings_fg or nil
+            end,
+            delete_buffer_on_left_click = true,
+            truncation = { priority = 1 },
+          },
+        }
+
+        require("cokeline").setup({
+          default_hl = {
+            fg = function(buffer)
+              return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
+            end,
+            bg = "NONE",
+          },
+          components = {
+            components.space,
+            components.space,
+            components.devicon,
+            components.space,
+            components.unique_prefix,
+            components.filename,
+            components.diagnostics,
+            components.space,
+            components.close_or_unsaved,
+            components.space,
+          },
+
+          buffers = {
+            filter_visible = function(buffer)
+              return buffer.type ~= "terminal" and buffer.type ~= "quickfix" and buffer.filename ~= "[No Name]"
+            end,
+            filter_valid = function(buffer)
+              return buffer.type ~= "terminal" and buffer.type ~= "quickfix" and buffer.filename ~= "[No Name]"
+            end,
+          },
+
+          sidebar = {
+            filetype = { "NvimTree" },
+            components = {
+              {
+                text = function(buf)
+                  return buf.filetype
+                end,
+                fg = yellow,
+                bg = function()
+                  return get_hex("NvimTreeNormal", "bg")
+                end,
+                bold = true,
+              },
+            },
           },
         })
-        vim.api.nvim_set_keymap("n", "[[", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "]]", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "][", ":BufferLinePickClose<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\][", ":BufferLineCloseLeft<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\[]", ":BufferLineCloseRight<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\\\", ":bd<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", "\\\\ ", ":bp<CR>", { noremap = true, silent = true })
       end,
     },
 
+    -- タスクショートカット
     {
       "stevearc/overseer.nvim",
       dependencies = {
