@@ -383,7 +383,7 @@ require("lazy").setup({
         local theme_colors = {
           blue = "#193b73",
           cyan = "#79dac8",
-          black = "#080808",
+          black = "#0a0a06",
           white = "#c6c6c6",
           red = "#ff5189",
           violet = "#d183e8",
@@ -1443,6 +1443,12 @@ require("lazy").setup({
         local errors_fg = get_hex("DiagnosticError", "fg")
         local warnings_fg = get_hex("DiagnosticWarn", "fg")
 
+        local active_fg = get_hex("Normal", "fg")
+        -- local active_bg = get_hex("ColorColumn", "bg")
+        local active_bg = "#281709"
+        local inactive_fg = get_hex("Comment", "fg")
+        local inactive_bg = get_hex("Normal", "bg")
+
         local red = vim.g.terminal_color_1
         -- local green = vim.g.terminal_color_8
         local yellow = vim.g.terminal_color_3
@@ -1461,21 +1467,17 @@ require("lazy").setup({
           separator_left = {
             text = "",
             fg = function(buffer)
-              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+              return buffer.is_focused and active_bg or inactive_bg
             end,
-            bg = function(buffer)
-              return buffer.is_focused and get_hex("Normal", "bg") or get_hex("Normal", "bg")
-            end,
+            bg = inactive_bg,
           },
 
           separator_right = {
             text = "",
             fg = function(buffer)
-              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+              return buffer.is_focused and active_bg or inactive_bg
             end,
-            bg = function(buffer)
-              return buffer.is_focused and get_hex("Normal", "bg") or get_hex("Normal", "bg")
-            end,
+            bg = inactive_bg,
           },
 
           devicon = {
@@ -1552,10 +1554,10 @@ require("lazy").setup({
         require("cokeline").setup({
           default_hl = {
             fg = function(buffer)
-              return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
+              return buffer.is_focused and active_fg or inactive_fg
             end,
             bg = function(buffer)
-              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+              return buffer.is_focused and active_bg or inactive_bg
             end,
           },
           components = {
