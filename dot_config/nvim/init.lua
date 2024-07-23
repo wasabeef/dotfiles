@@ -1448,15 +1448,34 @@ require("lazy").setup({
         local yellow = vim.g.terminal_color_3
 
         local components = {
+          margin = {
+            text = " ",
+            bg = get_hex("Normal", "bg"),
+            truncation = { priority = 1 },
+          },
+
           space = { text = " ", truncation = { priority = 1 } },
 
           two_spaces = { text = "  ", truncation = { priority = 1 } },
 
-          separator = {
-            text = function(buffer)
-              return buffer.index ~= 1 and "▏" or ""
+          separator_left = {
+            text = "",
+            fg = function(buffer)
+              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
             end,
-            truncation = { priority = 1 },
+            bg = function(buffer)
+              return buffer.is_focused and get_hex("Normal", "bg") or get_hex("Normal", "bg")
+            end,
+          },
+
+          separator_right = {
+            text = "",
+            fg = function(buffer)
+              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+            end,
+            bg = function(buffer)
+              return buffer.is_focused and get_hex("Normal", "bg") or get_hex("Normal", "bg")
+            end,
           },
 
           devicon = {
@@ -1535,9 +1554,13 @@ require("lazy").setup({
             fg = function(buffer)
               return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
             end,
-            bg = "NONE",
+            bg = function(buffer)
+              return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+            end,
           },
           components = {
+            components.margin,
+            components.separator_left,
             components.space,
             components.space,
             components.devicon,
@@ -1548,6 +1571,7 @@ require("lazy").setup({
             components.space,
             components.close_or_unsaved,
             components.space,
+            components.separator_right,
           },
 
           buffers = {
