@@ -201,7 +201,7 @@ vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
 vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
 vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
 vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
-vim.keymap.set("n", "<Leader>tt", vim.lsp.buf.type_definition, bufopts)
+vim.keymap.set("n", "<Leader>T", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
 -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
 -- vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts) -- use trouble
@@ -679,6 +679,21 @@ require("lazy").setup({
       config = true,
     },
 
+    -- html タグペア
+    {
+      "windwp/nvim-ts-autotag",
+      event = "VeryLazy",
+      config = function()
+        require("nvim-ts-autotag").setup({
+          opts = {
+            enable_close = true, -- Auto close tags
+            enable_rename = true, -- Auto rename pairs of tags
+            enable_close_on_slash = false, -- Auto close on trailing </
+          },
+        })
+      end,
+    },
+
     -- EditorConfig
     {
       "editorconfig/editorconfig-vim",
@@ -700,9 +715,9 @@ require("lazy").setup({
       event = "VeryLazy",
       keys = {
         {
+          mode = { "n" },
           "<C-/>",
           "<cmd>GrugFar<CR>",
-          mode = { "n" },
         },
       },
       config = function()
@@ -710,6 +725,29 @@ require("lazy").setup({
           windowCreationCommand = "rightbelow 120vnew",
         })
       end,
+    },
+
+    -- w, e, b 移動の最適化
+    {
+      "chrisgrieser/nvim-spider",
+      event = "VeryLazy",
+      keys = {
+        {
+          mode = { "n", "o", "x" },
+          "w",
+          "<cmd>lua require('spider').motion('w')<CR>",
+        },
+        {
+          mode = { "n", "o", "x" },
+          "e",
+          "<cmd>lua require('spider').motion('e')<CR>",
+        },
+        {
+          mode = { "n", "o", "x" },
+          "b",
+          "<cmd>lua require('spider').motion('b')<CR>",
+        },
+      },
     },
 
     -- カーソルジャンプ
@@ -801,23 +839,6 @@ require("lazy").setup({
     {
       "echasnovski/mini.indentscope",
       event = { "BufRead", "BufNewFile" },
-      init = function()
-        vim.api.nvim_create_autocmd("FileType", {
-          pattern = {
-            "help",
-            "alpha",
-            "Trouble",
-            "lazy",
-            "mason",
-            "notify",
-            "toggleterm",
-            "lazyterm",
-          },
-          callback = function()
-            vim.b.miniindentscope_disable = true
-          end,
-        })
-      end,
       config = function()
         require("mini.indentscope").setup({
           options = {
@@ -835,6 +856,22 @@ require("lazy").setup({
             goto_bottom = "]i",
           },
           -- symbol = "󰍳",
+        })
+
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = {
+            "help",
+            "alpha",
+            "Trouble",
+            "lazy",
+            "mason",
+            "notify",
+            "toggleterm",
+            "lazyterm",
+          },
+          callback = function()
+            vim.b.miniindentscope_disable = true
+          end,
         })
       end,
     },
@@ -870,6 +907,30 @@ require("lazy").setup({
         -- all the sub-options of filetypes apply to buftypes
         buftypes = {},
       },
+    },
+
+    {
+      "potamides/pantran.nvim",
+      event = "VeryLazy",
+      config = function()
+        local pantran = require("pantran")
+        pantran.setup({
+          default_engine = "google",
+          engines = {
+            google = {
+              fallback = {
+                default_source = "auto",
+                default_target = "ja",
+              },
+            },
+          },
+        })
+        local opts = { noremap = true, silent = true, expr = true }
+        vim.keymap.set("n", "<Leader>g", function()
+          return pantran.motion_translate() .. "_"
+        end, opts)
+        vim.keymap.set("x", "<Leader>g", pantran.motion_translate, opts)
+      end,
     },
 
     -- ログに色付け
