@@ -702,28 +702,20 @@ require("lazy").setup({
 
     -- 置換
     {
-      "chrisgrieser/nvim-rip-substitute",
+      "MagicDuck/grug-far.nvim",
       event = "VeryLazy",
       keys = {
         {
           "<C-/>",
-          function()
-            require("rip-substitute").sub()
-          end,
-          mode = { "n", "x" },
-          desc = " rip",
+          "<cmd>GrugFar<CR>",
+          mode = { "n" },
         },
       },
-      opts = {
-        popupWin = {
-          border = "rounded",
-          position = "top",
-        },
-        prefill = {
-          normal = false,
-        },
-        notificationOnSuccess = true,
-      },
+      config = function()
+        require("grug-far").setup({
+          windowCreationCommand = "rightbelow 120vnew",
+        })
+      end,
     },
 
     -- カーソルジャンプ
