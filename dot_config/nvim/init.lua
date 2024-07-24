@@ -846,7 +846,7 @@ require("lazy").setup({
             indent_at_cursor = true,
           },
           draw = {
-            delay = 300,
+            delay = 500,
             -- animation = require("mini.indentscope").gen_animation.none(),
           },
           mappings = {
