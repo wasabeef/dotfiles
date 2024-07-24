@@ -76,8 +76,6 @@ vim.o.hlsearch = true
 vim.o.gdefault = true
 -- 変更時にガタつかないようにサイン列を常に表示しておく
 vim.o.signcolumn = "yes"
--- LineLength 80 に色を付ける
-vim.o.colorcolumn = "80"
 -- True Color
 vim.o.termguicolors = true
 -- コマンドラインの高さを非表示
@@ -166,7 +164,7 @@ vim.api.nvim_set_keymap("n", "<C-Down>", '"zdd"zp', { noremap = true })
 vim.api.nvim_set_keymap("v", "<C-Up>", '"zx<Up>"zP`[V`]', { noremap = true })
 vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
 -- Ctrl + p で繰り返しヤンクした文字をペースト
-vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
+-- vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 -- Ctrl + m を無効
 -- vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
 
@@ -263,8 +261,14 @@ require("lazy").setup({
 
     -- アイコン
     {
-      "DaikyXendo/nvim-material-icon",
-      event = "VimEnter",
+      "rachartier/tiny-devicons-auto-colors.nvim",
+      dependencies = {
+        "DaikyXendo/nvim-material-icon",
+      },
+      event = "VeryLazy",
+      config = function()
+        require("tiny-devicons-auto-colors").setup()
+      end,
     },
 
     -- スタート画面
@@ -650,6 +654,16 @@ require("lazy").setup({
           background = false,
         })
       end,
+    },
+
+    -- LineLength 80 に色を付ける
+    -- vim.o.colorcolumn = "80"
+    {
+      "m4xshen/smartcolumn.nvim",
+      event = "VeryLazy",
+      opts = {
+        disabled_filetypes = { "alpha" },
+      },
     },
 
     -- コメントアウト

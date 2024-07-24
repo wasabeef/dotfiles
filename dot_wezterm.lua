@@ -15,7 +15,7 @@ local config = wezterm.config_builder()
 
 -- macOS settings
 if os == "macOS" then
-  config.font_size = 11.0
+  config.font_size = 10.0
   config.initial_cols = 320
   config.initial_rows = 100
 
@@ -44,6 +44,7 @@ config.front_end = "WebGpu"
 config.webgpu_power_preference = "HighPerformance"
 
 -- window
+config.adjust_window_size_when_changing_font_size = false
 config.integrated_title_button_style = "Windows"
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.window_background_opacity = 1
