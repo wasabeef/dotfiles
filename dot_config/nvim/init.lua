@@ -1371,6 +1371,59 @@ require("lazy").setup({
       },
     },
 
+    -- Formatter
+    {
+      "stevearc/conform.nvim",
+      event = "VeryLazy",
+      cmd = { "ConformInfo" },
+      init = function()
+        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+      end,
+      keys = {
+        {
+          "<Leader>f",
+          function()
+            require("conform").format({ async = true })
+          end,
+        },
+      },
+      opts = {
+        -- default_format_opts = {
+        --   lsp_format = "fallback",
+        -- },
+        -- format_on_save = { timeout_ms = 500 },
+        formatters_by_ft = {
+          ["*"] = { "trim_whitespace" },
+          sh = { "shfmt" },
+          bash = { "shfmt" },
+          zsh = { "shfmt" },
+          lua = { "stylua" },
+          markdown = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          toml = { "dprint" },
+          html = { "prettier" },
+          css = { "prettier" },
+          less = { "prettier" },
+          scss = { "prettier" },
+          xml = { "xmllint" },
+          vue = { "prettier" },
+          svelte = { "prettier" },
+          astro = { "prettier" },
+          javascript = { "prettier", "eslint" },
+          javascriptreact = { "prettier", "eslint", "stylelint" },
+          typescript = { "prettier", "tslint", "eslint" },
+          typescriptreact = { "prettier", "tslint", "eslint", "stylelint" },
+          java = { "eclipselsp" },
+          kotlin = { "ktlint" },
+          dart = { "dart_format" },
+          go = { "gofmt", "goimports" },
+          graphql = { "prettier" },
+          swift = { "swiftformat" },
+        },
+      },
+    },
+
     -- Lint
     {
       "dense-analysis/ale",
@@ -1397,36 +1450,6 @@ require("lazy").setup({
           go = { "gofmt", "gopls" },
           swift = { "swiftlint" },
         }
-        vim.g.ale_fixers = {
-          ["*"] = { "trim_whitespace" },
-          sh = { "shfmt" },
-          bash = { "shfmt" },
-          zsh = { "shfmt" },
-          lua = { "stylua" },
-          markdown = { "prettier" },
-          json = { "prettier" },
-          yaml = { "prettier" },
-          toml = { "dprint" },
-          html = { "prettier" },
-          css = { "prettier" },
-          less = { "prettier" },
-          scss = { "prettier" },
-          xml = { "xmllint" },
-          vue = { "prettier" },
-          svelte = { "prettier" },
-          astro = { "prettier" },
-          javascript = { "prettier", "eslint" },
-          javascriptreact = { "prettier", "eslint", "stylelint" },
-          typescript = { "prettier", "tslint", "eslint" },
-          typescriptreact = { "prettier", "tslint", "eslint", "stylelint" },
-          java = { "eclipselsp" },
-          kotlin = { "ktlint" },
-          dart = { "dart-format" },
-          go = { "gofmt", "goimports" },
-          graphql = { "prettier" },
-          swift = { "swiftformat" },
-        }
-        vim.api.nvim_set_keymap("n", "<Leader>f", ":ALEFix<CR>", { noremap = true, silent = true })
       end,
     },
 
