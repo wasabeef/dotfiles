@@ -261,14 +261,8 @@ require("lazy").setup({
 
     -- アイコン
     {
-      "rachartier/tiny-devicons-auto-colors.nvim",
-      dependencies = {
-        "DaikyXendo/nvim-material-icon",
-      },
-      event = "VeryLazy",
-      config = function()
-        require("tiny-devicons-auto-colors").setup()
-      end,
+      "DaikyXendo/nvim-material-icon",
+      event = "VimEnter",
     },
 
     -- スタート画面
