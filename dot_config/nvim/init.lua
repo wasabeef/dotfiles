@@ -198,8 +198,8 @@ vim.g.skip_loading_mswin = 1
 vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
 -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
 vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
-vim.keymap.set("n", "<Leader>dd", vim.lsp.buf.definition, bufopts)
-vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
+vim.keymap.set("n", "<Leader>D", vim.lsp.buf.definition, bufopts)
+-- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
 vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>T", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
