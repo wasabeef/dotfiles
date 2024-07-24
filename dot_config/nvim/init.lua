@@ -96,13 +96,13 @@ vim.api.nvim_set_keymap("n", "k", "gk", { noremap = true })
 vim.api.nvim_set_keymap("v", "k", "gk", { noremap = true })
 
 -- タブの移動
-vim.api.nvim_set_keymap("n", "tf", ":tabfirst<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "tl", ":tablast<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "tt", ":tabnext<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "T", ":tabprevious<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "tc", ":tabclose<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "to", ":tabonly<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "tn", ":tabnew<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "tf", ":tabfirst<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "tl", ":tablast<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "tt", ":tabnext<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "T", ":tabprevious<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "tc", ":tabclose<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "to", ":tabonly<CR>", { noremap = true })
+-- vim.api.nvim_set_keymap("n", "tn", ":tabnew<CR>", { noremap = true })
 
 -- 画面分割
 vim.api.nvim_set_keymap("n", "s", "<Nop>", { noremap = true })
