@@ -230,6 +230,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- パフォーマンス
+vim.loader.enable()
+
 require("lazy").setup({
   checker = { enabled = false },
   spec = {
@@ -323,7 +326,7 @@ require("lazy").setup({
 
         dashboard.section.buttons.val = {
           -- dashboard.button("e", "   New file",       ":ene <BAR> startinsert <CR>"),
-          dashboard.button("f", "   Find file", ":Telescope find_files<CR>"),
+          dashboard.button("o", "   Find file", ":Telescope find_files<CR>"),
           dashboard.button("g", "󰱼   Find word", ":Telescope live_grep<CR>"),
           dashboard.button("r", "󰈚   Recent", ":Telescope oldfiles<CR>"),
           dashboard.button("i", "   Edit init.lua", ":e $MYVIMRC <CR>"),
@@ -833,6 +836,12 @@ require("lazy").setup({
           },
         })
       end,
+    },
+
+    -- ブラケットの移動
+    {
+      "echasnovski/mini.bracketed",
+      event = { "BufRead", "BufNewFile" },
     },
 
     -- インデント表示、Textobjects
@@ -1744,6 +1753,15 @@ require("lazy").setup({
           desc = "Autostart Screenkey on BufRead",
         })
       end,
+    },
+
+    -- Markdown プレビュー
+    {
+      "OXY2DEV/markview.nvim",
+      dependencies = {
+        "nvim-treesitter/nvim-treesitter",
+      },
+      ft = "markdown",
     },
 
     -----------------------------------------------------------------------
