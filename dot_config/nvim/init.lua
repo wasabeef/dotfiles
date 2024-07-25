@@ -1023,7 +1023,7 @@ require("lazy").setup({
         vim.keymap.set("n", "<Leader>j", function()
           return pantran.motion_translate() .. "_"
         end, opts)
-        vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts)
+        -- vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts) -- do not enable this
         vim.keymap.set("x", "<Leader>j", pantran.motion_translate, opts)
       end,
     },
@@ -1039,8 +1039,13 @@ require("lazy").setup({
     -- ファイルツリー
     {
       "nvim-tree/nvim-tree.lua",
+      dependencies = {
+        "b0o/nvim-tree-preview.lua",
+        "nvim-lua/plenary.nvim",
+      },
       event = "VeryLazy",
       config = function()
+        local preview = require("nvim-tree-preview")
         local function on_attach(bufnr)
           local api = require("nvim-tree.api")
 
@@ -1057,9 +1062,32 @@ require("lazy").setup({
           vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Node"))
           vim.keymap.set("n", "s", "", opts(""))
           vim.keymap.set("n", "sl", "<c-w>l", opts(""))
+
+          vim.keymap.set("n", "P", preview.watch, opts("Preview (Watch)"))
+          vim.keymap.set("n", "<Esc>", preview.unwatch, opts("Close Preview/Unwatch"))
+          vim.keymap.set("n", "<Tab>", function()
+            local ok, node = pcall(api.tree.get_node_under_cursor)
+            if ok and node then
+              if node.type == "directory" then
+                api.node.open.edit()
+              else
+                preview.watch()
+              end
+            end
+          end, opts("Preview"))
         end
 
-        vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+        preview.setup({
+          keymaps = {
+            ["<Esc>"] = { action = "close", unwatch = true },
+          },
+          min_width = 60,
+          min_height = 15,
+          max_width = 120,
+          max_height = 30,
+          wrap = false, -- Whether to wrap lines in the preview window
+          border = "rounded", -- Border style for the preview window
+        })
 
         require("nvim-tree").setup({
           on_attach = on_attach,
@@ -1094,6 +1122,7 @@ require("lazy").setup({
             ignore = false,
           },
         })
+        vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
       end,
     },
 
@@ -1946,6 +1975,40 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
       },
       ft = "markdown",
+    },
+
+    -- URL 開く
+    {
+      "sontungexpt/url-open",
+      event = "VeryLazy",
+      cmd = "URLOpenUnderCursor",
+      config = function()
+        local status_ok, url_open = pcall(require, "url-open")
+        if not status_ok then
+          return
+        end
+        url_open.setup({})
+      end,
+    },
+
+    -- ブラウザ検索
+    {
+      "voldikss/vim-browser-search",
+      event = "VeryLazy",
+      keys = {
+        {
+          "<Leader>?",
+          "<cmd>BrowserSearch<CR>",
+          mode = { "n" },
+          desc = "Browser Search",
+        },
+        {
+          "<Leader>?",
+          ":'<,'>BrowserSearch<CR>",
+          mode = { "x" },
+          desc = "Browser Search",
+        },
+      },
     },
 
     -----------------------------------------------------------------------
