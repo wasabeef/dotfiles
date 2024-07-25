@@ -30,6 +30,7 @@ vim.o.showcmd = true
 vim.o.clipboard = "unnamedplus"
 -- マウスを有効にする
 vim.o.mouse = "a"
+vim.o.mousemoveevent = true
 -- 文字コードの指定
 vim.o.encoding = "utf-8"
 vim.o.fileencoding = "utf-8"
@@ -206,12 +207,12 @@ vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
 -- LSP
-vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
+-- vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts) -- use hover
 -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use conform
-vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
+vim.keymap.set("n", "<Leader>R", vim.lsp.buf.references, bufopts)
 vim.keymap.set("n", "<Leader>D", vim.lsp.buf.definition, bufopts)
 -- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
-vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
+vim.keymap.set("n", "<Leader>I", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>T", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
 -- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use actions-preview
@@ -1109,6 +1110,7 @@ require("lazy").setup({
       end,
     },
 
+    -- Git
     {
       "kdheepak/lazygit.nvim",
       cmd = {
@@ -1924,12 +1926,12 @@ require("lazy").setup({
             width = 40,
             height = 1,
           },
-          display_infront = { "Telescope*", "toggleterm", "lazygit" },
+          display_infront = { "*" },
           keys = {
             ["<leader>"] = "<Leader>",
           },
         })
-        vim.api.nvim_create_autocmd("BufRead", {
+        vim.api.nvim_create_autocmd("BufAdd", {
           group = vim.api.nvim_create_augroup("AutostartScreenkey", {}),
           command = "Screenkey toggle",
           desc = "Autostart Screenkey on BufRead",
@@ -2104,7 +2106,7 @@ require("lazy").setup({
         "hrsh8th/cmp-nvim-lsp",
       },
       ft = { "dart" },
-      event = "VeryLazy",
+      event = "BufRead *.dart",
       config = function()
         require("flutter-tools").setup({
           flutter_path = nil,
@@ -2191,6 +2193,30 @@ require("lazy").setup({
         })
 
         require("telescope").load_extension("flutter")
+      end,
+    },
+
+    -- pubspec.yaml のヘルパー
+    {
+      "akinsho/pubspec-assist.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      cmd = {
+        "PubspecAssistAddPackage",
+        "PubspecAssistAddDevPackage",
+        "PubspecAssistPickVersion",
+      },
+      ft = { "yaml" },
+      event = "BufEnter pubspec.yaml",
+      config = function()
+        require("pubspec-assist").setup()
+        vim.api.nvim_set_keymap(
+          "n",
+          "<Leader>p",
+          "<cmd>PubspecAssistPickVersion<CR>",
+          { noremap = true, silent = true }
+        )
       end,
     },
 
@@ -2436,20 +2462,70 @@ require("lazy").setup({
       end,
     },
 
+    -- LSP Hover
+    {
+      "lewis6991/hover.nvim",
+      event = "VeryLazy",
+      config = function()
+        require("hover").setup({
+          init = function()
+            require("hover.providers.lsp")
+            -- require('hover.providers.gh')
+            -- require('hover.providers.gh_user')
+            -- require('hover.providers.jira')
+            -- require('hover.providers.dap')
+            -- require('hover.providers.fold_preview')
+            -- require("hover.providers.diagnostic")
+            -- require('hover.providers.man')
+            -- require('hover.providers.dictionary')
+          end,
+          preview_opts = {
+            border = "single",
+          },
+          preview_window = false,
+          title = true,
+          mouse_providers = {
+            "LSP",
+          },
+          mouse_delay = 1000,
+        })
+        vim.keymap.set("n", "K", require("hover").hover, { desc = "hover.nvim" })
+
+        -- Mouse support
+        vim.keymap.set("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
+      end,
+    },
+
     -- LSP ポップアップ
     {
       "rmagatti/goto-preview",
       event = "VeryLazy",
       config = function()
         require("goto-preview").setup({
-          height = 40,
           width = 160,
+          height = 40,
+          border = { "↖", "─", "┐", "│", "┘", "─", "└", "│" },
+          default_mappings = false,
+          debug = false,
+          opacity = nil,
+          resizing_mappings = false,
+          references = {
+            telescope = require("telescope.themes").get_dropdown({ hide_preview = false }),
+          },
+          focus_on_open = true,
+          dismiss_on_move = false,
+          force_close = true,
+          bufhidden = "wipe",
+          stack_floating_preview_windows = true,
+          preview_window_title = { enable = true, position = "left" },
+          zindex = 1,
         })
 
         -- LSP Popup
         vim.keymap.set("n", "<Leader>d", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
         vim.keymap.set("n", "<Leader>i", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
         vim.keymap.set("n", "<Leader>t", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
+        vim.keymap.set("n", "<Leader>r", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", bufopts)
       end,
     },
   },
