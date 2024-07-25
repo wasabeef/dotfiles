@@ -1,5 +1,4 @@
 ---@diagnostic disable: undefined-global
-
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
@@ -80,7 +79,17 @@ vim.o.signcolumn = "yes"
 vim.o.termguicolors = true
 -- コマンドラインの高さを非表示
 vim.o.cmdheight = 0
-
+-- セッションの保存・復元
+-- blank: 空のウィンドウも含める
+-- buffers: 開いているバッファーも含める
+-- curdir: 現在のディレクトリを含める
+-- folds: フォールドの状態を含める
+-- help: ヘルプウィンドウを含める
+-- tabpages: タブページも含める
+-- winsize: ウィンドウのサイズを含める
+-- winpos: ウィンドウの位置を含める
+-- terminal: ターミナルウィンドウも含める
+-- localoptions: ローカルオプション（バッファーやウィンドウの設定）を含める
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
 -- ---------------------------------------------------------
@@ -196,14 +205,14 @@ vim.g.skip_loading_mswin = 1
 
 -- LSP
 vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts)
--- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use ale
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use conform
 vim.keymap.set("n", "<Leader>r", vim.lsp.buf.references, bufopts)
 vim.keymap.set("n", "<Leader>D", vim.lsp.buf.definition, bufopts)
 -- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
 vim.keymap.set("n", "<Leader>ii", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>T", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
--- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use action-preview
+-- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use actions-preview
 -- vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts) -- use trouble
 vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
 vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
@@ -213,6 +222,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
   pattern = "*",
   callback = function()
+    ---@diagnostic disable-next-line: deprecated
     local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
     if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
       vim.api.nvim_win_set_cursor(0, { row, col })
@@ -1300,44 +1310,54 @@ require("lazy").setup({
 
     -- コードアクション、差分修正
     {
-      "aznhe21/actions-preview.nvim",
+      "rachartier/tiny-code-action.nvim",
       dependencies = {
+        "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope.nvim",
       },
-      event = "VeryLazy",
+      event = "LspAttach",
+      keys = {
+        {
+          mode = { "n" },
+          "<leader>a",
+          "<cmd>lua require('tiny-code-action').code_action()<cr>",
+        },
+      },
       config = function()
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "<Leader>a", "<cmd>lua require('actions-preview').code_actions()<CR>", bufopts)
-
-        require("actions-preview").setup({
-          diff = {
-            algorithm = "histogram",
-            -- 差分がある部分の前後に表示する行数。git diff --unified=<n>相当
-            ctxlen = 3,
-            -- 同一ファイルの差分塊間の行数がこれ以下なら全部表示する。git diff --inter-hunk-context=<lines>相当
-            interhunkctxlen = 0,
-            -- あらゆるスペースの変更を無視する。trueならgit diff --ignore-all-space相当
-            ignore_whitespace = false,
-            -- 行頭や連続するスペースの変更を無視する。trueならgit diff --ignore-space-change相当
-            ignore_whitespace_change = false,
-            -- 行末スペースの変更を無視する。trueならgit diff --ignore-space-at-eol相当
-            ignore_whitespace_change_at_eol = false,
-            -- 改行前のCR（\r）を無視する。trueならgit diff --ignore-cr-at-eol相当
-            ignore_cr_at_eol = false,
-            -- 連続した空行の変更を無視する。trueならgit diff --ignore-blank-lines相当
-            ignore_blank_lines = false,
-            -- 差分のズレを抑制する。trueならgit diff --indent-heuristic相当。actions-preview.nvimではデフォルト無効
-            indent_heuristic = false,
+        require("tiny-code-action").setup({
+          backend = "vim",
+          backend_opts = {
+            delta = {
+              override_cmd = nil,
+              use_git_config = false,
+              config_path = nil,
+              header_lines_to_removed = 4,
+            },
           },
-          backend = { "telescope" },
-          telescope = require("telescope.themes").get_dropdown({
-            color_devicons = true,
+          telescope_opts = {
             layout_strategy = "vertical",
             layout_config = {
               width = 0.5,
               height = 0.75,
+              preview_cutoff = 1,
+              preview_height = function(_, _, max_lines)
+                local h = math.floor(max_lines * 0.5)
+                return math.max(h, 10)
+              end,
             },
-          }),
+          },
+          signs = {
+            quickfix = { "󰁨", { link = "DiagnosticInfo" } },
+            others = { "?", { link = "DiagnosticWarning" } },
+            refactor = { "", { link = "DiagnosticWarning" } },
+            ["refactor.move"] = { "󰪹", { link = "DiagnosticInfo" } },
+            ["refactor.extract"] = { "", { link = "DiagnosticError" } },
+            ["source.organizeImports"] = { "", { link = "TelescopeResultVariable" } },
+            ["source.fixAll"] = { "", { link = "TelescopeResultVariable" } },
+            ["source"] = { "", { link = "DiagnosticError" } },
+            ["rename"] = { "󰑕", { link = "DiagnosticWarning" } },
+            ["codeAction"] = { "", { link = "DiagnosticError" } },
+          },
         })
       end,
     },
@@ -1388,9 +1408,9 @@ require("lazy").setup({
         },
       },
       opts = {
-        -- default_format_opts = {
-        --   lsp_format = "fallback",
-        -- },
+        default_format_opts = {
+          lsp_format = "fallback",
+        },
         -- format_on_save = { timeout_ms = 500 },
         formatters_by_ft = {
           ["*"] = { "trim_whitespace" },
@@ -1398,58 +1418,76 @@ require("lazy").setup({
           bash = { "shfmt" },
           zsh = { "shfmt" },
           lua = { "stylua" },
-          markdown = { "prettier" },
-          json = { "prettier" },
-          yaml = { "prettier" },
+          markdown = { "prettierd" },
+          json = { "prettierd" },
+          yaml = { "prettierd" },
           toml = { "dprint" },
-          html = { "prettier" },
-          css = { "prettier" },
-          less = { "prettier" },
-          scss = { "prettier" },
-          xml = { "xmllint" },
-          vue = { "prettier" },
-          svelte = { "prettier" },
-          astro = { "prettier" },
-          javascript = { "prettier", "eslint" },
-          javascriptreact = { "prettier", "eslint", "stylelint" },
-          typescript = { "prettier", "tslint", "eslint" },
-          typescriptreact = { "prettier", "tslint", "eslint", "stylelint" },
+          html = { "prettierd" },
+          css = { "stylelint", "prettierd" },
+          xml = { "xmlformat" },
+          vue = { "prettierd" },
+          svelte = { "prettierd" },
+          astro = { "prettierd" },
+          javascript = { "eslint_d", "prettierd" },
+          javascriptreact = { "eslint_d", "prettierd" },
+          typescript = { "eslint_d", "prettierd" },
+          typescriptreact = { "eslint_d", "prettierd" },
           java = { "eclipselsp" },
           kotlin = { "ktlint" },
           dart = { "dart_format" },
           go = { "gofmt", "goimports" },
-          graphql = { "prettier" },
+          graphql = { "prettierd" },
           swift = { "swiftformat" },
+        },
+        formatters = {
+          dprint = {
+            prepend_args = function(self, ctx)
+              if not self:cwd(ctx) then
+                vim.notify("Falling back to global dprint config")
+                return {
+                  "--config",
+                  vim.fn.expand("~/.config/nvim/dprint.json"),
+                }
+              end
+            end,
+          },
         },
       },
     },
 
-    -- Lint
+    -- Linter
     {
-      "dense-analysis/ale",
+      "mfussenegger/nvim-lint",
       event = "VeryLazy",
       config = function()
-        -- vim.g.ale_echo_msg_error_str = "Err"
-        -- vim.g.ale_sign_error = "🔥"
-        -- vim.g.ale_echo_msg_warning_str = "Warn"
-        -- vim.g.ale_sign_warning = "‼️"
-        -- vim.g.ale_echo_msg_info_str = "Info"
-        -- vim.g.ale_sign_info = "🤔"
-        vim.g.ale_virtualtext_cursor = "disabled"
-        vim.g.ale_lint_on_enter = 0
-        vim.g.ale_sign_column_always = 0
-        vim.g.ale_set_highlights = 0
-        vim.g.ale_lint_on_save = 0
-        vim.g.ale_linters_explicit = 1
-        vim.g.ale_linters = {
+        local lint = require("lint")
+        lint.linters_by_ft = {
+          javascript = { "eslint_d" },
+          typescript = { "eslint_d" },
+          javascriptreact = { "eslint_d" },
+          typescriptreact = { "eslint_d" },
+          css = { "stylelint" },
           sh = { "shellcheck" },
-          lua = { "stylua" },
-          markdown = { "textlint" },
-          json = { "jq", "jsonlint" },
+          lua = { "selene" },
+          markdown = { "markdownlint", "vale" },
+          json = { "jsonlint" },
           yaml = { "yamllint", "actionlint" },
-          go = { "gofmt", "gopls" },
+          go = { "golangcilint" },
           swift = { "swiftlint" },
+          terraform = { "tflint" },
         }
+        lint.linters_by_ft = {
+          selene = {
+            condition = function(ctx)
+              return vim.fs.find({ "selene.toml" }, { path = ctx.filename, upward = true })[1]
+            end,
+          },
+        }
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+          callback = function()
+            require("lint").try_lint()
+          end,
+        })
       end,
     },
 

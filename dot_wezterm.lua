@@ -27,9 +27,9 @@ elseif os == "windows" then
   config.initial_rows = 60
 
 -- Linux settings
-elseif os == "linux" then
-  -- Add any specific Linux configurations here
-end
+-- elseif os == "linux" then
+--   -- Add any specific Linux configurations here
+-- end
 
 config.font = wezterm.font_with_fallback({
   "Cascadia Code",
