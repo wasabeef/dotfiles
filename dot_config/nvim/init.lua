@@ -1,4 +1,5 @@
 ---@diagnostic disable: undefined-global
+vim.o.foldenable = true
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
@@ -166,12 +167,13 @@ vim.api.nvim_set_keymap("i", "<C-j>", "<Down>", { noremap = true })
 vim.api.nvim_set_keymap("i", "<C-k>", "<Up>", { noremap = true })
 vim.api.nvim_set_keymap("i", "<C-l>", "<Right>", { noremap = true })
 
--- 対象の行を移動
-vim.api.nvim_set_keymap("n", "<C-Up>", '"zdd<Up>"zP', { noremap = true })
-vim.api.nvim_set_keymap("n", "<C-Down>", '"zdd"zp', { noremap = true })
--- 対象の複数行を移動
-vim.api.nvim_set_keymap("v", "<C-Up>", '"zx<Up>"zP`[V`]', { noremap = true })
-vim.api.nvim_set_keymap("v", "<C-Down>", '"zx"zp`[V`]', { noremap = true })
+-- 対象の行を移動 -- use mini.move
+-- vim.api.nvim_set_keymap("n", "<M-k>", '"zdd<Up>"zP', { noremap = true })
+-- vim.api.nvim_set_keymap("n", "<M-j>", '"zdd"zp', { noremap = true })
+-- 対象の複数行を移動 -- use mini.move
+-- vim.api.nvim_set_keymap("v", "<M-k>", '"zx<Up>"zP`[V`]', { noremap = true })
+-- vim.api.nvim_set_keymap("v", "<M-j>", '"zx"zp`[V`]', { noremap = true })
+
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 -- vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
 -- Ctrl + m を無効
@@ -222,7 +224,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   group = vim.api.nvim_create_augroup("restore_cursor", { clear = true }),
   pattern = "*",
   callback = function()
-    ---@diagnostic disable-next-line: deprecated
     local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
     if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
       vim.api.nvim_win_set_cursor(0, { row, col })
@@ -368,6 +369,27 @@ require("lazy").setup({
         })
       end,
     },
+
+    -- VIM 矯正
+    -- {
+    --   "m4xshen/hardtime.nvim",
+    --   dependencies = {
+    --     "MunifTanjim/nui.nvim",
+    --     "nvim-lua/plenary.nvim",
+    --   },
+    --   event = "VeryLazy",
+    --   opts = {
+    --     max_count = 30,
+    --     disable_mouse = false,
+    --     disabled_filetypes = {
+    --       "NvimTree",
+    --       "lazy",
+    --       "mason",
+    --       "toggleterm",
+    --       "TelescopePrompt",
+    --     },
+    --   },
+    -- },
 
     -- スクリーンセーバー
     {
@@ -761,6 +783,14 @@ require("lazy").setup({
           "<cmd>lua require('spider').motion('b')<CR>",
         },
       },
+      config = function()
+        require("spider").setup({
+          skipInsignificantPunctuation = true,
+          consistentOperatorPending = false,
+          subwordMovement = false, -- ignore camelCase, snake_case
+          customPatterns = {},
+        })
+      end,
     },
 
     -- カーソルジャンプ
@@ -848,6 +878,30 @@ require("lazy").setup({
       end,
     },
 
+    -- 選択したテキストの移動
+    {
+      "echasnovski/mini.move",
+      event = "VeryLazy",
+      opts = {
+        mappings = {
+          -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
+          left = "<M-h>",
+          right = "<M-l>",
+          down = "<M-j>",
+          up = "<M-k>",
+
+          -- Move current line in Normal mode
+          line_left = "<M-h>",
+          line_right = "<M-l>",
+          line_down = "<M-j>",
+          line_up = "<M-k>",
+        },
+        options = {
+          reindent_linewise = true,
+        },
+      },
+    },
+
     -- ブラケットの移動
     {
       "echasnovski/mini.bracketed",
@@ -895,6 +949,25 @@ require("lazy").setup({
       end,
     },
 
+    -- 通知
+    {
+      "echasnovski/mini.notify",
+      event = "VeryLazy",
+      config = function()
+        require("mini.notify").setup({
+          lsp_progress = {
+            enable = false,
+          },
+        })
+
+        vim.notify = require("mini.notify").make_notify({
+          ERROR = { duration = 5000 },
+          WARN = { duration = 5000 },
+          INFO = { duration = 5000 },
+        })
+      end,
+    },
+
     -- カラーハイライト
     {
       "NvChad/nvim-colorizer.lua",
@@ -928,6 +1001,7 @@ require("lazy").setup({
       },
     },
 
+    -- Google 翻訳
     {
       "potamides/pantran.nvim",
       event = "VeryLazy",
@@ -945,10 +1019,11 @@ require("lazy").setup({
           },
         })
         local opts = { noremap = true, silent = true, expr = true }
-        vim.keymap.set("n", "<Leader>g", function()
+        vim.keymap.set("n", "<Leader>j", function()
           return pantran.motion_translate() .. "_"
         end, opts)
-        vim.keymap.set("x", "<Leader>g", pantran.motion_translate, opts)
+        vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts)
+        vim.keymap.set("x", "<Leader>j", pantran.motion_translate, opts)
       end,
     },
 
@@ -1034,6 +1109,34 @@ require("lazy").setup({
       end,
     },
 
+    {
+      "kdheepak/lazygit.nvim",
+      cmd = {
+        "LazyGit",
+        "LazyGitConfig",
+        "LazyGitCurrentFile",
+        "LazyGitFilter",
+        "LazyGitFilterCurrentFile",
+      },
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      keys = {
+        { "<Leader>g", "<cmd>LazyGit<CR>", desc = "LazyGit" },
+      },
+    },
+
+    -- Git 差分表示
+    {
+      "sindrets/diffview.nvim",
+      event = "VeryLazy",
+      keys = {
+        { "<Leader>gd", "<cmd>DiffviewOpen<CR>", mode = "n", noremap = true },
+        { "<Leader>gh", "<cmd>DiffviewFileHistory<CR>", mode = "n", noremap = true },
+        { "<Leader>gc", "<cmd>DiffviewFileHistory %<CR>", mode = "n", noremap = true },
+      },
+    },
+
     -- Git Blame
     {
       "lewis6991/gitsigns.nvim",
@@ -1111,15 +1214,18 @@ require("lazy").setup({
       config = function()
         require("nvim-treesitter.configs").setup({
           ensure_installed = {
+            "gitignore",
+            "git_config",
             "lua",
-            "javascript",
             "vim",
             "vimdoc",
             "dart",
             "graphql",
             "bash",
             "swift",
+            "objc",
             "kotlin",
+            "java",
             "go",
             "printf",
             "regex",
@@ -1127,6 +1233,10 @@ require("lazy").setup({
             "json5",
             "javascript",
             "typescript",
+            "svelte",
+            "vue",
+            "astro",
+            "terraform",
             "css",
             "html",
             "markdown",
@@ -1209,8 +1319,21 @@ require("lazy").setup({
             prompt_prefix = " ",
             selection_caret = "󰁕 ",
             file_ignore_patterns = {
-              "node_modules",
-              ".git/",
+              "node_modules/",
+              "vendor/",
+              "build/",
+              "temp/",
+              ".git/info/",
+              ".git/logs/",
+              ".git/objects/",
+              ".git/refs/",
+              "logs/",
+              "screenshots/",
+              "Pods/",
+              ".gradle/",
+              ".symlinks/",
+              ".dart_tool/",
+              -- .gitignore を無視してるのでこっちで追加する
             },
             vimgrep_arguments = {
               "rg",
@@ -1221,9 +1344,8 @@ require("lazy").setup({
               "--column",
               "--smart-case",
               "--trim",
-              -- "--hidden",
-              "--glob",
-              "!**/.git/*",
+              "--no-ignore",
+              "--hidden",
             },
             mappings = {
               n = {
@@ -1294,6 +1416,17 @@ require("lazy").setup({
                   )
                 end
               end,
+            },
+          },
+          pickers = {
+            find_files = {
+              find_command = {
+                "fd",
+                "--no-ignore",
+                "--hidden",
+                "--type",
+                "file",
+              },
             },
           },
         })
@@ -1476,12 +1609,19 @@ require("lazy").setup({
           swift = { "swiftlint" },
           terraform = { "tflint" },
         }
-        lint.linters_by_ft = {
-          selene = {
-            condition = function(ctx)
-              return vim.fs.find({ "selene.toml" }, { path = ctx.filename, upward = true })[1]
-            end,
-          },
+        lint.linters.selene.args = {
+          "--config",
+          function() -- find selene.toml file
+            local conf =
+              vim.fs.find({ "selene.toml" }, { type = "file", upward = true, path = vim.api.nvim_buf_get_name(0) })[1]
+            if conf == nil then
+              conf = vim.fn.expand("~/.config/nvim/selene.toml")[1]
+            end
+            return conf
+          end,
+          "--display-style",
+          "json",
+          "-",
         }
         vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
           callback = function()
@@ -1508,25 +1648,6 @@ require("lazy").setup({
           winblend = 10,
         },
       },
-    },
-
-    -- 通知
-    {
-      "rcarriga/nvim-notify",
-      event = "VeryLazy",
-      config = function()
-        vim.notify = require("notify")
-        require("notify").setup({
-          stages = "slide",
-          render = "default",
-          background_colour = "Normal",
-          level = 2, -- trace = 0, debug, info, warn, error
-          timeout = 3000,
-          fps = 60,
-          on_open = nil,
-          on_close = nil,
-        })
-      end,
     },
 
     -- バッファ操作
@@ -1803,7 +1924,7 @@ require("lazy").setup({
             width = 40,
             height = 1,
           },
-          display_infront = { "Telescope*", "toggleterm" },
+          display_infront = { "Telescope*", "toggleterm", "lazygit" },
           keys = {
             ["<leader>"] = "<Leader>",
           },
@@ -1849,6 +1970,23 @@ require("lazy").setup({
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
         end
 
+        vim.diagnostic.config({
+          -- virtual_text は非表示
+          -- virtual_text = {
+          --   severity = vim.diagnostic.severity.ERROR,
+          -- },
+          virtual_text = false,
+          -- signcolumn のアイコンを変える
+          signs = {
+            text = {
+              [vim.diagnostic.severity.ERROR] = " ",
+              [vim.diagnostic.severity.WARN] = " ",
+              [vim.diagnostic.severity.HINT] = " ",
+              [vim.diagnostic.severity.INFO] = " ",
+            },
+          },
+        })
+
         local lspconfig = require("lspconfig")
         require("mason").setup()
         require("mason-lspconfig").setup()
@@ -1857,20 +1995,31 @@ require("lazy").setup({
             -- LSP
             "typos-lsp",
             "gopls",
-            "lua-language-server",
+            "lua-language-server", -- lua_ls
             "typescript-language-server",
             "graphql-language-service-cli",
 
-            -- Formatter
+            -- Formatter/Linter
             "prettier",
+            "prettierd",
+            "eslint_d",
             "actionlint",
             "goimports",
+            "golangci-lint",
             "ktlint",
             "shellcheck",
             "shfmt",
             "swiftlint",
+            "markdownlint",
+            "markdownlint-cli2",
+            "vale",
             "yamlfmt",
             "yamllint",
+            "jsonlint",
+            "xmlformatter",
+            "selene",
+            "stylua",
+            "tflint",
           },
           auto_update = true,
           run_on_start = true,
@@ -1887,6 +2036,22 @@ require("lazy").setup({
               })
             end
           end,
+        })
+
+        -- lua_ls
+        lspconfig.lua_ls.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            runtime = {
+              version = "LuaJIT",
+            },
+            Lua = {
+              diagnostics = {
+                globals = { "vim" },
+              },
+            },
+          },
         })
 
         -- typo-lsp
@@ -2060,23 +2225,6 @@ require("lazy").setup({
       },
       event = { "InsertEnter", "LspAttach" },
       config = function()
-        vim.diagnostic.config({
-          -- virtual_text は非表示
-          -- virtual_text = {
-          --   severity = vim.diagnostic.severity.ERROR,
-          -- },
-          virtual_text = false,
-          -- signcolumn のアイコンを変える
-          signs = {
-            text = {
-              [vim.diagnostic.severity.ERROR] = " ",
-              [vim.diagnostic.severity.WARN] = " ",
-              [vim.diagnostic.severity.HINT] = " ",
-              [vim.diagnostic.severity.INFO] = " ",
-            },
-          },
-        })
-
         local cmp = require("cmp")
         local types = require("cmp.types")
         local lspkind = require("lspkind")
