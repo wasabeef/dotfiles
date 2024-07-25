@@ -1002,32 +1002,6 @@ require("lazy").setup({
       },
     },
 
-    -- Google 翻訳
-    {
-      "potamides/pantran.nvim",
-      event = "VeryLazy",
-      config = function()
-        local pantran = require("pantran")
-        pantran.setup({
-          default_engine = "google",
-          engines = {
-            google = {
-              fallback = {
-                default_source = "auto",
-                default_target = "ja",
-              },
-            },
-          },
-        })
-        local opts = { noremap = true, silent = true, expr = true }
-        vim.keymap.set("n", "<Leader>j", function()
-          return pantran.motion_translate() .. "_"
-        end, opts)
-        -- vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts) -- do not enable this
-        vim.keymap.set("x", "<Leader>j", pantran.motion_translate, opts)
-      end,
-    },
-
     -- ログに色付け
     {
       "fei6409/log-highlight.nvim",
@@ -1977,11 +1951,44 @@ require("lazy").setup({
       ft = "markdown",
     },
 
+    -- Google 翻訳
+    {
+      "potamides/pantran.nvim",
+      event = "VeryLazy",
+      config = function()
+        local pantran = require("pantran")
+        pantran.setup({
+          default_engine = "google",
+          engines = {
+            google = {
+              fallback = {
+                default_source = "auto",
+                default_target = "ja",
+              },
+            },
+          },
+        })
+        local opts = { noremap = true, silent = true, expr = true }
+        vim.keymap.set("n", "<Leader>j", function()
+          return pantran.motion_translate() .. "_"
+        end, opts)
+        -- vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts) -- do not enable this
+        vim.keymap.set("x", "<Leader>j", pantran.motion_translate, opts)
+      end,
+    },
+
     -- URL 開く
     {
       "sontungexpt/url-open",
       event = "VeryLazy",
       cmd = "URLOpenUnderCursor",
+      keys = {
+        {
+          "<Leader>/",
+          "<cmd>URLOpenUnderCursor<CR>",
+          desc = "Open URL under cursor",
+        },
+      },
       config = function()
         local status_ok, url_open = pcall(require, "url-open")
         if not status_ok then
