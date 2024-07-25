@@ -1057,8 +1057,8 @@ require("lazy").setup({
           },
           min_width = 60,
           min_height = 15,
-          max_width = 120,
-          max_height = 30,
+          max_width = 160,
+          max_height = 40,
           wrap = false, -- Whether to wrap lines in the preview window
           border = "rounded", -- Border style for the preview window
         })
@@ -1270,6 +1270,38 @@ require("lazy").setup({
       end,
     },
 
+    {
+      "Sam-programs/cmdline-hl.nvim",
+      event = { "BufReadPre", "BufNewFile" },
+      config = function()
+        local cmdline_hl = require("cmdline-hl")
+        cmdline_hl.setup({
+          -- custom prefixes for builtin-commands
+          type_signs = {
+            [":"] = { "   ", "Title" },
+            ["/"] = { "   ", "Title" },
+            ["?"] = { "   ", "Title" },
+            ["="] = { "   ", "Title" },
+          },
+          custom_types = {
+            ["="] = { pat = "=(.*)", lang = "lua", show_cmd = true },
+            ["help"] = { icon = "? ", show_cmd = true },
+            ["substitute"] = { pat = "%w(.*)", lang = "regex", show_cmd = true },
+          },
+          aliases = {},
+          input_hl = "Title",
+          input_format = function(input)
+            return input
+          end,
+          range_hl = "Constant",
+          ghost_text = true,
+          ghost_text_hl = "Comment",
+          inline_ghost_text = false,
+          ghost_text_provider = require("cmdline-hl.ghost_text").history,
+        })
+      end,
+    },
+
     -- fzf ファイル・コマンド検索
     {
       "nvim-telescope/telescope.nvim",
@@ -1279,7 +1311,7 @@ require("lazy").setup({
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
         "dimaportenko/telescope-simulators.nvim",
-        "jonarrien/telescope-cmdline.nvim",
+        "andrew-george/telescope-themes",
       },
       event = "VeryLazy",
       config = function()
@@ -1314,10 +1346,15 @@ require("lazy").setup({
         --   { noremap = true, silent = true }
         -- )
         vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
-        vim.api.nvim_set_keymap("n", ";", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
+        vim.api.nvim_set_keymap(
+          "n",
+          "?",
+          ":Telescope current_buffer_fuzzy_find<CR>",
+          { noremap = true, desc = "Find Local" }
+        )
 
         local telescope = require("telescope")
+        -- local builtin_schemes = require("telescope._extensions.themes").builtin_schemes
         telescope.setup({
           defaults = {
             initial_mode = "insert",
@@ -1384,7 +1421,27 @@ require("lazy").setup({
                 case_mode = "smart_case", -- or "ignore_case" or "respect_case"
                 -- the default case_mode is "smart_case"
               },
-              cmdline = {},
+              --   themes = {
+              --     layout_config = {
+              --       horizontal = {
+              --         width = 0.8,
+              --         height = 0.7,
+              --       },
+              --     },
+              --     enable_previewer = true,
+              --     enable_live_preview = false,
+              --     ignore = vim.list_extend(builtin_schemes, { "embark" }),
+              --     persist = {
+              --       enabled = true,
+              --       path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua",
+              --     },
+              --     mappings = {
+              --       -- for people used to other mappings
+              --       down = "<C-n>",
+              --       up = "<C-p>",
+              --       accept = "<C-y>",
+              --     },
+              --   },
             },
             preview = {
               treesitter = false,
@@ -1424,6 +1481,7 @@ require("lazy").setup({
             },
           },
           pickers = {
+            current_buffer_fuzzy_find = { theme = "ivy" },
             find_files = {
               find_command = {
                 "fd",
@@ -1442,7 +1500,6 @@ require("lazy").setup({
           android_emulator = true,
           apple_simulator = true,
         })
-        telescope.load_extension("cmdline")
       end,
     },
 
