@@ -2016,6 +2016,14 @@ require("lazy").setup({
           desc = "Browser Search",
         },
       },
+      config = function()
+        vim.g.browser_search_builtin_engines = {
+          github = "https://github.com/search?q=%s",
+          google = "https://google.com/search?q=%s",
+          stackoverflow = "https://stackoverflow.com/search?q=%s",
+        }
+        vim.g.browser_search_default = "google"
+      end,
     },
 
     -----------------------------------------------------------------------
