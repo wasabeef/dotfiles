@@ -412,7 +412,7 @@ require("lazy").setup({
       },
       event = "VimEnter",
       config = function()
-        require("lsp-progress").setup()
+        require("lsp-progress").setup({})
         local lualine = require("lualine")
         local theme_colors = {
           blue = "#193b73",
@@ -1362,6 +1362,7 @@ require("lazy").setup({
             selection_caret = "󰁕 ",
             file_ignore_patterns = {
               "node_modules/",
+              "Pods/",
               "vendor/",
               "build/",
               "temp/",
@@ -1371,7 +1372,6 @@ require("lazy").setup({
               ".git/refs/",
               "logs/",
               "screenshots/",
-              "Pods/",
               ".gradle/",
               ".symlinks/",
               ".dart_tool/",
@@ -1484,11 +1484,17 @@ require("lazy").setup({
             current_buffer_fuzzy_find = { theme = "ivy" },
             find_files = {
               find_command = {
-                "fd",
+                "rg",
+                "--color=never",
+                "--no-heading",
+                "--with-filename",
+                "--line-number",
+                "--column",
+                "--smart-case",
+                "--trim",
                 "--no-ignore",
                 "--hidden",
-                "--type",
-                "file",
+                "--files",
               },
             },
           },
@@ -2239,6 +2245,12 @@ require("lazy").setup({
           },
         })
 
+        -- graphql
+        lspconfig.graphql.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+        })
+
         -- gopls
         lspconfig.gopls.setup({
           on_attach = on_attach,
@@ -2421,7 +2433,7 @@ require("lazy").setup({
       ft = { "yaml" },
       event = "BufEnter pubspec.yaml",
       config = function()
-        require("pubspec-assist").setup()
+        require("pubspec-assist").setup({})
         vim.api.nvim_set_keymap(
           "n",
           "<Leader>p",
@@ -2550,7 +2562,7 @@ require("lazy").setup({
           sources = cmp.config.sources({
             { name = "copilot", group_index = 2 },
             { name = "nvim_lsp", group_index = 2 },
-            { name = "vsnip", group_index = 2 },
+            { name = "lazydev", group_index = 2 },
             { name = "nvim_lsp_signature_help", group_index = 2 },
             { name = "path", group_index = 2 },
           }, {
@@ -2745,6 +2757,18 @@ require("lazy").setup({
         vim.keymap.set("n", "<Leader>t", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
         vim.keymap.set("n", "<Leader>r", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", bufopts)
       end,
+    },
+
+    -- init.lua の開発サポート
+    {
+      "folke/lazydev.nvim",
+      ft = { "lua" },
+      event = "BufRead init.lua",
+      opts = {
+        library = {
+          { path = "luvit-meta/library", words = { "vim%.uv" } },
+        },
+      },
     },
   },
 })
