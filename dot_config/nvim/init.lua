@@ -1631,7 +1631,7 @@ require("lazy").setup({
           yaml = { "prettierd" },
           toml = { "dprint" },
           html = { "prettierd" },
-          css = { "stylelint", "prettierd" },
+          css = { "prettierd" },
           xml = { "xmlformat" },
           vue = { "prettierd" },
           svelte = { "prettierd" },
@@ -1640,7 +1640,7 @@ require("lazy").setup({
           javascriptreact = { "eslint_d", "prettierd" },
           typescript = { "eslint_d", "prettierd" },
           typescriptreact = { "eslint_d", "prettierd" },
-          java = { "eclipselsp" },
+          java = { "google-java-format" },
           kotlin = { "ktlint" },
           dart = { "dart_format" },
           go = { "gofmt", "goimports" },
@@ -1682,6 +1682,7 @@ require("lazy").setup({
           yaml = { "yamllint", "actionlint" },
           go = { "golangcilint" },
           swift = { "swiftlint" },
+          kotlin = { "ktlint" },
           terraform = { "tflint" },
         }
 
@@ -2192,6 +2193,7 @@ require("lazy").setup({
             "lua-language-server", -- lua_ls
             "typescript-language-server",
             "graphql-language-service-cli",
+            "jdtls",
 
             -- Formatter/Linter
             "prettier",
@@ -2213,7 +2215,9 @@ require("lazy").setup({
             "xmlformatter",
             "selene",
             "stylua",
+            "stylelint",
             "tflint",
+            "google-java-format",
           },
           auto_update = true,
           run_on_start = true,
