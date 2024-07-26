@@ -17,6 +17,3 @@ extend-exclude = [
 
 [type.log]
 check-file = false
-
-[type.toggleterm]
-check-file = false

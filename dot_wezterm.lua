@@ -29,7 +29,7 @@ elseif os == "windows" then
 -- Linux settings
 -- elseif os == "linux" then
 --   -- Add any specific Linux configurations here
--- end
+end
 
 config.font = wezterm.font_with_fallback({
   "Cascadia Code",

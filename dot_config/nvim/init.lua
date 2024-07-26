@@ -1,5 +1,4 @@
 ---@diagnostic disable: undefined-global
-vim.o.foldenable = true
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
@@ -9,10 +8,10 @@ vim.api.nvim_create_user_command("ReloadVimrc", "source $MYVIMRC", {})
 vim.cmd("syntax on")
 -- <Leader>を`<Space>`に設定
 vim.g.mapleader = " "
-vim.api.nvim_set_keymap("n", " ", "<Leader>", {})
+vim.keymap.set("n", " ", "<Leader>", {})
 -- <LocalLeader>を`,`に設定
 vim.g.maplocalleader = ","
-vim.api.nvim_set_keymap("n", ",", "<LocalLeader>", {})
+vim.keymap.set("n", ",", "<LocalLeader>", {})
 
 -- 保存されていないファイルがあるときは終了前に保存確認
 vim.o.confirm = true
@@ -98,92 +97,92 @@ vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,
 -- キーマップ
 -- ---------------------------------------------------------
 -- ESC連打でハイライト解除
-vim.api.nvim_set_keymap("n", "<Esc><Esc>", ":nohlsearch<CR><Esc>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR><Esc>", { noremap = true, silent = true })
 
 -- 折り返し時に表示行単位での移動できるようにする
-vim.api.nvim_set_keymap("n", "j", "gj", { noremap = true })
-vim.api.nvim_set_keymap("v", "j", "gj", { noremap = true })
-vim.api.nvim_set_keymap("n", "k", "gk", { noremap = true })
-vim.api.nvim_set_keymap("v", "k", "gk", { noremap = true })
+vim.keymap.set("n", "j", "gj", { noremap = true })
+vim.keymap.set("v", "j", "gj", { noremap = true })
+vim.keymap.set("n", "k", "gk", { noremap = true })
+vim.keymap.set("v", "k", "gk", { noremap = true })
 
 -- タブの移動
--- vim.api.nvim_set_keymap("n", "tf", ":tabfirst<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "tl", ":tablast<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "tt", ":tabnext<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "T", ":tabprevious<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "tc", ":tabclose<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "to", ":tabonly<CR>", { noremap = true })
--- vim.api.nvim_set_keymap("n", "tn", ":tabnew<CR>", { noremap = true })
+-- vim.keymap.set("n", "tf", ":tabfirst<CR>", { noremap = true })
+-- vim.keymap.set("n", "tl", ":tablast<CR>", { noremap = true })
+-- vim.keymap.set("n", "tt", ":tabnext<CR>", { noremap = true })
+-- vim.keymap.set("n", "T", ":tabprevious<CR>", { noremap = true })
+-- vim.keymap.set("n", "tc", ":tabclose<CR>", { noremap = true })
+-- vim.keymap.set("n", "to", ":tabonly<CR>", { noremap = true })
+-- vim.keymap.set("n", "tn", ":tabnew<CR>", { noremap = true })
 
 -- 画面分割
-vim.api.nvim_set_keymap("n", "s", "<Nop>", { noremap = true })
-vim.api.nvim_set_keymap("n", "sj", "<C-w>j", { noremap = true })
-vim.api.nvim_set_keymap("n", "sk", "<C-w>k", { noremap = true })
-vim.api.nvim_set_keymap("n", "sl", "<C-w>l", { noremap = true })
-vim.api.nvim_set_keymap("n", "sh", "<C-w>h", { noremap = true })
-vim.api.nvim_set_keymap("n", "sJ", "<C-w>J", { noremap = true })
-vim.api.nvim_set_keymap("n", "sK", "<C-w>K", { noremap = true })
-vim.api.nvim_set_keymap("n", "sL", "<C-w>L", { noremap = true })
-vim.api.nvim_set_keymap("n", "sH", "<C-w>H", { noremap = true })
-vim.api.nvim_set_keymap("n", "sn", "gt", { noremap = true })
-vim.api.nvim_set_keymap("n", "sp", "gT", { noremap = true })
-vim.api.nvim_set_keymap("n", "s=", "<C-w>=", { noremap = true })
-vim.api.nvim_set_keymap("n", "sw", "<C-w>w", { noremap = true })
-vim.api.nvim_set_keymap("n", "so", "<C-w>_<C-w>|", { noremap = true })
-vim.api.nvim_set_keymap("n", "sO", "<C-w>=", { noremap = true })
-vim.api.nvim_set_keymap("n", "sN", ":<C-u>bn<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "sP", ":<C-u>bp<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "st", ":<C-u>tabnew<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "ss", ":<C-u>sp<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "sv", ":<C-u>vs<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "sq", ":<C-u>q<CR>", { noremap = true })
-vim.api.nvim_set_keymap("n", "sQ", ":<C-u>bd<CR>", { noremap = true })
+vim.keymap.set("n", "s", "<Nop>", { noremap = true })
+vim.keymap.set("n", "sj", "<C-w>j", { noremap = true })
+vim.keymap.set("n", "sk", "<C-w>k", { noremap = true })
+vim.keymap.set("n", "sl", "<C-w>l", { noremap = true })
+vim.keymap.set("n", "sh", "<C-w>h", { noremap = true })
+vim.keymap.set("n", "sJ", "<C-w>J", { noremap = true })
+vim.keymap.set("n", "sK", "<C-w>K", { noremap = true })
+vim.keymap.set("n", "sL", "<C-w>L", { noremap = true })
+vim.keymap.set("n", "sH", "<C-w>H", { noremap = true })
+vim.keymap.set("n", "sn", "gt", { noremap = true })
+vim.keymap.set("n", "sp", "gT", { noremap = true })
+vim.keymap.set("n", "s=", "<C-w>=", { noremap = true })
+vim.keymap.set("n", "sw", "<C-w>w", { noremap = true })
+vim.keymap.set("n", "so", "<C-w>_<C-w>|", { noremap = true })
+vim.keymap.set("n", "sO", "<C-w>=", { noremap = true })
+vim.keymap.set("n", "sN", ":<C-u>bn<CR>", { noremap = true })
+vim.keymap.set("n", "sP", ":<C-u>bp<CR>", { noremap = true })
+vim.keymap.set("n", "st", ":<C-u>tabnew<CR>", { noremap = true })
+vim.keymap.set("n", "ss", ":<C-u>sp<CR>", { noremap = true })
+vim.keymap.set("n", "sv", ":<C-u>vs<CR>", { noremap = true })
+vim.keymap.set("n", "sq", ":<C-u>q<CR>", { noremap = true })
+vim.keymap.set("n", "sQ", ":<C-u>bd<CR>", { noremap = true })
 
 -- ノーマルモードではセミコロンをコロンに
-vim.api.nvim_set_keymap("n", ";", ":", { noremap = true })
+vim.keymap.set("n", ";", ":", { noremap = true })
 -- ノーマルモードでは 0 で行頭、9 で行末
-vim.api.nvim_set_keymap("n", "0", "^", { noremap = true })
-vim.api.nvim_set_keymap("n", "9", "$", { noremap = true })
+vim.keymap.set("n", "0", "^", { noremap = true })
+vim.keymap.set("n", "9", "$", { noremap = true })
 
 -- 保存・終了時のタイポ修正
-vim.api.nvim_set_keymap("c", "Q", "q", { noremap = true })
-vim.api.nvim_set_keymap("c", "Q!", "q!", { noremap = true })
-vim.api.nvim_set_keymap("c", "W", "w", { noremap = true })
-vim.api.nvim_set_keymap("c", "W!", "w!", { noremap = true })
-vim.api.nvim_set_keymap("c", "WQ!", "wq!", { noremap = true })
+vim.keymap.set("c", "Q", "q", { noremap = true })
+vim.keymap.set("c", "Q!", "q!", { noremap = true })
+vim.keymap.set("c", "W", "w", { noremap = true })
+vim.keymap.set("c", "W!", "w!", { noremap = true })
+vim.keymap.set("c", "WQ!", "wq!", { noremap = true })
 
 -- Ctrl+s で保存
-vim.api.nvim_set_keymap("n", "<C-s>", ":update<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<s>", ":update<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-s>", ":update<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<s>", ":update<CR>", { noremap = true, silent = true })
 
 -- Ctrl+q で :q
-vim.api.nvim_set_keymap("n", "<C-q>", ":q<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-q>", ":q<CR>", { noremap = true, silent = true })
 
 -- w!!でsudoを忘れても保存
-vim.api.nvim_set_keymap("c", "w!!", "w !sudo tee > /dev/null %<CR> :e!<CR>", { noremap = true })
+vim.keymap.set("c", "w!!", "w !sudo tee > /dev/null %<CR> :e!<CR>", { noremap = true })
 
 -- 入力モード中のカーソル移動
-vim.api.nvim_set_keymap("i", "<C-h>", "<Left>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<C-j>", "<Down>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<C-k>", "<Up>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<C-l>", "<Right>", { noremap = true })
+vim.keymap.set("i", "<C-h>", "<Left>", { noremap = true })
+vim.keymap.set("i", "<C-j>", "<Down>", { noremap = true })
+vim.keymap.set("i", "<C-k>", "<Up>", { noremap = true })
+vim.keymap.set("i", "<C-l>", "<Right>", { noremap = true })
 
 -- 対象の行を移動 -- use mini.move
--- vim.api.nvim_set_keymap("n", "<M-k>", '"zdd<Up>"zP', { noremap = true })
--- vim.api.nvim_set_keymap("n", "<M-j>", '"zdd"zp', { noremap = true })
+-- vim.keymap.set("n", "<M-k>", '"zdd<Up>"zP', { noremap = true })
+-- vim.keymap.set("n", "<M-j>", '"zdd"zp', { noremap = true })
 -- 対象の複数行を移動 -- use mini.move
--- vim.api.nvim_set_keymap("v", "<M-k>", '"zx<Up>"zP`[V`]', { noremap = true })
--- vim.api.nvim_set_keymap("v", "<M-j>", '"zx"zp`[V`]', { noremap = true })
+-- vim.keymap.set("v", "<M-k>", '"zx<Up>"zP`[V`]', { noremap = true })
+-- vim.keymap.set("v", "<M-j>", '"zx"zp`[V`]', { noremap = true })
 
 -- Ctrl + p で繰り返しヤンクした文字をペースト
--- vim.api.nvim_set_keymap("v", "<C-p>", '"0p', { silent = true })
+-- vim.keymap.set("v", "<C-p>", '"0p', { silent = true })
 -- Ctrl + m を無効
--- vim.api.nvim_set_keymap("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
-vim.api.nvim_set_keymap("c", "<C-n>", 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
-vim.api.nvim_set_keymap("c", "<C-p>", 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
+vim.keymap.set("c", "<C-n>", 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
+vim.keymap.set("c", "<C-p>", 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
 -- 不要なプラグインを停止する
 vim.g.did_install_default_menus = 1
@@ -264,6 +263,15 @@ require("lazy").setup({
           transparent = false,
           dimInactive = false,
           terminalColors = true,
+          colors = {
+            theme = {
+              wave = {
+                ui = {
+                  bg_visual = "#5a7785",
+                },
+              },
+            },
+          },
           theme = "wave",
           background = {
             dark = "wave",
@@ -665,8 +673,13 @@ require("lazy").setup({
       config = function()
         require("scrollbar").setup({
           handle = { color = "#006df2" },
+          excluded_buftypes = {
+            "terminal",
+          },
           excluded_filetypes = {
+            "prompt",
             "dropbar_menu",
+            "lazygit",
           },
         })
       end,
@@ -751,9 +764,9 @@ require("lazy").setup({
       event = "VeryLazy",
       keys = {
         {
-          mode = { "n" },
+          mode = { "n", "o", "x" },
           "<C-/>",
-          "<cmd>GrugFar<CR>",
+          "<cmd>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>'), paths = vim.fn.expand('%') } })<CR>",
         },
       },
       config = function()
@@ -801,9 +814,9 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("hop").setup({ keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 })
-        vim.api.nvim_set_keymap("n", "ff", ":HopPattern<CR>", { noremap = true })
-        vim.api.nvim_set_keymap("n", "fw", ":HopWord<CR>", { noremap = true })
-        vim.api.nvim_set_keymap("n", "fl", ":HopLine<CR>", { noremap = true })
+        vim.keymap.set("n", "ff", ":HopPattern<CR>", { noremap = true })
+        vim.keymap.set("n", "fw", ":HopWord<CR>", { noremap = true })
+        vim.keymap.set("n", "fl", ":HopLine<CR>", { noremap = true })
         vim.api.nvim_set_hl(0, "HopNextKey", { fg = "#E06C75" })
         vim.api.nvim_set_hl(0, "HopNextKey1", { fg = "#E06C75" })
         vim.api.nvim_set_hl(0, "HopNextKey2", { fg = "#E06C75" })
@@ -827,6 +840,8 @@ require("lazy").setup({
           filetypes_denylist = {
             "dropbar_menu",
             "NvimTree",
+            "DiffviewFileHistory",
+            "DiffviewFiles",
           },
           filetypes_allowlist = {},
           modes_denylist = {},
@@ -854,7 +869,7 @@ require("lazy").setup({
       event = "VeryLazy",
       config = function()
         require("yankbank").setup()
-        vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<C-p>", "<cmd>YankBank<CR>", { noremap = true, silent = true })
       end,
     },
 
@@ -1096,7 +1111,7 @@ require("lazy").setup({
             ignore = false,
           },
         })
-        vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
       end,
     },
 
@@ -1315,47 +1330,60 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        vim.api.nvim_set_keymap(
+        vim.keymap.set(
           "n",
           "<C-o>",
           "<cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>",
           { noremap = true, silent = true }
         )
-        vim.api.nvim_set_keymap(
+        vim.keymap.set(
           "n",
           "<C-g>",
           "<cmd>lua require('telescope.builtin').live_grep()<CR>",
           { noremap = true, silent = true }
         )
-        -- vim.api.nvim_set_keymap(
+        -- vim.keymap.set(
         --   "n",
         --   "<C-p>",
         --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
         --   { noremap = true, silent = true }
         -- )
-        -- vim.api.nvim_set_keymap(
+        -- vim.keymap.set(
         --   "n",
         --   "<C-x>",
         --   "<cmd>lua require('telescope.builtin').commands()<CR>",
         --   { noremap = true, silent = true }
         -- )
-        -- vim.api.nvim_set_keymap(
+        -- vim.keymap.set(
         --   "n",
         --   "<C-m>",
         --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
         --   { noremap = true, silent = true }
         -- )
-        vim.api.nvim_set_keymap("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
-        vim.api.nvim_set_keymap(
-          "n",
-          "?",
-          ":Telescope current_buffer_fuzzy_find<CR>",
-          { noremap = true, desc = "Find Local" }
-        )
+        vim.keymap.set("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "?", ":Telescope current_buffer_fuzzy_find<CR>", { noremap = true, desc = "Find Local" })
 
         local telescope = require("telescope")
         -- local builtin_schemes = require("telescope._extensions.themes").builtin_schemes
         telescope.setup({
+          pickers = {
+            current_buffer_fuzzy_find = { theme = "ivy" },
+            find_files = {
+              find_command = {
+                "rg",
+                "--color=never",
+                "--no-heading",
+                "--with-filename",
+                "--line-number",
+                "--column",
+                "--smart-case",
+                "--trim",
+                -- "--no-ignore",
+                "--hidden",
+                "--files",
+              },
+            },
+          },
           defaults = {
             initial_mode = "insert",
             prompt_prefix = " ",
@@ -1375,7 +1403,6 @@ require("lazy").setup({
               ".gradle/",
               ".symlinks/",
               ".dart_tool/",
-              -- .gitignore を無視してるのでこっちで追加する
             },
             vimgrep_arguments = {
               "rg",
@@ -1386,7 +1413,7 @@ require("lazy").setup({
               "--column",
               "--smart-case",
               "--trim",
-              "--no-ignore",
+              -- "--no-ignore",
               "--hidden",
             },
             mappings = {
@@ -1478,24 +1505,6 @@ require("lazy").setup({
                   )
                 end
               end,
-            },
-          },
-          pickers = {
-            current_buffer_fuzzy_find = { theme = "ivy" },
-            find_files = {
-              find_command = {
-                "rg",
-                "--color=never",
-                "--no-heading",
-                "--with-filename",
-                "--line-number",
-                "--column",
-                "--smart-case",
-                "--trim",
-                "--no-ignore",
-                "--hidden",
-                "--files",
-              },
             },
           },
         })
@@ -1672,7 +1681,8 @@ require("lazy").setup({
           lua = { "selene" },
           markdown = { "markdownlint", "vale" },
           json = { "jsonlint" },
-          yaml = { "yamllint", "actionlint" },
+          -- yaml = { "yamllint", "actionlint" },
+          yaml = { "yamllint" },
           go = { "golangcilint" },
           swift = { "swiftlint" },
           terraform = { "tflint" },
@@ -1972,7 +1982,7 @@ require("lazy").setup({
             dap = false,
           },
         })
-        vim.api.nvim_set_keymap("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
       end,
     },
 
@@ -2273,8 +2283,15 @@ require("lazy").setup({
         -- typo-lsp
         lspconfig.typos_lsp.setup({
           on_attach = function(client, bufnr)
-            local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
-            if filetype == "log" or filetype == "toggleterm" then
+            local filetype = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
+            local disabled_filetypes = {
+              "log",
+              "toggleterm",
+              "NvimTree",
+              "DiffviewFileHistory",
+              "DiffviewFiles",
+            }
+            if vim.tbl_contains(disabled_filetypes, filetype) then
               client.stop()
             end
           end,
@@ -2419,6 +2436,32 @@ require("lazy").setup({
       end,
     },
 
+    -- package.json のヘルパー
+    {
+      "vuki656/package-info.nvim",
+      dependencies = {
+        "MunifTanjim/nui.nvim",
+      },
+      ft = { "json" },
+      event = "BufEnter package.json",
+      config = function()
+        require("package-info").setup({
+          icons = {
+            enable = true,
+            style = {
+              up_to_date = "|  ",
+              outdated = "|  ",
+            },
+          },
+          autostart = true,
+          hide_up_to_date = true,
+          hide_unstable_versions = false,
+          package_manager = "npm",
+        })
+        vim.keymap.set("n", "<Leader>p", require("package-info").change_version, { silent = true, noremap = true })
+      end,
+    },
+
     -- pubspec.yaml のヘルパー
     {
       "akinsho/pubspec-assist.nvim",
@@ -2434,12 +2477,7 @@ require("lazy").setup({
       event = "BufEnter pubspec.yaml",
       config = function()
         require("pubspec-assist").setup({})
-        vim.api.nvim_set_keymap(
-          "n",
-          "<Leader>p",
-          "<cmd>PubspecAssistPickVersion<CR>",
-          { noremap = true, silent = true }
-        )
+        vim.keymap.set("n", "<Leader>p", "<cmd>PubspecAssistPickVersion<CR>", { noremap = true, silent = true })
       end,
     },
 
