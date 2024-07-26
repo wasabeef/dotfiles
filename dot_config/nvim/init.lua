@@ -1186,7 +1186,7 @@ require("lazy").setup({
           sign_priority = 6,
           update_debounce = 100,
           status_formatter = nil, -- Use default
-          max_file_length = 40000, -- Disable if file is longer than this (in lines)
+          max_file_length = 10000, -- Disable if file is longer than this (in lines)
           preview_config = {
             -- Options passed to nvim_open_win
             border = "single",
@@ -1285,7 +1285,7 @@ require("lazy").setup({
           },
           custom_types = {
             ["="] = { pat = "=(.*)", lang = "lua", show_cmd = true },
-            ["help"] = { icon = "? ", show_cmd = true },
+            ["help"] = { icon = "  ? ", show_cmd = true },
             ["substitute"] = { pat = "%w(.*)", lang = "regex", show_cmd = true },
           },
           aliases = {},
@@ -2114,8 +2114,12 @@ require("lazy").setup({
           textDocument = { completion = { completionItem = { snippetSupport = false } } },
         })
 
-        local on_attach = function(_, bufnr)
+        local on_attach = function(client, bufnr)
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+          -- Inlay hints
+          if client.server_capabilities.inlayHintProvider then
+            vim.lsp.inlay_hint.enable(true, { bufnr = buf })
+          end
         end
 
         vim.diagnostic.config({
@@ -2186,6 +2190,38 @@ require("lazy").setup({
           end,
         })
 
+        -- tsserver
+        lspconfig.tsserver.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+          },
+        })
+
         -- lua_ls
         lspconfig.lua_ls.setup({
           on_attach = on_attach,
@@ -2197,6 +2233,26 @@ require("lazy").setup({
             Lua = {
               diagnostics = {
                 globals = { "vim" },
+              },
+              hint = { enable = true },
+            },
+          },
+        })
+
+        -- gopls
+        lspconfig.gopls.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            gopls = {
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
               },
             },
           },
@@ -2319,10 +2375,14 @@ require("lazy").setup({
                 bufopts
               )
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
+
+              -- Inlay hints
+              -- vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
             end,
             capabilities = require("cmp_nvim_lsp").default_capabilities({
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
             }),
+            inlay_hints = { enabled = true },
             settings = {
               showTodos = true,
               completeFunctionCalls = true,
@@ -2336,6 +2396,14 @@ require("lazy").setup({
               updateImportsOnRename = true,
             },
           },
+        })
+
+        -- flutter-tools の場合はアタッチされたタイミングで呼ぶ
+        vim.api.nvim_create_autocmd("LspAttach", {
+          desc = "Enable inlayHint feature",
+          callback = function(args)
+            vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+          end,
         })
 
         require("telescope").load_extension("flutter")
@@ -2617,7 +2685,7 @@ require("lazy").setup({
           init = function()
             require("hover.providers.lsp")
             -- require('hover.providers.gh')
-            -- require('hover.providers.gh_user')
+            require("hover.providers.gh_user")
             -- require('hover.providers.jira')
             -- require('hover.providers.dap')
             -- require('hover.providers.fold_preview')
@@ -2659,6 +2727,10 @@ require("lazy").setup({
           references = {
             telescope = require("telescope.themes").get_cursor({
               hide_preview = false,
+              layout_config = {
+                width = 240,
+                height = 40,
+              },
             }),
           },
           focus_on_open = true,
