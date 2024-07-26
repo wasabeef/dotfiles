@@ -2375,9 +2375,6 @@ require("lazy").setup({
                 bufopts
               )
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
-
-              -- Inlay hints
-              -- vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
             end,
             capabilities = require("cmp_nvim_lsp").default_capabilities({
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
