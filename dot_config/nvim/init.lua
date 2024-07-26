@@ -1127,7 +1127,7 @@ require("lazy").setup({
         "nvim-lua/plenary.nvim",
       },
       keys = {
-        { "<Leader>g", "<cmd>LazyGit<CR>", desc = "LazyGit" },
+        { "<Leader>gl", "<cmd>LazyGit<CR>", desc = "LazyGit" },
       },
     },
 
@@ -2006,6 +2006,17 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
       },
       ft = "markdown",
+      event = "VeryLazy",
+    },
+
+    -- Markdown テーブル整形
+    {
+      "Kicamon/markdown-table-mode.nvim",
+      ft = "markdown",
+      event = "VeryLazy",
+      config = function()
+        require("markdown-table-mode").setup()
+      end,
     },
 
     -- Google 翻訳
@@ -2625,6 +2636,7 @@ require("lazy").setup({
           mouse_delay = 1000,
         })
         vim.keymap.set("n", "K", require("hover").hover, { desc = "hover.nvim" })
+        vim.keymap.set("n", "<Leader>k", require("hover").hover, { desc = "hover.nvim" })
 
         -- Mouse support
         vim.keymap.set("n", "<MouseMove>", require("hover").hover_mouse, { desc = "hover.nvim (mouse)" })
@@ -2645,7 +2657,9 @@ require("lazy").setup({
           opacity = nil,
           resizing_mappings = false,
           references = {
-            telescope = require("telescope.themes").get_dropdown({ hide_preview = false }),
+            telescope = require("telescope.themes").get_cursor({
+              hide_preview = false,
+            }),
           },
           focus_on_open = true,
           dismiss_on_move = false,
