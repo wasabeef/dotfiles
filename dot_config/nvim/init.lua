@@ -206,7 +206,7 @@ vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
 -- LSP
--- vim.keymap.set("n", "<Leader>k", vim.lsp.buf.hover, bufopts) -- use hover
+vim.keymap.set("n", "<Leader>K", vim.lsp.buf.hover, bufopts)
 -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use conform
 vim.keymap.set("n", "<Leader>R", vim.lsp.buf.references, bufopts)
 vim.keymap.set("n", "<Leader>D", vim.lsp.buf.definition, bufopts)
@@ -214,8 +214,8 @@ vim.keymap.set("n", "<Leader>D", vim.lsp.buf.definition, bufopts)
 vim.keymap.set("n", "<Leader>I", vim.lsp.buf.implementation, bufopts)
 vim.keymap.set("n", "<Leader>T", vim.lsp.buf.type_definition, bufopts)
 vim.keymap.set("n", "<Leader>n", vim.lsp.buf.rename, bufopts)
--- vim.keymap.set('n', '<Leader>a', vim.lsp.buf.code_action, bufopts) -- use actions-preview
--- vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, bufopts) -- use trouble
+vim.keymap.set("n", "<Leader>A", vim.lsp.buf.code_action, bufopts)
+vim.keymap.set("n", "<Leader>E", vim.diagnostic.open_float, bufopts)
 vim.keymap.set("n", "<Leader>]", vim.diagnostic.goto_next, bufopts)
 vim.keymap.set("n", "<Leader>[", vim.diagnostic.goto_prev, bufopts)
 
@@ -969,6 +969,13 @@ require("lazy").setup({
     {
       "echasnovski/mini.notify",
       event = "VeryLazy",
+      keys = {
+        {
+          mode = { "n", "o", "x" },
+          "<Leader>l",
+          "<cmd>tabnew | lua MiniNotify.show_history()<CR>",
+        },
+      },
       config = function()
         require("mini.notify").setup({
           lsp_progress = {
@@ -1580,15 +1587,6 @@ require("lazy").setup({
         modes = {
           preview_float = {
             mode = "diagnostics",
-            preview = {
-              type = "float",
-              relative = "editor",
-              border = "rounded",
-              title = "Trouble",
-              title_pos = "center",
-              position = { 0, -2 },
-              size = { width = 0.3, height = 0.3 },
-            },
           },
         },
       },
@@ -1681,12 +1679,45 @@ require("lazy").setup({
           lua = { "selene" },
           markdown = { "markdownlint", "vale" },
           json = { "jsonlint" },
-          -- yaml = { "yamllint", "actionlint" },
-          yaml = { "yamllint" },
+          yaml = { "yamllint", "actionlint" },
           go = { "golangcilint" },
           swift = { "swiftlint" },
           terraform = { "tflint" },
         }
+
+        -- https://github.com/syphar/dotfiles/blob/a60a9b6337499ab9b48398374ddda49331b3ecd6/.config/nvim/lua/dc/plugins/lint.lua#L32
+        vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "TextChanged" }, {
+          callback = function()
+            local ctx = { filename = vim.api.nvim_buf_get_name(0) }
+            ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
+
+            if not lint.linters_by_ft[vim.bo.filetype] then
+              return
+            end
+
+            local linters = vim.tbl_filter(function(name)
+              local linter = lint.linters[name]
+
+              assert(linter)
+              assert(type(linter) == "table")
+
+              ---@diagnostic disable-next-line: undefined-field
+              return not (linter.condition and not linter.condition(ctx))
+            end, lint.linters_by_ft[vim.bo.filetype])
+
+            if #linters > 0 then
+              lint.try_lint(linters)
+            end
+          end,
+        })
+
+        -- actionlint
+        ---@diagnostic disable-next-line: undefined-field
+        lint.linters.actionlint.condition = function(ctx)
+          return ctx.filename:find(".github")
+        end
+
+        -- selene
         lint.linters.selene.args = {
           "--config",
           function() -- find selene.toml file
@@ -1701,11 +1732,6 @@ require("lazy").setup({
           "json",
           "-",
         }
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-          callback = function()
-            require("lint").try_lint()
-          end,
-        })
       end,
     },
 
@@ -2595,7 +2621,7 @@ require("lazy").setup({
             ["<C-n>"] = cmp.mapping.select_next_item(),
             ["<C-Space>"] = cmp.mapping.complete(),
             ["<C-e>"] = cmp.mapping.abort(),
-            ["<CR>"] = cmp.mapping.confirm({ select = true }),
+            ["<CR>"] = cmp.mapping.confirm({ select = false }),
           }),
           sources = cmp.config.sources({
             { name = "copilot", group_index = 2 },
