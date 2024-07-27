@@ -1600,7 +1600,7 @@ require('lazy').setup {
                   vim.notify 'Falling back to global dprint config'
                   return {
                     '--config',
-                    vim.fn.expand '~/.config/nvim/dprint.json',
+                    vim.fn.expand '~/.config/dprint.json',
                   }
                 end
               end,
@@ -1672,7 +1672,7 @@ require('lazy').setup {
             local conf =
               vim.fs.find({ 'selene.toml' }, { type = 'file', upward = true, path = vim.api.nvim_buf_get_name(0) })[1]
             if conf == nil then
-              conf = vim.fn.expand('~/.config/nvim/selene.toml')[1]
+              conf = vim.fn.expand('~/.config/selene.toml')[1]
             end
             return conf
           end,
@@ -2383,6 +2383,9 @@ require('lazy').setup {
                 bufopts
               )
               vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', bufopts)
+
+              vim.keymap.set('n', '<Leader>h', '<cmd>InlayHintStart<CR>', bufopts)
+              vim.keymap.set('n', '<Leader>hd', '<cmd>InlayHintStop<CR>', bufopts)
             end,
             capabilities = require('cmp_nvim_lsp').default_capabilities {
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
