@@ -2,8 +2,6 @@
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
--- 再読み込み
-vim.api.nvim_create_user_command("ReloadVimrc", "source $MYVIMRC", {})
 -- Highlight
 vim.cmd("syntax on")
 -- <Leader>を`<Space>`に設定
@@ -284,7 +282,7 @@ require("lazy").setup({
 
     -- アイコン
     {
-      "DaikyXendo/nvim-material-icon",
+      "nvim-tree/nvim-web-devicons",
       event = "VimEnter",
     },
 
@@ -378,27 +376,6 @@ require("lazy").setup({
         })
       end,
     },
-
-    -- VIM 矯正
-    -- {
-    --   "m4xshen/hardtime.nvim",
-    --   dependencies = {
-    --     "MunifTanjim/nui.nvim",
-    --     "nvim-lua/plenary.nvim",
-    --   },
-    --   event = "VeryLazy",
-    --   opts = {
-    --     max_count = 30,
-    --     disable_mouse = false,
-    --     disabled_filetypes = {
-    --       "NvimTree",
-    --       "lazy",
-    --       "mason",
-    --       "toggleterm",
-    --       "TelescopePrompt",
-    --     },
-    --   },
-    -- },
 
     -- スクリーンセーバー
     {
@@ -1027,8 +1004,8 @@ require("lazy").setup({
     -- ログに色付け
     {
       "fei6409/log-highlight.nvim",
-      event = "VeryLazy",
       ft = "log",
+      -- event = "VeryLazy",
       config = true,
     },
 
@@ -1604,9 +1581,6 @@ require("lazy").setup({
       "stevearc/conform.nvim",
       event = "VeryLazy",
       cmd = { "ConformInfo" },
-      init = function()
-        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-      end,
       keys = {
         {
           "<Leader>f",
@@ -1615,52 +1589,56 @@ require("lazy").setup({
           end,
         },
       },
-      opts = {
-        default_format_opts = {
-          lsp_format = "fallback",
-        },
-        -- format_on_save = { timeout_ms = 500 },
-        formatters_by_ft = {
-          ["*"] = { "trim_whitespace" },
-          sh = { "shfmt" },
-          bash = { "shfmt" },
-          zsh = { "shfmt" },
-          lua = { "stylua" },
-          markdown = { "prettierd" },
-          json = { "prettierd" },
-          yaml = { "prettierd" },
-          toml = { "dprint" },
-          html = { "prettierd" },
-          css = { "prettierd" },
-          xml = { "xmlformat" },
-          vue = { "prettierd" },
-          svelte = { "prettierd" },
-          astro = { "prettierd" },
-          javascript = { "eslint_d", "prettierd" },
-          javascriptreact = { "eslint_d", "prettierd" },
-          typescript = { "eslint_d", "prettierd" },
-          typescriptreact = { "eslint_d", "prettierd" },
-          java = { "google-java-format" },
-          kotlin = { "ktlint" },
-          dart = { "dart_format" },
-          go = { "gofmt", "goimports" },
-          graphql = { "prettierd" },
-          swift = { "swiftformat" },
-        },
-        formatters = {
-          dprint = {
-            prepend_args = function(self, ctx)
-              if not self:cwd(ctx) then
-                vim.notify("Falling back to global dprint config")
-                return {
-                  "--config",
-                  vim.fn.expand("~/.config/nvim/dprint.json"),
-                }
-              end
-            end,
+      config = function()
+        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+        require("conform").setup({
+
+          default_format_opts = {
+            lsp_format = "fallback",
           },
-        },
-      },
+          -- format_on_save = { timeout_ms = 500 },
+          formatters_by_ft = {
+            ["*"] = { "trim_whitespace" },
+            sh = { "shfmt" },
+            bash = { "shfmt" },
+            zsh = { "shfmt" },
+            lua = { "stylua" },
+            markdown = { "prettierd" },
+            json = { "prettierd" },
+            yaml = { "prettierd" },
+            toml = { "dprint" },
+            html = { "prettierd" },
+            css = { "prettierd" },
+            xml = { "xmlformat" },
+            vue = { "prettierd" },
+            svelte = { "prettierd" },
+            astro = { "prettierd" },
+            javascript = { "eslint_d", "prettierd" },
+            javascriptreact = { "eslint_d", "prettierd" },
+            typescript = { "eslint_d", "prettierd" },
+            typescriptreact = { "eslint_d", "prettierd" },
+            java = { "google-java-format" },
+            kotlin = { "ktlint" },
+            dart = { "dart_format" },
+            go = { "gofmt", "goimports" },
+            graphql = { "prettierd" },
+            swift = { "swiftformat" },
+          },
+          formatters = {
+            dprint = {
+              prepend_args = function(self, ctx)
+                if not self:cwd(ctx) then
+                  vim.notify("Falling back to global dprint config")
+                  return {
+                    "--config",
+                    vim.fn.expand("~/.config/nvim/dprint.json"),
+                  }
+                end
+              end,
+            },
+          },
+        })
+      end,
     },
 
     -- Linter
@@ -2049,14 +2027,14 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
       },
       ft = "markdown",
-      event = "VeryLazy",
+      -- event = "VeryLazy",
     },
 
     -- Markdown テーブル整形
     {
       "Kicamon/markdown-table-mode.nvim",
       ft = "markdown",
-      event = "VeryLazy",
+      -- event = "VeryLazy",
       config = function()
         require("markdown-table-mode").setup()
       end,
@@ -2164,6 +2142,9 @@ require("lazy").setup({
             vim.lsp.inlay_hint.enable(true, { bufnr = buf })
           end
         end
+        -- Inaly hints commands
+        vim.api.nvim_create_user_command("InlayHintStart", "lua vim.lsp.inlay_hint.enable(true)", {})
+        vim.api.nvim_create_user_command("InlayHintStop", "lua vim.lsp.inlay_hint.enable(false)", {})
 
         vim.diagnostic.config({
           -- virtual_text は非表示
@@ -2237,33 +2218,25 @@ require("lazy").setup({
         })
 
         -- tsserver
+        local inlayHints = {
+          includeInlayParameterNameHints = "all",
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = true,
+          includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        }
         lspconfig.tsserver.setup({
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
             typescript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
+              inlayHints = inlayHints,
             },
             javascript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
+              inlayHints = inlayHints,
             },
           },
         })
@@ -2280,6 +2253,7 @@ require("lazy").setup({
               diagnostics = {
                 globals = { "vim" },
               },
+              -- inlay hints
               hint = { enable = true },
             },
           },
@@ -2298,13 +2272,13 @@ require("lazy").setup({
           settings = {
             gopls = {
               hints = {
+                rangeVariableTypes = true,
+                parameterNames = true,
+                constantValues = true,
                 assignVariableTypes = true,
                 compositeLiteralFields = true,
                 compositeLiteralTypes = true,
-                constantValues = true,
                 functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true,
               },
             },
           },
@@ -2367,7 +2341,7 @@ require("lazy").setup({
         "hrsh8th/cmp-nvim-lsp",
       },
       ft = { "dart" },
-      event = "BufRead *.dart",
+      -- event = "BufRead *.dart",
       config = function()
         require("flutter-tools").setup({
           flutter_path = nil,
@@ -2466,13 +2440,43 @@ require("lazy").setup({
       end,
     },
 
+    -- Inlay hints
+    {
+      "chrisgrieser/nvim-lsp-endhints",
+      ft = {
+        "typescript",
+        "typescriptreact",
+        "javascript",
+        "javascriptreact",
+        "lua",
+        "go",
+      },
+      -- event = "LspAttach",
+      config = function()
+        require("lsp-endhints").setup({
+          icons = {
+            type = "󰜁 ",
+            parameter = "󰏪 ",
+            offspec = " ", -- hint kind not defined in official LSP spec
+            unknown = " ", -- hint kind is nil
+          },
+          label = {
+            padding = 1,
+            marginLeft = 0,
+            bracketedParameters = true,
+          },
+          autoEnableHints = true,
+        })
+      end,
+    },
+
     -- package.json のヘルパー
     {
       "vuki656/package-info.nvim",
       dependencies = {
         "MunifTanjim/nui.nvim",
       },
-      ft = { "json" },
+      -- ft = { "json" },
       event = "BufEnter package.json",
       config = function()
         require("package-info").setup({
@@ -2503,7 +2507,7 @@ require("lazy").setup({
         "PubspecAssistAddDevPackage",
         "PubspecAssistPickVersion",
       },
-      ft = { "yaml" },
+      -- ft = { "yaml" },
       event = "BufEnter pubspec.yaml",
       config = function()
         require("pubspec-assist").setup({})
@@ -2830,7 +2834,7 @@ require("lazy").setup({
     -- init.lua の開発サポート
     {
       "folke/lazydev.nvim",
-      ft = { "lua" },
+      -- ft = { "lua" },
       event = "BufRead init.lua",
       opts = {
         library = {
