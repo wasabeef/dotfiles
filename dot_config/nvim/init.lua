@@ -3,7 +3,7 @@
 -- 基本設定
 -- ---------------------------------------------------------
 -- Highlight
-vim.cmd("syntax on")
+vim.cmd "syntax on"
 -- <Leader>を`<Space>`に設定
 vim.g.mapleader = " "
 vim.keymap.set("n", " ", "<Leader>", {})
@@ -232,17 +232,17 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  vim.fn.system { "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath }
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- パフォーマンス
 vim.loader.enable()
 
-require("lazy").setup({
+require("lazy").setup {
   checker = { enabled = false },
   spec = {
     -- テーマ
@@ -250,7 +250,7 @@ require("lazy").setup({
       "rebelot/kanagawa.nvim",
       event = "VimEnter",
       config = function()
-        require("kanagawa").setup({
+        require("kanagawa").setup {
           compile = true, -- 変更したら :KanagawaCompile が必要
           undercurl = false,
           commentStyle = { italic = false },
@@ -275,8 +275,8 @@ require("lazy").setup({
             dark = "wave",
             light = "wave",
           },
-        })
-        vim.cmd("colorscheme kanagawa")
+        }
+        vim.cmd "colorscheme kanagawa"
       end,
     },
 
@@ -291,8 +291,8 @@ require("lazy").setup({
       "goolord/alpha-nvim",
       event = "VimEnter",
       config = function()
-        local alpha = require("alpha")
-        local dashboard = require("alpha.themes.dashboard")
+        local alpha = require "alpha"
+        local dashboard = require "alpha.themes.dashboard"
         dashboard.section.header.val = {
           -- Using img2art
           [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
@@ -397,8 +397,8 @@ require("lazy").setup({
       },
       event = "VimEnter",
       config = function()
-        require("lsp-progress").setup({})
-        local lualine = require("lualine")
+        require("lsp-progress").setup {}
+        local lualine = require "lualine"
         local theme_colors = {
           blue = "#193b73",
           cyan = "#79dac8",
@@ -446,8 +446,7 @@ require("lazy").setup({
                 function()
                   return "󰩃"
                 end,
-                separator = { left = "" },
-                padding = { left = 1, right = 3 },
+                padding = { left = 2, right = 3 },
                 color = function()
                   local evil_colors = {
                     bg = "#1c1f24",
@@ -518,7 +517,7 @@ require("lazy").setup({
             },
             lualine_x = {
               function()
-                return require("lsp-progress").progress({
+                return require("lsp-progress").progress {
                   format = function(messages)
                     local active_clients = vim.lsp.get_active_clients()
                     local client_count = #active_clients
@@ -537,7 +536,7 @@ require("lazy").setup({
                       return " LSP:" .. client_count .. " " .. table.concat(client_names, " ")
                     end
                   end,
-                })
+                }
               end,
             },
             lualine_y = {
@@ -576,8 +575,7 @@ require("lazy").setup({
               {
                 "filetype",
                 icons_enabled = false,
-                separator = { right = "" },
-                padding = { left = 0, right = 1.5 },
+                padding = { left = 0, right = 2 },
               },
             },
           },
@@ -605,8 +603,8 @@ require("lazy").setup({
       "karb94/neoscroll.nvim",
       event = "VeryLazy",
       config = function()
-        local neoscroll = require("neoscroll")
-        neoscroll.setup({
+        local neoscroll = require "neoscroll"
+        neoscroll.setup {
           mappings = {
             "<C-u>",
             "<C-d>",
@@ -620,19 +618,19 @@ require("lazy").setup({
           },
           hide_cursor = false,
           performance_mode = true,
-        })
+        }
         local keymap = {
           ["<C-u>"] = function()
-            neoscroll.ctrl_u({ duration = 50 })
+            neoscroll.ctrl_u { duration = 50 }
           end,
           ["<C-d>"] = function()
-            neoscroll.ctrl_d({ duration = 50 })
+            neoscroll.ctrl_d { duration = 50 }
           end,
           ["<C-b>"] = function()
-            neoscroll.ctrl_b({ duration = 120 })
+            neoscroll.ctrl_b { duration = 120 }
           end,
           ["<C-f>"] = function()
-            neoscroll.ctrl_f({ duration = 120 })
+            neoscroll.ctrl_f { duration = 120 }
           end,
         }
 
@@ -648,7 +646,7 @@ require("lazy").setup({
       "petertriho/nvim-scrollbar",
       event = "VeryLazy",
       config = function()
-        require("scrollbar").setup({
+        require("scrollbar").setup {
           handle = { color = "#006df2" },
           excluded_buftypes = {
             "terminal",
@@ -658,7 +656,7 @@ require("lazy").setup({
             "dropbar_menu",
             "lazygit",
           },
-        })
+        }
       end,
     },
 
@@ -670,9 +668,9 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        require("dropbar").setup({
+        require("dropbar").setup {
           background = false,
-        })
+        }
       end,
     },
 
@@ -710,13 +708,13 @@ require("lazy").setup({
       "windwp/nvim-ts-autotag",
       event = "VeryLazy",
       config = function()
-        require("nvim-ts-autotag").setup({
+        require("nvim-ts-autotag").setup {
           opts = {
             enable_close = true, -- Auto close tags
             enable_rename = true, -- Auto rename pairs of tags
             enable_close_on_slash = false, -- Auto close on trailing </
           },
-        })
+        }
       end,
     },
 
@@ -747,9 +745,9 @@ require("lazy").setup({
         },
       },
       config = function()
-        require("grug-far").setup({
+        require("grug-far").setup {
           windowCreationCommand = "rightbelow 120vnew",
-        })
+        }
       end,
     },
 
@@ -775,12 +773,12 @@ require("lazy").setup({
         },
       },
       config = function()
-        require("spider").setup({
+        require("spider").setup {
           skipInsignificantPunctuation = true,
           consistentOperatorPending = false,
           subwordMovement = false, -- ignore camelCase, snake_case
           customPatterns = {},
-        })
+        }
       end,
     },
 
@@ -790,7 +788,7 @@ require("lazy").setup({
       branch = "v2",
       event = "VeryLazy",
       config = function()
-        require("hop").setup({ keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 })
+        require("hop").setup { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 }
         vim.keymap.set("n", "ff", ":HopPattern<CR>", { noremap = true })
         vim.keymap.set("n", "fw", ":HopWord<CR>", { noremap = true })
         vim.keymap.set("n", "fl", ":HopLine<CR>", { noremap = true })
@@ -806,7 +804,7 @@ require("lazy").setup({
       "RRethy/vim-illuminate",
       event = "VeryLazy",
       config = function()
-        require("illuminate").configure({
+        require("illuminate").configure {
           providers = {
             "lsp",
             "treesitter",
@@ -830,7 +828,7 @@ require("lazy").setup({
           large_file_overrides = nil,
           min_count_to_highlight = 1,
           case_insensitive_regex = false,
-        })
+        }
       end,
     },
 
@@ -861,13 +859,13 @@ require("lazy").setup({
       "echasnovski/mini.splitjoin",
       event = { "BufRead", "BufNewFile" },
       config = function()
-        require("mini.splitjoin").setup({
+        require("mini.splitjoin").setup {
           mappings = {
             toggle = "gss",
             split = "",
             join = "",
           },
-        })
+        }
       end,
     },
 
@@ -906,7 +904,7 @@ require("lazy").setup({
       "echasnovski/mini.indentscope",
       event = { "BufRead", "BufNewFile" },
       config = function()
-        require("mini.indentscope").setup({
+        require("mini.indentscope").setup {
           options = {
             try_as_border = true,
             indent_at_cursor = true,
@@ -922,7 +920,7 @@ require("lazy").setup({
             goto_bottom = "]i",
           },
           -- symbol = "󰍳",
-        })
+        }
 
         vim.api.nvim_create_autocmd("FileType", {
           pattern = {
@@ -954,17 +952,17 @@ require("lazy").setup({
         },
       },
       config = function()
-        require("mini.notify").setup({
+        require("mini.notify").setup {
           lsp_progress = {
             enable = false,
           },
-        })
+        }
 
-        vim.notify = require("mini.notify").make_notify({
+        vim.notify = require("mini.notify").make_notify {
           ERROR = { duration = 5000 },
           WARN = { duration = 5000 },
           INFO = { duration = 5000 },
-        })
+        }
       end,
     },
 
@@ -1018,26 +1016,32 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        local preview = require("nvim-tree-preview")
+        local preview = require "nvim-tree-preview"
         local function on_attach(bufnr)
-          local api = require("nvim-tree.api")
+          local api = require "nvim-tree.api"
 
           local function opts(desc)
-            return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+            return {
+              desc = "nvim-tree: " .. desc,
+              buffer = bufnr,
+              noremap = true,
+              silent = true,
+              nowait = true,
+            }
           end
 
           api.config.mappings.default_on_attach(bufnr)
-          vim.keymap.set("n", "x", api.node.run.system, opts("Open System"))
-          vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
-          vim.keymap.set("n", "=", api.tree.change_root_to_node, opts("CD"))
-          vim.keymap.set("n", "-", api.tree.change_root_to_parent, opts("Dir Up"))
-          vim.keymap.set("n", "l", api.node.open.edit, opts("Edit"))
-          vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Node"))
-          vim.keymap.set("n", "s", "", opts(""))
-          vim.keymap.set("n", "sl", "<c-w>l", opts(""))
+          vim.keymap.set("n", "x", api.node.run.system, opts "Open System")
+          vim.keymap.set("n", "?", api.tree.toggle_help, opts "Help")
+          vim.keymap.set("n", "=", api.tree.change_root_to_node, opts "CD")
+          vim.keymap.set("n", "-", api.tree.change_root_to_parent, opts "Dir Up")
+          vim.keymap.set("n", "l", api.node.open.edit, opts "Edit")
+          vim.keymap.set("n", "h", api.node.navigate.parent_close, opts "Close Node")
+          vim.keymap.set("n", "s", "", opts "")
+          vim.keymap.set("n", "sl", "<c-w>l", opts "")
 
-          vim.keymap.set("n", "P", preview.watch, opts("Preview (Watch)"))
-          vim.keymap.set("n", "<Esc>", preview.unwatch, opts("Close Preview/Unwatch"))
+          vim.keymap.set("n", "P", preview.watch, opts "Preview (Watch)")
+          vim.keymap.set("n", "<Esc>", preview.unwatch, opts "Close Preview/Unwatch")
           vim.keymap.set("n", "<Tab>", function()
             local ok, node = pcall(api.tree.get_node_under_cursor)
             if ok and node then
@@ -1047,10 +1051,10 @@ require("lazy").setup({
                 preview.watch()
               end
             end
-          end, opts("Preview"))
+          end, opts "Preview")
         end
 
-        preview.setup({
+        preview.setup {
           keymaps = {
             ["<Esc>"] = { action = "close", unwatch = true },
           },
@@ -1060,9 +1064,9 @@ require("lazy").setup({
           max_height = 40,
           wrap = false, -- Whether to wrap lines in the preview window
           border = "rounded", -- Border style for the preview window
-        })
+        }
 
-        require("nvim-tree").setup({
+        require("nvim-tree").setup {
           on_attach = on_attach,
           view = {
             signcolumn = "yes",
@@ -1094,7 +1098,7 @@ require("lazy").setup({
             enable = true,
             ignore = false,
           },
-        })
+        }
         vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
       end,
     },
@@ -1146,7 +1150,7 @@ require("lazy").setup({
       "lewis6991/gitsigns.nvim",
       event = "VeryLazy",
       config = function()
-        require("gitsigns").setup({
+        require("gitsigns").setup {
           signs = {
             add = { text = "┃" },
             change = { text = "┃" },
@@ -1194,7 +1198,7 @@ require("lazy").setup({
             row = 0,
             col = 1,
           },
-        })
+        }
         -- スクロールバーにも表示
         require("scrollbar.handlers.gitsigns").setup()
       end,
@@ -1216,7 +1220,7 @@ require("lazy").setup({
         pcall(require, "nvim-treesitter.query_predicates")
       end,
       config = function()
-        require("nvim-treesitter.configs").setup({
+        require("nvim-treesitter.configs").setup {
           ensure_installed = {
             "gitignore",
             "git_config",
@@ -1265,39 +1269,7 @@ require("lazy").setup({
             end,
             additional_vim_regex_highlighting = false,
           },
-        })
-      end,
-    },
-
-    {
-      "Sam-programs/cmdline-hl.nvim",
-      event = { "BufReadPre", "BufNewFile" },
-      config = function()
-        local cmdline_hl = require("cmdline-hl")
-        cmdline_hl.setup({
-          -- custom prefixes for builtin-commands
-          type_signs = {
-            [":"] = { "   ", "Title" },
-            ["/"] = { "   ", "Title" },
-            ["?"] = { "   ", "Title" },
-            ["="] = { "   ", "Title" },
-          },
-          custom_types = {
-            ["="] = { pat = "=(.*)", lang = "lua", show_cmd = true },
-            ["help"] = { icon = "  ? ", show_cmd = true },
-            ["substitute"] = { pat = "%w(.*)", lang = "regex", show_cmd = true },
-          },
-          aliases = {},
-          input_hl = "Title",
-          input_format = function(input)
-            return input
-          end,
-          range_hl = "Constant",
-          ghost_text = true,
-          ghost_text_hl = "Comment",
-          inline_ghost_text = false,
-          ghost_text_provider = require("cmdline-hl.ghost_text").history,
-        })
+        }
       end,
     },
 
@@ -1309,8 +1281,8 @@ require("lazy").setup({
         { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
         "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-media-files.nvim",
+        "jonarrien/telescope-cmdline.nvim",
         "dimaportenko/telescope-simulators.nvim",
-        "andrew-george/telescope-themes",
       },
       event = "VeryLazy",
       config = function()
@@ -1345,13 +1317,17 @@ require("lazy").setup({
         --   { noremap = true, silent = true }
         -- )
         vim.keymap.set("n", "<C-x>", "<cmd>Telescope simulators run<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", ":", ":Telescope cmdline<CR>", { noremap = true, desc = "Cmdline" })
         vim.keymap.set("n", "?", ":Telescope current_buffer_fuzzy_find<CR>", { noremap = true, desc = "Find Local" })
+        vim.api.nvim_create_user_command("Clear", function(opts)
+          vim.fn.histdel("cmd", -1)
+        end, {})
 
-        local telescope = require("telescope")
+        local telescope = require "telescope"
         -- local builtin_schemes = require("telescope._extensions.themes").builtin_schemes
-        telescope.setup({
+        telescope.setup {
           pickers = {
-            current_buffer_fuzzy_find = { theme = "ivy" },
+            -- current_buffer_fuzzy_find = { theme = "ivy" },
             find_files = {
               find_command = {
                 "rg",
@@ -1407,8 +1383,8 @@ require("lazy").setup({
               i = {
                 ["<C-q>"] = "close",
                 ["<Tab>"] = function(prompt_bufnr)
-                  local action_state = require("telescope.actions.state")
-                  local actions = require("telescope.actions")
+                  local action_state = require "telescope.actions.state"
+                  local actions = require "telescope.actions"
                   local picker = action_state.get_current_picker(prompt_bufnr)
                   local prompt_win = picker.prompt_win
                   local previewer = picker.previewer
@@ -1432,27 +1408,19 @@ require("lazy").setup({
                 case_mode = "smart_case", -- or "ignore_case" or "respect_case"
                 -- the default case_mode is "smart_case"
               },
-              --   themes = {
-              --     layout_config = {
-              --       horizontal = {
-              --         width = 0.8,
-              --         height = 0.7,
-              --       },
-              --     },
-              --     enable_previewer = true,
-              --     enable_live_preview = false,
-              --     ignore = vim.list_extend(builtin_schemes, { "embark" }),
-              --     persist = {
-              --       enabled = true,
-              --       path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua",
-              --     },
-              --     mappings = {
-              --       -- for people used to other mappings
-              --       down = "<C-n>",
-              --       up = "<C-p>",
-              --       accept = "<C-y>",
-              --     },
-              --   },
+              cmdline = {
+                picker = {
+                  layout_config = {
+                    width = 120,
+                    height = 25,
+                  },
+                },
+                mappings = {
+                  complete = "<Tab>",
+                  run_selection = "<C-CR>",
+                  run_input = "<CR>",
+                },
+              },
             },
             preview = {
               treesitter = false,
@@ -1491,14 +1459,15 @@ require("lazy").setup({
               end,
             },
           },
-        })
-        telescope.load_extension("fzf")
-        telescope.load_extension("ui-select")
-        telescope.load_extension("media_files")
-        require("simulators").setup({
+        }
+        telescope.load_extension "fzf"
+        telescope.load_extension "ui-select"
+        telescope.load_extension "media_files"
+        telescope.load_extension "cmdline"
+        require("simulators").setup {
           android_emulator = true,
           apple_simulator = true,
-        })
+        }
       end,
     },
 
@@ -1518,7 +1487,7 @@ require("lazy").setup({
         },
       },
       config = function()
-        require("tiny-code-action").setup({
+        require("tiny-code-action").setup {
           backend = "vim",
           backend_opts = {
             delta = {
@@ -1552,7 +1521,7 @@ require("lazy").setup({
             ["rename"] = { "󰑕", { link = "DiagnosticWarning" } },
             ["codeAction"] = { "", { link = "DiagnosticError" } },
           },
-        })
+        }
       end,
     },
 
@@ -1585,13 +1554,13 @@ require("lazy").setup({
         {
           "<Leader>f",
           function()
-            require("conform").format({ async = true })
+            require("conform").format { async = true }
           end,
         },
       },
       config = function()
         vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-        require("conform").setup({
+        require("conform").setup {
 
           default_format_opts = {
             lsp_format = "fallback",
@@ -1628,16 +1597,16 @@ require("lazy").setup({
             dprint = {
               prepend_args = function(self, ctx)
                 if not self:cwd(ctx) then
-                  vim.notify("Falling back to global dprint config")
+                  vim.notify "Falling back to global dprint config"
                   return {
                     "--config",
-                    vim.fn.expand("~/.config/nvim/dprint.json"),
+                    vim.fn.expand "~/.config/nvim/dprint.json",
                   }
                 end
               end,
             },
           },
-        })
+        }
       end,
     },
 
@@ -1646,7 +1615,7 @@ require("lazy").setup({
       "mfussenegger/nvim-lint",
       event = "VeryLazy",
       config = function()
-        local lint = require("lint")
+        local lint = require "lint"
         lint.linters_by_ft = {
           javascript = { "eslint_d" },
           typescript = { "eslint_d" },
@@ -1693,7 +1662,7 @@ require("lazy").setup({
         -- actionlint
         ---@diagnostic disable-next-line: undefined-field
         lint.linters.actionlint.condition = function(ctx)
-          return ctx.filename:find(".github")
+          return ctx.filename:find ".github"
         end
 
         -- selene
@@ -1772,17 +1741,20 @@ require("lazy").setup({
       },
       config = function()
         local get_hex = require("cokeline.hlgroups").get_hl_attr
-        local mappings = require("cokeline/mappings")
+        local mappings = require "cokeline/mappings"
 
         local comments_fg = get_hex("Comment", "fg")
         local errors_fg = get_hex("DiagnosticError", "fg")
         local warnings_fg = get_hex("DiagnosticWarn", "fg")
 
-        local active_fg = get_hex("Normal", "fg")
+        -- local active_fg = get_hex("Normal", "fg")
+        local active_fg = "#282828"
         -- local active_bg = get_hex("ColorColumn", "bg")
-        local active_bg = "#281709"
-        local inactive_fg = get_hex("Comment", "fg")
-        local inactive_bg = get_hex("Normal", "bg")
+        local active_bg = "#fbc114"
+        -- local inactive_fg = get_hex("Comment", "fg")
+        local inactive_fg = "#ffffff"
+        -- local inactive_bg = get_hex("Normal", "bg")
+        local inactive_bg = "#281709"
 
         local red = vim.g.terminal_color_1
         -- local green = vim.g.terminal_color_8
@@ -1886,7 +1858,7 @@ require("lazy").setup({
           },
         }
 
-        require("cokeline").setup({
+        require("cokeline").setup {
           default_hl = {
             fg = function(buffer)
               return buffer.is_focused and active_fg or inactive_fg
@@ -1894,6 +1866,9 @@ require("lazy").setup({
             bg = function(buffer)
               return buffer.is_focused and active_bg or inactive_bg
             end,
+            -- bold = function(buffer)
+            --   return buffer.is_focused
+            -- end,
           },
           components = {
             components.margin,
@@ -1935,7 +1910,7 @@ require("lazy").setup({
               },
             },
           },
-        })
+        }
       end,
     },
 
@@ -1948,10 +1923,10 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        local overseer = require("overseer")
+        local overseer = require "overseer"
 
         -- Git
-        overseer.register_template({
+        overseer.register_template {
           name = "tig status",
           builder = function()
             return {
@@ -1959,9 +1934,9 @@ require("lazy").setup({
               args = { "status" },
             }
           end,
-        })
+        }
 
-        overseer.register_template({
+        overseer.register_template {
           name = "git pull origin main",
           builder = function()
             return {
@@ -1969,8 +1944,8 @@ require("lazy").setup({
               args = { "pull", "origin", "main" },
             }
           end,
-        })
-        overseer.register_template({
+        }
+        overseer.register_template {
           name = "chezmoi re-add",
           builder = function()
             return {
@@ -1978,15 +1953,15 @@ require("lazy").setup({
               args = { "re-add" },
             }
           end,
-        })
+        }
 
-        overseer.setup({
+        overseer.setup {
           strategy = {
             "toggleterm",
             -- quit_on_exit = "success",
             dap = false,
           },
-        })
+        }
         vim.keymap.set("n", "<C-.>", "<cmd>OverseerRun<CR>", { noremap = true, silent = true })
       end,
     },
@@ -1996,7 +1971,7 @@ require("lazy").setup({
       "NStefan002/screenkey.nvim",
       event = "VeryLazy",
       config = function()
-        require("screenkey").setup({
+        require("screenkey").setup {
           disable = {
             filetypes = {
               "alpha",
@@ -2011,7 +1986,7 @@ require("lazy").setup({
           keys = {
             ["<leader>"] = "<Leader>",
           },
-        })
+        }
         vim.api.nvim_create_autocmd("BufAdd", {
           group = vim.api.nvim_create_augroup("AutostartScreenkey", {}),
           command = "Screenkey toggle",
@@ -2045,8 +2020,8 @@ require("lazy").setup({
       "potamides/pantran.nvim",
       event = "VeryLazy",
       config = function()
-        local pantran = require("pantran")
-        pantran.setup({
+        local pantran = require "pantran"
+        pantran.setup {
           default_engine = "google",
           engines = {
             google = {
@@ -2056,7 +2031,7 @@ require("lazy").setup({
               },
             },
           },
-        })
+        }
         local opts = { noremap = true, silent = true, expr = true }
         vim.keymap.set("n", "<Leader>j", function()
           return pantran.motion_translate() .. "_"
@@ -2083,7 +2058,7 @@ require("lazy").setup({
         if not status_ok then
           return
         end
-        url_open.setup({})
+        url_open.setup {}
       end,
     },
 
@@ -2131,9 +2106,9 @@ require("lazy").setup({
       },
       event = "VeryLazy",
       config = function()
-        local capabilities = require("cmp_nvim_lsp").default_capabilities({
+        local capabilities = require("cmp_nvim_lsp").default_capabilities {
           textDocument = { completion = { completionItem = { snippetSupport = false } } },
-        })
+        }
 
         local on_attach = function(client, bufnr)
           vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -2146,7 +2121,7 @@ require("lazy").setup({
         vim.api.nvim_create_user_command("InlayHintStart", "lua vim.lsp.inlay_hint.enable(true)", {})
         vim.api.nvim_create_user_command("InlayHintStop", "lua vim.lsp.inlay_hint.enable(false)", {})
 
-        vim.diagnostic.config({
+        vim.diagnostic.config {
           -- virtual_text は非表示
           -- virtual_text = {
           --   severity = vim.diagnostic.severity.ERROR,
@@ -2161,12 +2136,12 @@ require("lazy").setup({
               [vim.diagnostic.severity.INFO] = " ",
             },
           },
-        })
+        }
 
-        local lspconfig = require("lspconfig")
+        local lspconfig = require "lspconfig"
         require("mason").setup()
         require("mason-lspconfig").setup()
-        require("mason-tool-installer").setup({
+        require("mason-tool-installer").setup {
           ensure_installed = {
             -- LSP
             "typos-lsp",
@@ -2204,18 +2179,18 @@ require("lazy").setup({
           run_on_start = true,
           start_delay = 3000,
           debounce_hours = 5,
-        })
-        require("mason-lspconfig").setup_handlers({
+        }
+        require("mason-lspconfig").setup_handlers {
           function(server_name)
             -- dartls を除く (flutter-tools.nvim で行う)
             if server_name ~= "dartls" then
-              lspconfig[server_name].setup({
+              lspconfig[server_name].setup {
                 on_attach = on_attach,
                 capabilities = capabilities,
-              })
+              }
             end
           end,
-        })
+        }
 
         -- tsserver
         local inlayHints = {
@@ -2228,7 +2203,7 @@ require("lazy").setup({
           includeInlayFunctionLikeReturnTypeHints = true,
           includeInlayEnumMemberValueHints = true,
         }
-        lspconfig.tsserver.setup({
+        lspconfig.tsserver.setup {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -2239,10 +2214,10 @@ require("lazy").setup({
               inlayHints = inlayHints,
             },
           },
-        })
+        }
 
         -- lua_ls
-        lspconfig.lua_ls.setup({
+        lspconfig.lua_ls.setup {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -2257,16 +2232,16 @@ require("lazy").setup({
               hint = { enable = true },
             },
           },
-        })
+        }
 
         -- graphql
-        lspconfig.graphql.setup({
+        lspconfig.graphql.setup {
           on_attach = on_attach,
           capabilities = capabilities,
-        })
+        }
 
         -- gopls
-        lspconfig.gopls.setup({
+        lspconfig.gopls.setup {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -2282,10 +2257,10 @@ require("lazy").setup({
               },
             },
           },
-        })
+        }
 
         -- typo-lsp
-        lspconfig.typos_lsp.setup({
+        lspconfig.typos_lsp.setup {
           on_attach = function(client, bufnr)
             local filetype = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
             local disabled_filetypes = {
@@ -2303,16 +2278,16 @@ require("lazy").setup({
             config = "$HOME/.config/nvim/typos.toml",
             diagnosticSeverity = "Warning",
           },
-        })
+        }
 
         -- SourceKit-LSP
         local function execute(cmd)
           local file = assert(io.popen(cmd, "r"))
-          local output = file:read("*a")
+          local output = file:read "*a"
           file:close()
           return output
         end
-        lspconfig.sourcekit.setup({
+        lspconfig.sourcekit.setup {
           on_attach = on_attach,
           capabilities = capabilities,
           cmd = {
@@ -2328,7 +2303,7 @@ require("lazy").setup({
               .. execute("xcrun --sdk iphonesimulator --show-sdk-version"):gsub("\n", "")
               .. "-simulator", -- "x86_64-apple-ios17.5-simulator"
           },
-        })
+        }
       end,
     },
 
@@ -2343,7 +2318,7 @@ require("lazy").setup({
       ft = { "dart" },
       -- event = "BufRead *.dart",
       config = function()
-        require("flutter-tools").setup({
+        require("flutter-tools").setup {
           flutter_path = nil,
           flutter_lookup_cmd = "asdf where flutter",
           fvm = false,
@@ -2364,7 +2339,7 @@ require("lazy").setup({
             run_via_dap = true,
             exception_breakpoints = {},
             register_configurations = function(paths)
-              local dap = require("dap")
+              local dap = require "dap"
               dap.adapters.dart = {
                 type = "executable",
                 command = paths.flutter_bin,
@@ -2409,24 +2384,24 @@ require("lazy").setup({
               )
               vim.keymap.set("n", "<Leader>o", "<cmd>FlutterOutlineToggle<CR>", bufopts)
             end,
-            capabilities = require("cmp_nvim_lsp").default_capabilities({
+            capabilities = require("cmp_nvim_lsp").default_capabilities {
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
-            }),
+            },
             inlay_hints = { enabled = true },
             settings = {
               showTodos = true,
               completeFunctionCalls = true,
               analysisExcludedFolders = {
-                vim.fn.expand("$HOME/.pub-cache"),
-                vim.fn.expand("$HOME/.asdf/installs/flutter"),
-                vim.fn.expand("$HOME/.asdf/installs/dart"),
+                vim.fn.expand "$HOME/.pub-cache",
+                vim.fn.expand "$HOME/.asdf/installs/flutter",
+                vim.fn.expand "$HOME/.asdf/installs/dart",
               },
               renameFilesWithClasses = "prompt",
               enableSnippets = false,
               updateImportsOnRename = true,
             },
           },
-        })
+        }
 
         -- flutter-tools の場合はアタッチされたタイミングで呼ぶ
         vim.api.nvim_create_autocmd("LspAttach", {
@@ -2436,7 +2411,7 @@ require("lazy").setup({
           end,
         })
 
-        require("telescope").load_extension("flutter")
+        require("telescope").load_extension "flutter"
       end,
     },
 
@@ -2453,7 +2428,7 @@ require("lazy").setup({
       },
       -- event = "LspAttach",
       config = function()
-        require("lsp-endhints").setup({
+        require("lsp-endhints").setup {
           icons = {
             type = "󰜁 ",
             parameter = "󰏪 ",
@@ -2466,7 +2441,7 @@ require("lazy").setup({
             bracketedParameters = true,
           },
           autoEnableHints = true,
-        })
+        }
       end,
     },
 
@@ -2479,7 +2454,7 @@ require("lazy").setup({
       -- ft = { "json" },
       event = "BufEnter package.json",
       config = function()
-        require("package-info").setup({
+        require("package-info").setup {
           icons = {
             enable = true,
             style = {
@@ -2491,7 +2466,7 @@ require("lazy").setup({
           hide_up_to_date = true,
           hide_unstable_versions = false,
           package_manager = "npm",
-        })
+        }
         vim.keymap.set("n", "<Leader>p", require("package-info").change_version, { silent = true, noremap = true })
       end,
     },
@@ -2510,7 +2485,7 @@ require("lazy").setup({
       -- ft = { "yaml" },
       event = "BufEnter pubspec.yaml",
       config = function()
-        require("pubspec-assist").setup({})
+        require("pubspec-assist").setup {}
         vim.keymap.set("n", "<Leader>p", "<cmd>PubspecAssistPickVersion<CR>", { noremap = true, silent = true })
       end,
     },
@@ -2546,11 +2521,11 @@ require("lazy").setup({
       },
       event = { "InsertEnter", "LspAttach" },
       config = function()
-        local cmp = require("cmp")
-        local types = require("cmp.types")
-        local lspkind = require("lspkind")
+        local cmp = require "cmp"
+        local types = require "cmp.types"
+        local lspkind = require "lspkind"
 
-        lspkind.init({
+        lspkind.init {
           mode = "symbol_text",
           symbol_map = {
             Copilot = "",
@@ -2580,12 +2555,12 @@ require("lazy").setup({
             Operator = "󰆕",
             TypeParameter = "",
           },
-        })
+        }
 
         vim.opt.completeopt = { "menu", "menuone", "noselect" }
         vim.o.completefunc = 'v:lua.require("cmp").complete()'
 
-        cmp.setup({
+        cmp.setup {
           completion = {
             autocomplete = {
               types.cmp.TriggerEvent.InsertEnter,
@@ -2596,25 +2571,25 @@ require("lazy").setup({
             keyword_length = 1,
           },
           window = {
-            completion = cmp.config.window.bordered({
+            completion = cmp.config.window.bordered {
               border = "rounded",
               -- max_width = 80,
               winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
-            }),
-            documentation = cmp.config.window.bordered({
+            },
+            documentation = cmp.config.window.bordered {
               border = "rounded",
-            }),
+            },
           },
           formatting = {
             expandable_indicator = true,
             fields = { "kind", "abbr", "menu" },
             format = function(entry, vim_item)
-              local kind = lspkind.cmp_format({
+              local kind = lspkind.cmp_format {
                 ellipsis_char = "…",
                 maxwidth = 50,
                 mode = "symbol_text",
                 with_text = true,
-              })(entry, vim_item)
+              }(entry, vim_item)
               local strings = vim.split(kind.kind, "%s", { trimempty = true })
               kind.kind = " " .. (strings[1] or "") .. " "
               kind.menu = "    (" .. (strings[2] or "") .. ")"
@@ -2622,15 +2597,15 @@ require("lazy").setup({
               return kind
             end,
           },
-          mapping = cmp.mapping.preset.insert({
+          mapping = cmp.mapping.preset.insert {
             ["<C-d>"] = cmp.mapping.scroll_docs(-4),
             ["<C-f>"] = cmp.mapping.scroll_docs(4),
             ["<C-p>"] = cmp.mapping.select_prev_item(),
             ["<C-n>"] = cmp.mapping.select_next_item(),
             ["<C-Space>"] = cmp.mapping.complete(),
             ["<C-e>"] = cmp.mapping.abort(),
-            ["<CR>"] = cmp.mapping.confirm({ select = false }),
-          }),
+            ["<CR>"] = cmp.mapping.confirm { select = false },
+          },
           sources = cmp.config.sources({
             { name = "copilot", group_index = 2 },
             { name = "nvim_lsp", group_index = 2 },
@@ -2647,7 +2622,7 @@ require("lazy").setup({
             native_menu = false,
             ghost_text = true,
           },
-        })
+        }
 
         cmp.setup.cmdline({ "/", "?" }, {
           mapping = cmp.mapping.preset.cmdline(),
@@ -2670,6 +2645,39 @@ require("lazy").setup({
       end,
     },
 
+    -- コマンドのデザイン
+    {
+      "Sam-programs/cmdline-hl.nvim",
+      event = { "BufReadPre", "BufNewFile" }, -- 画面がちらつく
+      config = function()
+        local cmdline_hl = require "cmdline-hl"
+        cmdline_hl.setup {
+          type_signs = {
+            [":"] = { "   ", "Title" },
+            ["/"] = { "   ", "Title" },
+            ["?"] = { "   ", "Title" },
+            ["="] = { "   ", "Title" },
+          },
+          custom_types = {
+            ["lua"] = { icon = "    ", icon_hl = "Title", lang = "lua", show_cmd = true },
+            ["="] = { pat = "=(.*)", lang = "lua", show_cmd = true },
+            ["help"] = { icon = "  ? ", show_cmd = true },
+            ["substitute"] = { pat = "%w(.*)", lang = "regex", show_cmd = true },
+          },
+          aliases = {},
+          input_hl = "Title",
+          input_format = function(input)
+            return input
+          end,
+          range_hl = "Constant",
+          ghost_text = false,
+          ghost_text_hl = "Comment",
+          inline_ghost_text = false,
+          -- ghost_text_provider = require("cmdline-hl.ghost_text").history,
+        }
+      end,
+    },
+
     -- LSP Copilot
     {
       "zbirenbaum/copilot-cmp",
@@ -2680,7 +2688,7 @@ require("lazy").setup({
       fix_pairs = true,
       cmd = "Copilot",
       config = function()
-        require("copilot").setup({
+        require("copilot").setup {
           panel = {
             enabled = false,
           },
@@ -2700,21 +2708,21 @@ require("lazy").setup({
           },
           copilot_node_command = vim.env.HOME .. "/.asdf/shims/node",
           server_opts_overrides = {},
-        })
+        }
         require("copilot.api").register_status_notification_handler(function(data)
-          local ns = vim.api.nvim_create_namespace("user.copilot")
+          local ns = vim.api.nvim_create_namespace "user.copilot"
           vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
           if vim.fn.mode() == "i" and data.status == "InProgress" then
-            vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line(".") - 1, 0, {
+            vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line "." - 1, 0, {
               virt_text = { { "  Thinking...", "Comment" } },
               virt_text_pos = "eol",
               hl_mode = "combine",
             })
           end
         end)
-        require("copilot_cmp").setup({
+        require("copilot_cmp").setup {
           method = "getCompletionsCycling",
-        })
+        }
       end,
     },
 
@@ -2737,7 +2745,7 @@ require("lazy").setup({
         vim.keymap.set("n", "<Leader>br", "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
         vim.keymap.set("n", "<Leader>bu", "<cmd>lua require('dapui').toggle()<CR>", bufopts)
 
-        require("dapui").setup({
+        require("dapui").setup {
           icons = { expanded = "▾", collapsed = "▸" },
           layouts = {
             {
@@ -2751,9 +2759,9 @@ require("lazy").setup({
               position = "bottom",
             },
           },
-        })
+        }
 
-        require("telescope").load_extension("dap")
+        require("telescope").load_extension "dap"
       end,
     },
 
@@ -2762,11 +2770,11 @@ require("lazy").setup({
       "lewis6991/hover.nvim",
       event = "VeryLazy",
       config = function()
-        require("hover").setup({
+        require("hover").setup {
           init = function()
-            require("hover.providers.lsp")
+            require "hover.providers.lsp"
             -- require('hover.providers.gh')
-            require("hover.providers.gh_user")
+            require "hover.providers.gh_user"
             -- require('hover.providers.jira')
             -- require('hover.providers.dap')
             -- require('hover.providers.fold_preview')
@@ -2783,7 +2791,7 @@ require("lazy").setup({
             "LSP",
           },
           mouse_delay = 1000,
-        })
+        }
         vim.keymap.set("n", "K", require("hover").hover, { desc = "hover.nvim" })
         vim.keymap.set("n", "<Leader>k", require("hover").hover, { desc = "hover.nvim" })
 
@@ -2797,7 +2805,7 @@ require("lazy").setup({
       "rmagatti/goto-preview",
       event = "VeryLazy",
       config = function()
-        require("goto-preview").setup({
+        require("goto-preview").setup {
           width = 160,
           height = 40,
           border = { "↖", "─", "┐", "│", "┘", "─", "└", "│" },
@@ -2806,13 +2814,13 @@ require("lazy").setup({
           opacity = nil,
           resizing_mappings = false,
           references = {
-            telescope = require("telescope.themes").get_cursor({
+            telescope = require("telescope.themes").get_cursor {
               hide_preview = false,
               layout_config = {
                 width = 240,
                 height = 40,
               },
-            }),
+            },
           },
           focus_on_open = true,
           dismiss_on_move = false,
@@ -2821,7 +2829,7 @@ require("lazy").setup({
           stack_floating_preview_windows = true,
           preview_window_title = { enable = true, position = "left" },
           zindex = 1,
-        })
+        }
 
         -- LSP Popup
         vim.keymap.set("n", "<Leader>d", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
@@ -2843,4 +2851,4 @@ require("lazy").setup({
       },
     },
   },
-})
+}
