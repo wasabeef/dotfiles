@@ -1,0 +1,19 @@
+[default]
+binary = false
+check-filename = true
+
+[default.extend-identifiers]
+
+[default.extend-words]
+
+[files]
+extend-exclude = [
+  ".git/",
+  "node_modules/",
+  "~/.pub-cache",
+  "~/.asdf/installs/flutter",
+  "~/.asdf/installs/dart",
+]
+
+[type.log]
+check-file = false
