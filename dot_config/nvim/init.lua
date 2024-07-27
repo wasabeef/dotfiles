@@ -103,15 +103,6 @@ vim.keymap.set('v', 'j', 'gj', { noremap = true })
 vim.keymap.set('n', 'k', 'gk', { noremap = true })
 vim.keymap.set('v', 'k', 'gk', { noremap = true })
 
--- タブの移動
--- vim.keymap.set("n", "tf", ":tabfirst<CR>", { noremap = true })
--- vim.keymap.set("n", "tl", ":tablast<CR>", { noremap = true })
--- vim.keymap.set("n", "tt", ":tabnext<CR>", { noremap = true })
--- vim.keymap.set("n", "T", ":tabprevious<CR>", { noremap = true })
--- vim.keymap.set("n", "tc", ":tabclose<CR>", { noremap = true })
--- vim.keymap.set("n", "to", ":tabonly<CR>", { noremap = true })
--- vim.keymap.set("n", "tn", ":tabnew<CR>", { noremap = true })
-
 -- 画面分割
 vim.keymap.set('n', 's', '<Nop>', { noremap = true })
 vim.keymap.set('n', 'sj', '<C-w>j', { noremap = true })
@@ -616,7 +607,8 @@ require('lazy').setup {
             -- "zz",
             -- "zb",
           },
-          hide_cursor = false,
+          easing = 'sine',
+          hide_cursor = true,
           performance_mode = true,
         }
         local keymap = {
@@ -906,7 +898,7 @@ require('lazy').setup {
       config = function()
         require('mini.indentscope').setup {
           options = {
-            try_as_border = true,
+            try_as_border = false,
             indent_at_cursor = true,
           },
           draw = {
