@@ -50,10 +50,10 @@ vim.o.laststatus = 3
 -- ファイル名補完
 vim.o.wildmode = 'list:longest'
 -- コマンドの補完
--- vim.o.wildmenu = true
+vim.o.wildmenu = true
 -- 空白文字の表示
--- vim.o.list = true
--- vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
+vim.o.list = true
+vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
 -- タブ文字をスペースにする
 vim.o.expandtab = true
 vim.o.tabstop = 2
@@ -241,6 +241,9 @@ vim.loader.enable()
 require('lazy').setup {
   checker = { enabled = false },
   spec = {
+    -- Event Order
+    -- https://vi.stackexchange.com/questions/4493/what-is-the-order-of-winenter-bufenter-bufread-syntax-filetype-events
+
     -- テーマ
     {
       'uloco/bluloco.nvim',
@@ -406,8 +409,9 @@ require('lazy').setup {
       dependencies = {
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
+        'uloco/bluloco.nvim',
       },
-      event = 'VeryLazy',
+      event = 'VimEnter', -- 画面がちらつく
       config = function()
         require('lsp-progress').setup {}
         local lualine = require 'lualine'
