@@ -710,27 +710,16 @@ require('lazy').setup {
     -- 括弧
     {
       'echasnovski/mini.surround',
-      event = 'VeryLazy',
-      ops = {
-        custom_surroundings = nil,
-        highlight_duration = 500,
+      opts = {
         mappings = {
-          add = '<M>', -- Add surrounding in Normal and Visual modes
-          delete = 'sd', -- Delete surrounding
-          find = 'sf', -- Find surrounding (to the right)
-          find_left = 'sF', -- Find surrounding (to the left)
-          highlight = 'sh', -- Highlight surrounding
-          replace = 'sr', -- Replace surrounding
-          update_n_lines = 'sn', -- Update `n_lines`
-
-          suffix_last = 'l', -- Suffix to search with "prev" method
-          suffix_next = 'n', -- Suffix to search with "next" method
+          add = '<space>ca', -- Add surrounding in Normal and Visual modes
+          delete = '<space>cd', -- Delete surrounding
+          find = '<space>cf', -- Find surrounding (to the right)
+          find_left = '<space>cF', -- Find surrounding (to the left)
+          highlight = '<space>ch', -- Highlight surrounding
+          replace = '<space>cr', -- Replace surrounding
+          update_n_lines = '<space>cn', -- Update `n_lines`
         },
-
-        n_lines = 20,
-        respect_selection_type = false,
-        search_method = 'cover',
-        silent = false,
       },
     },
 
