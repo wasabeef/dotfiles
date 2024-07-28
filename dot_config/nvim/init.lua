@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+---@diagnostic disable: undefined-global, missing-fields
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
@@ -49,6 +49,8 @@ vim.o.matchtime = 1
 vim.o.laststatus = 3
 -- ファイル名補完
 vim.o.wildmode = 'list:longest'
+-- コマンドの補完
+-- vim.o.wildmenu = true
 -- 空白文字の表示
 -- vim.o.list = true
 -- vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
@@ -78,6 +80,9 @@ vim.o.signcolumn = 'yes'
 vim.o.termguicolors = true
 -- コマンドラインの高さを非表示
 vim.o.cmdheight = 0
+-- ウィンドウを半透明にする
+vim.o.winblend = 10
+vim.opt.pumblend = 10
 -- セッションの保存・復元
 -- blank: 空のウィンドウも含める
 -- buffers: 開いているバッファーも含める
@@ -238,43 +243,59 @@ require('lazy').setup {
   spec = {
     -- テーマ
     {
-      'rebelot/kanagawa.nvim',
+      'uloco/bluloco.nvim',
       event = 'VimEnter',
+      dependencies = { 'rktjmp/lush.nvim' },
       config = function()
-        require('kanagawa').setup {
-          compile = true, -- 変更したら :KanagawaCompile が必要
-          undercurl = false,
-          commentStyle = { italic = false },
-          functionStyle = { italic = false },
-          keywordStyle = { italic = false },
-          statementStyle = { italic = false },
-          typeStyle = { italic = false },
+        require('bluloco').setup {
+          style = 'dark',
           transparent = false,
-          dimInactive = false,
-          terminalColors = true,
-          colors = {
-            theme = {
-              wave = {
-                ui = {
-                  bg_visual = '#5a7785',
-                },
-              },
-            },
-          },
-          theme = 'wave',
-          background = {
-            dark = 'wave',
-            light = 'wave',
-          },
+          italics = false,
+          terminal = vim.fn.has 'gui_running' == 1,
+          guicursor = false,
         }
-        vim.cmd 'colorscheme kanagawa'
+
+        vim.cmd 'colorscheme bluloco'
       end,
     },
+    -- {
+    --   'rebelot/kanagawa.nvim',
+    --   event = 'VimEnter',
+    --   config = function()
+    --     require('kanagawa').setup {
+    --       compile = true, -- 変更したら :KanagawaCompile が必要
+    --       undercurl = false,
+    --       commentStyle = { italic = false },
+    --       functionStyle = { italic = false },
+    --       keywordStyle = { italic = false },
+    --       statementStyle = { italic = false },
+    --       typeStyle = { italic = false },
+    --       transparent = false,
+    --       dimInactive = false,
+    --       terminalColors = true,
+    --       colors = {
+    --         theme = {
+    --           wave = {
+    --             ui = {
+    --               bg_visual = '#5a7785',
+    --             },
+    --           },
+    --         },
+    --       },
+    --       theme = 'wave',
+    --       background = {
+    --         dark = 'wave',
+    --         light = 'wave',
+    --       },
+    --     }
+    --     vim.cmd 'colorscheme kanagawa'
+    --   end,
+    -- },
 
     -- アイコン
     {
       'nvim-tree/nvim-web-devicons',
-      event = 'VimEnter',
+      event = 'VeryLazy',
     },
 
     -- スタート画面
@@ -341,8 +362,8 @@ require('lazy').setup {
           dashboard.button('i', '   Edit init.lua', ':e $MYVIMRC <CR>'),
           dashboard.button('z', '   Edit .zshrc', ':e ~/.zshrc <CR>'),
           dashboard.button('w', '   Edit .wezterm.lua', ':e ~/.wezterm.lua <CR>'),
-          dashboard.button('t', '   Edit typos.toml', ':e ~/.config/nvim/typos.toml <CR>'),
-          dashboard.button('d', '   Edit dprint.json', ':e ~/.config/nvim/dprint.json <CR>'),
+          dashboard.button('t', '   Edit typos.toml', ':e ~/.config/typos.toml <CR>'),
+          dashboard.button('d', '   Edit dprint.json', ':e ~/.config/dprint.json <CR>'),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
           dashboard.button('u', '󰂖   Update plugins', "<cmd>lua require('lazy').sync()<CR>"),
@@ -386,7 +407,7 @@ require('lazy').setup {
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
       },
-      event = 'VimEnter',
+      event = 'VeryLazy',
       config = function()
         require('lsp-progress').setup {}
         local lualine = require 'lualine'
@@ -639,6 +660,9 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('scrollbar').setup {
+          throttle_ms = 1000,
+          show_in_active_only = false,
+          hide_if_all_visible = true,
           handle = { color = '#006df2' },
           excluded_buftypes = {
             'terminal',
@@ -647,6 +671,7 @@ require('lazy').setup {
             'prompt',
             'dropbar_menu',
             'lazygit',
+            'alpha',
           },
         }
       end,
@@ -684,8 +709,29 @@ require('lazy').setup {
 
     -- 括弧
     {
-      'tpope/vim-surround',
+      'echasnovski/mini.surround',
       event = 'VeryLazy',
+      ops = {
+        custom_surroundings = nil,
+        highlight_duration = 500,
+        mappings = {
+          add = '<M>', -- Add surrounding in Normal and Visual modes
+          delete = 'sd', -- Delete surrounding
+          find = 'sf', -- Find surrounding (to the right)
+          find_left = 'sF', -- Find surrounding (to the left)
+          highlight = 'sh', -- Highlight surrounding
+          replace = 'sr', -- Replace surrounding
+          update_n_lines = 'sn', -- Update `n_lines`
+
+          suffix_last = 'l', -- Suffix to search with "prev" method
+          suffix_next = 'n', -- Suffix to search with "next" method
+        },
+
+        n_lines = 20,
+        respect_selection_type = false,
+        search_method = 'cover',
+        silent = false,
+      },
     },
 
     -- ペア
@@ -1281,7 +1327,7 @@ require('lazy').setup {
         vim.keymap.set(
           'n',
           '<C-o>',
-          "<cmd>lua require('telescope.builtin').find_files({hidden = true})<CR>",
+          "<cmd>lua require('telescope.builtin').find_files({hidden = false})<CR>",
           { noremap = true, silent = true }
         )
         vim.keymap.set(
@@ -1415,7 +1461,7 @@ require('lazy').setup {
               },
             },
             preview = {
-              treesitter = false,
+              treesitter = true,
               mime_hook = function(filepath, bufnr, opts)
                 local is_image = function(_)
                   local image_extensions = { 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp' } -- Supported image formats
@@ -1616,7 +1662,7 @@ require('lazy').setup {
           css = { 'stylelint' },
           sh = { 'shellcheck' },
           lua = { 'selene' },
-          markdown = { 'markdownlint', 'vale' },
+          markdown = { 'markdownlint' }, -- stop vale
           json = { 'jsonlint' },
           yaml = { 'yamllint', 'actionlint' },
           go = { 'golangcilint' },
@@ -1690,6 +1736,7 @@ require('lazy').setup {
         direction = 'float',
         float_opts = {
           winblend = 10,
+          border = 'curved',
         },
       },
     },
@@ -1746,7 +1793,9 @@ require('lazy').setup {
         -- local inactive_fg = get_hex("Comment", "fg")
         local inactive_fg = '#ffffff'
         -- local inactive_bg = get_hex("Normal", "bg")
-        local inactive_bg = '#281709'
+        -- local inactive_bg = '#281709'
+        local inactive_bg = '#ff0000'
+        local terminal_bg = '#282c34'
 
         local red = vim.g.terminal_color_1
         -- local green = vim.g.terminal_color_8
@@ -1768,7 +1817,7 @@ require('lazy').setup {
             fg = function(buffer)
               return buffer.is_focused and active_bg or inactive_bg
             end,
-            bg = inactive_bg,
+            bg = terminal_bg,
           },
 
           separator_right = {
@@ -1776,7 +1825,7 @@ require('lazy').setup {
             fg = function(buffer)
               return buffer.is_focused and active_bg or inactive_bg
             end,
-            bg = inactive_bg,
+            bg = terminal_bg,
           },
 
           devicon = {
@@ -1788,9 +1837,6 @@ require('lazy').setup {
               return (mappings.is_picking_focus() and yellow)
                 or (mappings.is_picking_close() and red)
                 or buffer.devicon.color
-            end,
-            style = function(_)
-              return (mappings.is_picking_focus() or mappings.is_picking_close()) and 'italic,bold' or nil
             end,
             truncation = { priority = 1 },
           },
@@ -1807,7 +1853,9 @@ require('lazy').setup {
               return buffer.unique_prefix
             end,
             fg = comments_fg,
-            style = 'italic',
+            italic = function(_)
+              return true
+            end,
             truncation = { priority = 3, direction = 'left' },
           },
 
@@ -1815,11 +1863,11 @@ require('lazy').setup {
             text = function(buffer)
               return buffer.filename
             end,
-            style = function(buffer)
-              return ((buffer.is_focused and buffer.diagnostics.errors ~= 0) and 'bold,underline')
-                or (buffer.is_focused and 'bold')
-                or (buffer.diagnostics.errors ~= 0 and 'underline')
-                or nil
+            underline = function(buffer)
+              return buffer.diagnostics.errors ~= 0 and 'underline'
+            end,
+            bold = function(buffer)
+              return buffer.is_focused
             end,
             truncation = { priority = 2, direction = 'left' },
           },
@@ -1858,9 +1906,6 @@ require('lazy').setup {
             bg = function(buffer)
               return buffer.is_focused and active_bg or inactive_bg
             end,
-            -- bold = function(buffer)
-            --   return buffer.is_focused
-            -- end,
           },
           components = {
             components.margin,
@@ -1948,11 +1993,9 @@ require('lazy').setup {
         }
 
         overseer.setup {
-          strategy = {
-            'toggleterm',
-            -- quit_on_exit = "success",
-            dap = false,
-          },
+          strategy = 'toggleterm',
+          -- quit_on_exit = "succss",
+          dap = false,
         }
         vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', { noremap = true, silent = true })
       end,
@@ -1976,7 +2019,7 @@ require('lazy').setup {
           },
           display_infront = { '*' },
           keys = {
-            ['<leader>'] = '<Leader>',
+            ['<leader>'] = '<Space>',
           },
         }
         vim.api.nvim_create_autocmd('BufAdd', {
@@ -2156,7 +2199,7 @@ require('lazy').setup {
             'swiftlint',
             'markdownlint',
             'markdownlint-cli2',
-            'vale',
+            -- 'vale',
             'yamlfmt',
             'yamllint',
             'jsonlint',
@@ -2259,6 +2302,7 @@ require('lazy').setup {
               'log',
               'toggleterm',
               'NvimTree',
+              'TelescopePrompt',
               'DiffviewFileHistory',
               'DiffviewFiles',
             }
@@ -2778,7 +2822,7 @@ require('lazy').setup {
             -- require('hover.providers.dictionary')
           end,
           preview_opts = {
-            border = 'single',
+            border = 'rounded',
           },
           preview_window = false,
           title = true,
