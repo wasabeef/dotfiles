@@ -155,6 +155,9 @@ vim.keymap.set('n', '<C-q>', ':q<CR>', { noremap = true, silent = true })
 -- w!!でsudoを忘れても保存
 vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', { noremap = true })
 
+-- <C-a> で全選択
+vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', { noremap = true })
+
 -- 入力モード中のカーソル移動
 vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true })
 vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true })
@@ -681,6 +684,43 @@ require('lazy').setup {
       end,
     },
 
+    -- 設定の切り替え
+    {
+      'gregorias/toggle.nvim',
+      version = '2.0',
+      event = { 'VeryLazy' },
+      config = function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
+        local toggle = require 'toggle'
+        toggle.register(
+          'i',
+          -- Disables or enables inlay hints for the current buffer.
+          toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
+            name = 'inlay hints',
+            get_state = function()
+              return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+            end,
+            set_state = function(new_value)
+              vim.lsp.inlay_hint.enable(new_value, {})
+            end,
+          }),
+          { buffer = bufnr }
+        )
+        toggle.setup {
+          keymaps = {
+            toggle_option_prefix = 'yo',
+            previous_option_prefix = '[o',
+            next_option_prefix = ']o',
+            status_dashboard = 'yos',
+          },
+          keymap_registry = require('toggle.keymap').keymap_registry(),
+          notify_on_set_default_option = true,
+        }
+      end,
+    },
+
     -- winbar
     {
       'Bekaboo/dropbar.nvim',
@@ -716,7 +756,20 @@ require('lazy').setup {
       'kylechui/nvim-surround',
       event = 'VeryLazy',
       config = function()
-        require('nvim-surround').setup {}
+        require('nvim-surround').setup {
+          keymaps = {
+            insert = '<C-g>s',
+            insert_line = '<C-g>S',
+            normal = 'gs',
+            normal_cur = 'gss',
+            normal_line = 'gS',
+            normal_cur_line = 'gSS',
+            visual = 'S',
+            visual_line = 'gS',
+            delete = 'ds',
+            change = 'cs',
+          },
+        }
       end,
     },
 
@@ -921,6 +974,20 @@ require('lazy').setup {
     {
       'echasnovski/mini.bracketed',
       event = { 'BufRead', 'BufNewFile' },
+    },
+
+    -- Visual モードで空白文字を表示
+    {
+      'mcauley-penney/visual-whitespace.nvim',
+      event = { 'BufRead', 'BufNewFile' },
+      config = true,
+      opts = {
+        highlight = { link = 'Visual' },
+        space_char = '·',
+        tab_char = '→',
+        nl_char = '↲',
+        cr_char = '←',
+      },
     },
 
     -- インデント表示、Textobjects
@@ -2410,6 +2477,11 @@ require('lazy').setup {
 
               vim.keymap.set('n', '<Leader>h', '<cmd>InlayHintStart<CR>', bufopts)
               vim.keymap.set('n', '<Leader>hd', '<cmd>InlayHintStop<CR>', bufopts)
+              vim.api.nvim_create_user_command(
+                'ToggleInlayHint',
+                'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
+                {}
+              )
             end,
             capabilities = require('cmp_nvim_lsp').default_capabilities {
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
@@ -2431,12 +2503,12 @@ require('lazy').setup {
         }
 
         -- flutter-tools の場合はアタッチされたタイミングで呼ぶ
-        vim.api.nvim_create_autocmd('LspAttach', {
-          desc = 'Enable inlayHint feature',
-          callback = function(args)
-            vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
-          end,
-        })
+        -- vim.api.nvim_create_autocmd('LspAttach', {
+        --   desc = 'Enable inlayHint feature',
+        --   callback = function(args)
+        --     vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+        --   end,
+        -- })
 
         require('telescope').load_extension 'flutter'
       end,
@@ -2764,6 +2836,7 @@ require('lazy').setup {
       event = 'LspAttach',
       config = function()
         -- Debugging
+        local bufnr = vim.api.nvim_get_current_buf()
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
         vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", bufopts)
