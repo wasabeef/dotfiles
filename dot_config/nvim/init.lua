@@ -52,8 +52,8 @@ vim.o.wildmode = 'list:longest'
 -- コマンドの補完
 vim.o.wildmenu = true
 -- 空白文字の表示
-vim.o.list = true
-vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
+-- vim.o.list = true
+-- vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
 -- タブ文字をスペースにする
 vim.o.expandtab = true
 vim.o.tabstop = 2
