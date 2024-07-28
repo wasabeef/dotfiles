@@ -709,18 +709,11 @@ require('lazy').setup {
 
     -- 括弧
     {
-      'echasnovski/mini.surround',
-      opts = {
-        mappings = {
-          add = '<space>ca', -- Add surrounding in Normal and Visual modes
-          delete = '<space>cd', -- Delete surrounding
-          find = '<space>cf', -- Find surrounding (to the right)
-          find_left = '<space>cF', -- Find surrounding (to the left)
-          highlight = '<space>ch', -- Highlight surrounding
-          replace = '<space>cr', -- Replace surrounding
-          update_n_lines = '<space>cn', -- Update `n_lines`
-        },
-      },
+      'kylechui/nvim-surround',
+      event = 'VeryLazy',
+      config = function()
+        require('nvim-surround').setup {}
+      end,
     },
 
     -- ペア
@@ -1782,8 +1775,7 @@ require('lazy').setup {
         -- local inactive_fg = get_hex("Comment", "fg")
         local inactive_fg = '#ffffff'
         -- local inactive_bg = get_hex("Normal", "bg")
-        -- local inactive_bg = '#281709'
-        local inactive_bg = '#ff0000'
+        local inactive_bg = '#303030'
         local terminal_bg = '#282c34'
 
         local red = vim.g.terminal_color_1
@@ -1857,6 +1849,9 @@ require('lazy').setup {
             end,
             bold = function(buffer)
               return buffer.is_focused
+            end,
+            italic = function(buffer)
+              return not buffer.is_focused
             end,
             truncation = { priority = 2, direction = 'left' },
           },
