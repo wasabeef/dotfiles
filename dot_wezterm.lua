@@ -37,7 +37,8 @@ config.window_frame = {
 }
 
 -- cursor
-config.default_cursor_style = 'BlinkingBar'
+-- config.default_cursor_style = 'BlinkingBlock'
+config.default_cursor_style = 'BlinkingUnderline'
 config.cursor_blink_ease_in = 'Constant'
 config.cursor_blink_ease_out = 'Constant'
 config.cursor_blink_rate = 500

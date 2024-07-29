@@ -761,7 +761,7 @@ require('lazy').setup {
           keymaps = {
             insert = '<C-g>s',
             insert_line = '<C-g>S',
-            normal = 'S',
+            normal = 'gs',
             normal_cur = 'gss',
             normal_line = 'gS',
             normal_cur_line = 'gSS',
