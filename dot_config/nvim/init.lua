@@ -203,6 +203,7 @@ vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
 -- LSP
+local bufopts = { noremap = true, silent = true }
 vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, bufopts)
 -- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use conform
 vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, bufopts)
@@ -760,7 +761,7 @@ require('lazy').setup {
           keymaps = {
             insert = '<C-g>s',
             insert_line = '<C-g>S',
-            normal = 'gs',
+            normal = 'S',
             normal_cur = 'gss',
             normal_line = 'gS',
             normal_cur_line = 'gSS',
@@ -2011,6 +2012,7 @@ require('lazy').setup {
       'stevearc/overseer.nvim',
       dependencies = {
         'nvim-lua/plenary.nvim',
+        'stevearc/dressing.nvim',
         'nvim-telescope/telescope.nvim',
       },
       event = 'VeryLazy',
@@ -2207,9 +2209,6 @@ require('lazy').setup {
             vim.lsp.inlay_hint.enable(true, { bufnr = buf })
           end
         end
-        -- Inaly hints commands
-        vim.api.nvim_create_user_command('InlayHintStart', 'lua vim.lsp.inlay_hint.enable(true)', {})
-        vim.api.nvim_create_user_command('InlayHintStop', 'lua vim.lsp.inlay_hint.enable(false)', {})
 
         vim.diagnostic.config {
           -- virtual_text は非表示
@@ -2475,8 +2474,6 @@ require('lazy').setup {
               )
               vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', bufopts)
 
-              vim.keymap.set('n', '<Leader>h', '<cmd>InlayHintStart<CR>', bufopts)
-              vim.keymap.set('n', '<Leader>hd', '<cmd>InlayHintStop<CR>', bufopts)
               vim.api.nvim_create_user_command(
                 'ToggleInlayHint',
                 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
@@ -2911,13 +2908,18 @@ require('lazy').setup {
           border = { '↖', '─', '┐', '│', '┘', '─', '└', '│' },
           default_mappings = false,
           debug = false,
-          opacity = nil,
+          opacity = 30,
           resizing_mappings = false,
           references = {
             telescope = require('telescope.themes').get_cursor {
               hide_preview = false,
+              path_display = function(opts, path)
+                local tail = require('telescope.utils').path_tail(path)
+                local relative_path = vim.fn.fnamemodify(path, ':.')
+                return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+              end,
               layout_config = {
-                width = 240,
+                width = 180,
                 height = 40,
               },
             },
