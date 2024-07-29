@@ -181,27 +181,6 @@ vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true })
 vim.keymap.set('c', '<C-n>', 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr = true })
 vim.keymap.set('c', '<C-p>', 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
--- 不要なプラグインを停止する
-vim.g.did_install_default_menus = 1
-vim.g.did_install_syntax_menu = 1
-vim.g.did_indent_on = 1
-vim.g.did_load_filetypes = 1
-vim.g.did_load_ftplugin = 1
-vim.g.loaded_2html_plugin = 1
-vim.g.loaded_gzip = 1
-vim.g.loaded_man = 1
-vim.g.loaded_matchit = 1
-vim.g.loaded_matchparen = 1
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_remote_plugins = 1
-vim.g.loaded_shada_plugin = 1
-vim.g.loaded_spellfile_plugin = 1
-vim.g.loaded_tarPlugin = 1
-vim.g.loaded_tutor_mode_plugin = 1
-vim.g.loaded_zipPlugin = 1
-vim.g.skip_loading_mswin = 1
-
 -- LSP
 local bufopts = { noremap = true, silent = true }
 vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, bufopts)
@@ -216,6 +195,11 @@ vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, bufopts)
 vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, bufopts)
 vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, bufopts)
 vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, bufopts)
+-- vim.api.nvim_create_user_command(
+--   'ToggleInlayHint',
+--   'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
+--   {}
+-- )
 
 -- 前回開いたファイルのカーソル位置を復旧する
 vim.api.nvim_create_autocmd('BufReadPost', {
@@ -243,7 +227,46 @@ vim.opt.rtp:prepend(lazypath)
 vim.loader.enable()
 
 require('lazy').setup {
-  checker = { enabled = false },
+  checker = {
+    enabled = false,
+    concurrency = 8,
+  },
+  -- 不要なプラグインを停止する
+  rtp = {
+    'did_indent_on',
+    'did_install_default_menus',
+    'did_install_syntax_menu',
+    'did_install_syntax_menu',
+    'did_load_filetypes',
+    'did_load_ftplugin',
+    'loaded_2html_plugin',
+    'loaded_getscript',
+    'loaded_getscriptPlugin',
+    'loaded_gzip',
+    'loaded_gzip',
+    'loaded_logiPat',
+    'loaded_logipat',
+    'loaded_man',
+    'loaded_matchit',
+    'loaded_matchparen',
+    'loaded_netrw',
+    'loaded_netrwFileHandlers',
+    'loaded_netrwPlugin',
+    'loaded_netrwSettings',
+    'loaded_remote_plugins',
+    'loaded_rrhelper',
+    'loaded_shada_plugin',
+    'loaded_spellfile_plugin',
+    'loaded_tar',
+    'loaded_tarPlugin',
+    'loaded_tutor_mode_plugin',
+    'loaded_vimball',
+    'loaded_vimballPlugin',
+    'loaded_zip',
+    'loaded_zipPlugin',
+    'loadedzip',
+    'skip_loading_mswin',
+  },
   spec = {
     -- Event Order
     -- https://vi.stackexchange.com/questions/4493/what-is-the-order-of-winenter-bufenter-bufread-syntax-filetype-events
@@ -265,44 +288,25 @@ require('lazy').setup {
         vim.cmd 'colorscheme bluloco'
       end,
     },
-    -- {
-    --   'rebelot/kanagawa.nvim',
-    --   event = 'VimEnter',
-    --   config = function()
-    --     require('kanagawa').setup {
-    --       compile = true, -- 変更したら :KanagawaCompile が必要
-    --       undercurl = false,
-    --       commentStyle = { italic = false },
-    --       functionStyle = { italic = false },
-    --       keywordStyle = { italic = false },
-    --       statementStyle = { italic = false },
-    --       typeStyle = { italic = false },
-    --       transparent = false,
-    --       dimInactive = false,
-    --       terminalColors = true,
-    --       colors = {
-    --         theme = {
-    --           wave = {
-    --             ui = {
-    --               bg_visual = '#5a7785',
-    --             },
-    --           },
-    --         },
-    --       },
-    --       theme = 'wave',
-    --       background = {
-    --         dark = 'wave',
-    --         light = 'wave',
-    --       },
-    --     }
-    --     vim.cmd 'colorscheme kanagawa'
-    --   end,
-    -- },
-
     -- アイコン
     {
-      'nvim-tree/nvim-web-devicons',
-      event = 'VeryLazy',
+      'echasnovski/mini.icons',
+      lazy = true,
+      opts = {
+        file = {
+          ['.keep'] = { glyph = '󰊢', hl = 'MiniIconsGrey' },
+          ['devcontainer.json'] = { glyph = '', hl = 'MiniIconsAzure' },
+        },
+        filetype = {
+          dotenv = { glyph = '', hl = 'MiniIconsYellow' },
+        },
+      },
+      init = function()
+        package.preload['nvim-web-devicons'] = function()
+          require('mini.icons').mock_nvim_web_devicons()
+          return package.loaded['nvim-web-devicons']
+        end
+      end,
     },
 
     -- スタート画面
@@ -686,40 +690,42 @@ require('lazy').setup {
     },
 
     -- 設定の切り替え
-    -- {
-    --   'gregorias/toggle.nvim',
-    --   version = '2.0',
-    --   event = { 'VeryLazy' },
-    --   config = function()
-    --     local bufnr = vim.api.nvim_get_current_buf()
-    --
-    --     local toggle = require 'toggle'
-    --     toggle.register(
-    --       'i',
-    --       -- Disables or enables inlay hints for the current buffer.
-    --       toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
-    --         name = 'inlay hints',
-    --         get_state = function()
-    --           return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
-    --         end,
-    --         set_state = function(new_value)
-    --           vim.lsp.inlay_hint.enable(new_value, {})
-    --         end,
-    --       }),
-    --       { buffer = bufnr }
-    --     )
-    --     toggle.setup {
-    --       keymaps = {
-    --         toggle_option_prefix = 'yo',
-    --         previous_option_prefix = '[o',
-    --         next_option_prefix = ']o',
-    --         status_dashboard = 'yos',
-    --       },
-    --       keymap_registry = require('toggle.keymap').keymap_registry(),
-    --       notify_on_set_default_option = true,
-    --     }
-    --   end,
-    -- },
+    {
+      'gregorias/toggle.nvim',
+      version = '2.0',
+      event = { 'VeryLazy' },
+      dependencies = {
+        'nvim-telescope/telescope.nvim',
+      },
+      config = function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local toggle = require 'toggle'
+        toggle.register(
+          'i',
+          -- Disables or enables inlay hints for the current buffer.
+          toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
+            name = 'inlay hints',
+            get_state = function()
+              return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+            end,
+            set_state = function(new_value)
+              vim.lsp.inlay_hint.enable(new_value, {})
+            end,
+          }),
+          { buffer = bufnr }
+        )
+        toggle.setup {
+          keymaps = {
+            toggle_option_prefix = 'to',
+            previous_option_prefix = 'to[',
+            next_option_prefix = 'to]',
+            status_dashboard = 'tog',
+          },
+          keymap_registry = require('toggle.keymap').keymap_registry(),
+          notify_on_set_default_option = true,
+        }
+      end,
+    },
 
     -- winbar
     {
@@ -780,7 +786,7 @@ require('lazy').setup {
       config = true,
     },
 
-    -- html タグペア
+    -- HTML and JSX タグペア
     {
       'windwp/nvim-ts-autotag',
       event = 'VeryLazy',
@@ -1620,17 +1626,11 @@ require('lazy').setup {
     {
       'folke/trouble.nvim',
       event = 'VeryLazy',
-      opts = {
-        modes = {
-          preview_float = {
-            mode = 'diagnostics',
-          },
-        },
-      },
+      opts = {},
       keys = {
         {
           '<Leader>e',
-          '<cmd>Trouble preview_float toggle filter.buf=0<CR>',
+          '<cmd>Trouble diagnostics toggle filter.buf=0<CR>',
           desc = 'Diagnostics (Trouble)',
         },
       },
@@ -1652,10 +1652,6 @@ require('lazy').setup {
       config = function()
         vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
         require('conform').setup {
-
-          default_format_opts = {
-            lsp_format = 'fallback',
-          },
           -- format_on_save = { timeout_ms = 500 },
           formatters_by_ft = {
             ['*'] = { 'trim_whitespace' },
@@ -2169,7 +2165,7 @@ require('lazy').setup {
             {
               pattern = '([^%s]+):',
               prefix = 'https://pub.dev/packages/',
-              suffix = '',
+              suffix = '/changelog',
               file_patterns = { 'pubspec.yaml' },
               excluded_file_patterns = nil,
               extra_condition = nil,
@@ -2372,7 +2368,7 @@ require('lazy').setup {
             },
           },
         }
-        --
+
         -- -- typo-lsp
         lspconfig.typos_lsp.setup {
           on_attach = on_attach,
@@ -2486,12 +2482,6 @@ require('lazy').setup {
                 bufopts
               )
               vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', bufopts)
-
-              vim.api.nvim_create_user_command(
-                'ToggleInlayHint',
-                'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
-                {}
-              )
             end,
             capabilities = require('cmp_nvim_lsp').default_capabilities {
               textDocument = { completion = { completionItem = { snippetSupport = false } } },
