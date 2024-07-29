@@ -1573,7 +1573,7 @@ require('lazy').setup {
       keys = {
         {
           mode = { 'n' },
-          '<leader>a',
+          '<Leader>a',
           "<cmd>lua require('tiny-code-action').code_action()<cr>",
         },
       },
@@ -2372,31 +2372,18 @@ require('lazy').setup {
             },
           },
         }
-
-        -- typo-lsp
+        --
+        -- -- typo-lsp
         lspconfig.typos_lsp.setup {
-          on_attach = function(client, bufnr)
-            local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
-            local disabled_filetypes = {
-              'log',
-              'mason',
-              'toggleterm',
-              'NvimTree',
-              'TelescopePrompt',
-              'DiffviewFileHistory',
-              'DiffviewFiles',
-            }
-            if vim.tbl_contains(disabled_filetypes, filetype) then
-              client.stop()
-            end
-          end,
+          on_attach = on_attach,
+          capabilities = capabilities,
           init_options = {
             config = '$HOME/.config/nvim/typos.toml',
             diagnosticSeverity = 'Warning',
           },
         }
 
-        -- SourceKit-LSP
+        -- -- SourceKit-LSP
         local function execute(cmd)
           local file = assert(io.popen(cmd, 'r'))
           local output = file:read '*a'
