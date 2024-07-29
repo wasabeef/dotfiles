@@ -686,41 +686,40 @@ require('lazy').setup {
     },
 
     -- 設定の切り替え
-    {
-      'gregorias/toggle.nvim',
-      version = '2.0',
-      event = { 'VeryLazy' },
-      config = function()
-        local bufnr = vim.api.nvim_get_current_buf()
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
-        local toggle = require 'toggle'
-        toggle.register(
-          'i',
-          -- Disables or enables inlay hints for the current buffer.
-          toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
-            name = 'inlay hints',
-            get_state = function()
-              return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
-            end,
-            set_state = function(new_value)
-              vim.lsp.inlay_hint.enable(new_value, {})
-            end,
-          }),
-          { buffer = bufnr }
-        )
-        toggle.setup {
-          keymaps = {
-            toggle_option_prefix = 'yo',
-            previous_option_prefix = '[o',
-            next_option_prefix = ']o',
-            status_dashboard = 'yos',
-          },
-          keymap_registry = require('toggle.keymap').keymap_registry(),
-          notify_on_set_default_option = true,
-        }
-      end,
-    },
+    -- {
+    --   'gregorias/toggle.nvim',
+    --   version = '2.0',
+    --   event = { 'VeryLazy' },
+    --   config = function()
+    --     local bufnr = vim.api.nvim_get_current_buf()
+    --
+    --     local toggle = require 'toggle'
+    --     toggle.register(
+    --       'i',
+    --       -- Disables or enables inlay hints for the current buffer.
+    --       toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
+    --         name = 'inlay hints',
+    --         get_state = function()
+    --           return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+    --         end,
+    --         set_state = function(new_value)
+    --           vim.lsp.inlay_hint.enable(new_value, {})
+    --         end,
+    --       }),
+    --       { buffer = bufnr }
+    --     )
+    --     toggle.setup {
+    --       keymaps = {
+    --         toggle_option_prefix = 'yo',
+    --         previous_option_prefix = '[o',
+    --         next_option_prefix = ']o',
+    --         status_dashboard = 'yos',
+    --       },
+    --       keymap_registry = require('toggle.keymap').keymap_registry(),
+    --       notify_on_set_default_option = true,
+    --     }
+    --   end,
+    -- },
 
     -- winbar
     {
@@ -2218,7 +2217,7 @@ require('lazy').setup {
       dependencies = {
         'williamboman/mason.nvim',
         'williamboman/mason-lspconfig.nvim',
-        'WhoIsSethDaniel/mason-tool-installer.nvim',
+        -- 'WhoIsSethDaniel/mason-tool-installer.nvim',
 
         'hrsh7th/cmp-nvim-lsp',
       },
