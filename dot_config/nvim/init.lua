@@ -1728,6 +1728,11 @@ require('lazy').setup {
         -- https://github.com/syphar/dotfiles/blob/a60a9b6337499ab9b48398374ddda49331b3ecd6/.config/nvim/lua/dc/plugins/lint.lua#L32
         vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost', 'TextChanged' }, {
           callback = function()
+            if vim.bo.filetype == 'swift' then
+              lint.try_lint()
+              return
+            end
+
             local ctx = { filename = vim.api.nvim_buf_get_name(0) }
             ctx.dirname = vim.fn.fnamemodify(ctx.filename, ':h')
 
@@ -2150,7 +2155,29 @@ require('lazy').setup {
         if not status_ok then
           return
         end
-        url_open.setup {}
+        url_open.setup {
+          extra_patterns = {
+            -- go.mod go.sum
+            {
+              pattern = '([^%s]+)',
+              prefix = 'https://',
+              suffix = '',
+              file_patterns = { 'go.mod', 'go.sum' },
+              excluded_file_patterns = nil,
+              extra_condition = nil,
+            },
+
+            -- pubspec.yaml
+            {
+              pattern = '([^%s]+):',
+              prefix = 'https://pub.dev/packages/',
+              suffix = '',
+              file_patterns = { 'pubspec.yaml' },
+              excluded_file_patterns = nil,
+              extra_condition = nil,
+            },
+          },
+        }
       end,
     },
 
@@ -2354,6 +2381,7 @@ require('lazy').setup {
             local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
             local disabled_filetypes = {
               'log',
+              'mason',
               'toggleterm',
               'NvimTree',
               'TelescopePrompt',
