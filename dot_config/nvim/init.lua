@@ -1410,7 +1410,6 @@ require('lazy').setup {
         -- )
         vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', { noremap = true, silent = true })
         vim.keymap.set('n', ':', ':Telescope cmdline<CR>', { noremap = true, desc = 'Cmdline' })
-        vim.keymap.set('v', ":", ':Telescope cmdline<CR>', { noremap = true, desc = 'Cmdline' })
         vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', { noremap = true, desc = 'Find Local' })
         vim.api.nvim_create_user_command('Clear', function(opts)
           vim.fn.histdel('cmd', -1)
