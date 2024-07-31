@@ -157,6 +157,9 @@ config.keys = {
 
   --
   { key = 'F5', action = 'ReloadConfiguration' },
+
+
+   {key="Q", mods="CTRL", action=wezterm.action{SendString="amazon-q"}}
 }
 
 return config

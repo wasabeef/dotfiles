@@ -10,6 +10,7 @@ export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=10000
 export HISTFILESIZE=10000
 export SAVEHIST=10000
+export FUNCNEST=1000
 setopt BANG_HIST              # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY       # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY     # Write to the history file immediately, not when the shell exits.
@@ -142,6 +143,12 @@ alias emu-ls='avdmanager list avd'
 alias simu='open -a Simulator'
 alias simu-ls='xcrun simctl list'
 alias chez='chezmoi'
+alias '?'='gh copilot explain'
+alias '??'='gh copilot suggest'
+alias cat='bat'
+alias find='fd'
+alias grep='rg'
+alias lazygit='lg'
 
 # Zsh Plugin Manager
 if [[ -x $(which sheldon) ]]; then
@@ -150,6 +157,10 @@ fi
 
 # fzf
 source <(fzf --zsh)
+
+
+# copilot
+# eval "$(gh copilot alias -- zsh)"
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then

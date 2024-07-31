@@ -95,86 +95,94 @@ vim.opt.pumblend = 10
 -- terminal: ターミナルウィンドウも含める
 -- localoptions: ローカルオプション（バッファーやウィンドウの設定）を含める
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+-- スクロール時に再描画しない
+vim.o.lazyredraw = true
+-- スペルチェック
+-- vim.o.spell = true
+-- vim.o.spelllang = "en,cjk"
+-- vim.opt_local.spelloptions:append("noplainbuffer")
 
 -- ---------------------------------------------------------
 -- キーマップ
 -- ---------------------------------------------------------
+local keymap_opts = { noremap = true, silent = false }
+
 -- ESC連打でハイライト解除
-vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', keymap_opts)
 
 -- 折り返し時に表示行単位での移動できるようにする
-vim.keymap.set('n', 'j', 'gj', { noremap = true })
-vim.keymap.set('v', 'j', 'gj', { noremap = true })
-vim.keymap.set('n', 'k', 'gk', { noremap = true })
-vim.keymap.set('v', 'k', 'gk', { noremap = true })
+vim.keymap.set('n', 'j', 'gj', keymap_opts)
+vim.keymap.set('v', 'j', 'gj', keymap_opts)
+vim.keymap.set('n', 'k', 'gk', keymap_opts)
+vim.keymap.set('v', 'k', 'gk', keymap_opts)
 
 -- 画面分割
-vim.keymap.set('n', 's', '<Nop>', { noremap = true })
-vim.keymap.set('n', 'sj', '<C-w>j', { noremap = true })
-vim.keymap.set('n', 'sk', '<C-w>k', { noremap = true })
-vim.keymap.set('n', 'sl', '<C-w>l', { noremap = true })
-vim.keymap.set('n', 'sh', '<C-w>h', { noremap = true })
-vim.keymap.set('n', 'sJ', '<C-w>J', { noremap = true })
-vim.keymap.set('n', 'sK', '<C-w>K', { noremap = true })
-vim.keymap.set('n', 'sL', '<C-w>L', { noremap = true })
-vim.keymap.set('n', 'sH', '<C-w>H', { noremap = true })
-vim.keymap.set('n', 'sn', 'gt', { noremap = true })
-vim.keymap.set('n', 'sp', 'gT', { noremap = true })
-vim.keymap.set('n', 's=', '<C-w>=', { noremap = true })
-vim.keymap.set('n', 'sw', '<C-w>w', { noremap = true })
-vim.keymap.set('n', 'so', '<C-w>_<C-w>|', { noremap = true })
-vim.keymap.set('n', 'sO', '<C-w>=', { noremap = true })
-vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', { noremap = true })
-vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', { noremap = true })
-vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', { noremap = true })
-vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', { noremap = true })
-vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', { noremap = true })
-vim.keymap.set('n', 'sq', ':<C-u>q<CR>', { noremap = true })
-vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', { noremap = true })
+vim.keymap.set('n', 's', '<Nop>', keymap_opts)
+vim.keymap.set('n', 'sj', '<C-w>j', keymap_opts)
+vim.keymap.set('n', 'sk', '<C-w>k', keymap_opts)
+vim.keymap.set('n', 'sl', '<C-w>l', keymap_opts)
+vim.keymap.set('n', 'sh', '<C-w>h', keymap_opts)
+vim.keymap.set('n', 'sJ', '<C-w>J', keymap_opts)
+vim.keymap.set('n', 'sK', '<C-w>K', keymap_opts)
+vim.keymap.set('n', 'sL', '<C-w>L', keymap_opts)
+vim.keymap.set('n', 'sH', '<C-w>H', keymap_opts)
+vim.keymap.set('n', 'sn', 'gt', keymap_opts)
+vim.keymap.set('n', 'sp', 'gT', keymap_opts)
+vim.keymap.set('n', 's=', '<C-w>=', keymap_opts)
+vim.keymap.set('n', 'sw', '<C-w>w', keymap_opts)
+vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts)
+vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts)
+vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts)
+vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts)
+vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts)
+vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts)
+vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts)
+vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts)
+vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts)
 
 -- ノーマルモードではセミコロンをコロンに
-vim.keymap.set('n', ';', ':', { noremap = true })
+vim.keymap.set('n', ';', ':', keymap_opts)
 -- ノーマルモードでは 0 で行頭、9 で行末
-vim.keymap.set('n', '0', '^', { noremap = true })
-vim.keymap.set('n', '9', '$', { noremap = true })
+vim.keymap.set('n', '0', '^', keymap_opts)
+vim.keymap.set('n', '9', '$', keymap_opts)
 
 -- 保存・終了時のタイポ修正
-vim.keymap.set('c', 'Q', 'q', { noremap = true })
-vim.keymap.set('c', 'Q!', 'q!', { noremap = true })
-vim.keymap.set('c', 'W', 'w', { noremap = true })
-vim.keymap.set('c', 'W!', 'w!', { noremap = true })
-vim.keymap.set('c', 'WQ!', 'wq!', { noremap = true })
+vim.keymap.set('c', 'Q', 'q', keymap_opts)
+vim.keymap.set('c', 'Q!', 'q!', keymap_opts)
+vim.keymap.set('c', 'W', 'w', keymap_opts)
+vim.keymap.set('c', 'W!', 'w!', keymap_opts)
+vim.keymap.set('c', 'WQ!', 'wq!', keymap_opts)
 
 -- Ctrl+s で保存
-vim.keymap.set('n', '<C-s>', ':update<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<s>', ':update<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-s>', ':update<CR>', keymap_opts)
+vim.keymap.set('n', '<s>', ':update<CR>', keymap_opts)
 
 -- Ctrl+q で :q
-vim.keymap.set('n', '<C-q>', ':q<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts)
 
 -- w!!でsudoを忘れても保存
-vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', { noremap = true })
+vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts)
 
 -- <C-a> で全選択
-vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', { noremap = true })
+vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', keymap_opts)
 
 -- 入力モード中のカーソル移動
-vim.keymap.set('i', '<C-h>', '<Left>', { noremap = true })
-vim.keymap.set('i', '<C-j>', '<Down>', { noremap = true })
-vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true })
-vim.keymap.set('i', '<C-l>', '<Right>', { noremap = true })
+vim.keymap.set('i', '<C-h>', '<Left>', keymap_opts)
+vim.keymap.set('i', '<C-j>', '<Down>', keymap_opts)
+vim.keymap.set('i', '<C-k>', '<Up>', keymap_opts)
+vim.keymap.set('i', '<C-l>', '<Right>', keymap_opts)
 
 -- 対象の行を移動 -- use mini.move
--- vim.keymap.set("n", "<M-k>", '"zdd<Up>"zP', { noremap = true })
--- vim.keymap.set("n", "<M-j>", '"zdd"zp', { noremap = true })
+-- vim.keymap.set("n", "<M-k>", '"zdd<Up>"zP', keymap_opts)
+-- vim.keymap.set("n", "<M-j>", '"zdd"zp', keymap_opts)
 -- 対象の複数行を移動 -- use mini.move
--- vim.keymap.set("v", "<M-k>", '"zx<Up>"zP`[V`]', { noremap = true })
--- vim.keymap.set("v", "<M-j>", '"zx"zp`[V`]', { noremap = true })
+-- vim.keymap.set("v", "<M-k>", '"zx<Up>"zP`[V`]', keymap_opts)
+-- vim.keymap.set("v", "<M-j>", '"zx"zp`[V`]', keymap_opts)
 
 -- Ctrl + p で繰り返しヤンクした文字をペースト
 -- vim.keymap.set("v", "<C-p>", '"0p', { silent = true })
 -- Ctrl + m を無効
--- vim.keymap.set("n", "<C-m>", "<Nop>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<C-m>", "<Nop>", keymap_opts)
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -182,19 +190,18 @@ vim.keymap.set('c', '<C-n>', 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr =
 vim.keymap.set('c', '<C-p>', 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
 -- LSP
-local bufopts = { noremap = true, silent = true }
-vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, bufopts)
--- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, bufopts) -- use conform
-vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, bufopts)
-vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, bufopts)
--- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, bufopts)
-vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, bufopts)
-vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, bufopts)
-vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, bufopts)
-vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, bufopts)
-vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, bufopts)
-vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, bufopts)
-vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, bufopts)
+vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, keymap_opts)
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, keymap_opts) -- use conform
+vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts)
+vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts)
+-- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts)
+vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts)
+vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts)
+vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts)
+vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts)
+vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts)
+vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts)
+vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts)
 -- vim.api.nvim_create_user_command(
 --   'ToggleInlayHint',
 --   'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
@@ -217,7 +224,8 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+---@diagnostic disable-next-line: undefined-field
+if not vim.uv.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
 end
@@ -225,47 +233,43 @@ vim.opt.rtp:prepend(lazypath)
 
 -- パフォーマンス
 vim.loader.enable()
+-- 不要なプラグインを停止する
+vim.g.did_indent_on = 1
+vim.g.did_install_default_menus = 1
+vim.g.did_install_syntax_menu = 1
+vim.g.did_load_filetypes = 1
+vim.g.did_load_ftplugin = 1
+vim.g.loaded_2html_plugin = 1
+vim.g.loaded_getscript = 1
+vim.g.loaded_getscriptPlugin = 1
+vim.g.loaded_gzip = 1
+vim.g.loaded_logiPat = 1
+vim.g.loaded_man = 1
+vim.g.loaded_matchit = 1
+vim.g.loaded_matchparen = 1
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwFileHandlers = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_netrwSettings = 1
+vim.g.loaded_remote_plugins = 1
+vim.g.loaded_rplugin = 1
+vim.g.loaded_rrhelper = 1
+vim.g.loaded_shada_plugin = 1
+vim.g.loaded_spec = 1
+-- vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_tar = 1
+vim.g.loaded_tarPlugin = 1
+vim.g.loaded_tutor_mode_plugin = 1
+vim.g.loaded_vimball = 1
+vim.g.loaded_vimballPlugin = 1
+vim.g.loaded_zip = 1
+vim.g.loaded_zipPlugin = 1
+vim.g.skip_loading_mswin = 1
 
 require('lazy').setup {
   checker = {
     enabled = false,
     concurrency = 8,
-  },
-  -- 不要なプラグインを停止する
-  rtp = {
-    'did_indent_on',
-    'did_install_default_menus',
-    'did_install_syntax_menu',
-    'did_install_syntax_menu',
-    'did_load_filetypes',
-    'did_load_ftplugin',
-    'loaded_2html_plugin',
-    'loaded_getscript',
-    'loaded_getscriptPlugin',
-    'loaded_gzip',
-    'loaded_gzip',
-    'loaded_logiPat',
-    'loaded_logipat',
-    'loaded_man',
-    'loaded_matchit',
-    'loaded_matchparen',
-    'loaded_netrw',
-    'loaded_netrwFileHandlers',
-    'loaded_netrwPlugin',
-    'loaded_netrwSettings',
-    'loaded_remote_plugins',
-    'loaded_rrhelper',
-    'loaded_shada_plugin',
-    'loaded_spellfile_plugin',
-    'loaded_tar',
-    'loaded_tarPlugin',
-    'loaded_tutor_mode_plugin',
-    'loaded_vimball',
-    'loaded_vimballPlugin',
-    'loaded_zip',
-    'loaded_zipPlugin',
-    'loadedzip',
-    'skip_loading_mswin',
   },
   spec = {
     -- Event Order
@@ -288,6 +292,7 @@ require('lazy').setup {
         vim.cmd 'colorscheme bluloco'
       end,
     },
+
     -- アイコン
     {
       'echasnovski/mini.icons',
@@ -373,6 +378,7 @@ require('lazy').setup {
           dashboard.button('i', '   Edit init.lua', ':e $MYVIMRC <CR>'),
           dashboard.button('z', '   Edit .zshrc', ':e ~/.zshrc <CR>'),
           dashboard.button('w', '   Edit .wezterm.lua', ':e ~/.wezterm.lua <CR>'),
+          dashboard.button('s', '   Edit sheldon config', ':e ~/.config/sheldon/plugins.toml <CR>'),
           dashboard.button('t', '   Edit typos.toml', ':e ~/.config/typos.toml <CR>'),
           dashboard.button('d', '   Edit dprint.json', ':e ~/.config/dprint.json <CR>'),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
@@ -543,7 +549,7 @@ require('lazy').setup {
               function()
                 return require('lsp-progress').progress {
                   format = function(messages)
-                    local active_clients = vim.lsp.get_active_clients()
+                    local active_clients = vim.lsp.get_clients()
                     local client_count = #active_clients
                     if #messages > 0 then
                       return ' LSP:' .. client_count .. ' ' .. table.concat(messages, ' ')
@@ -706,7 +712,7 @@ require('lazy').setup {
           toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
             name = 'inlay hints',
             get_state = function()
-              return vim.lsp.inlay_hint.is_enabled { bufnr = bufnr }
+              return vim.lsp.inlay_hint.is_enabled {}
             end,
             set_state = function(new_value)
               vim.lsp.inlay_hint.enable(new_value, {})
@@ -872,9 +878,9 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
-        vim.keymap.set('n', 'ff', ':HopPattern<CR>', { noremap = true })
-        vim.keymap.set('n', 'fw', ':HopWord<CR>', { noremap = true })
-        vim.keymap.set('n', 'fl', ':HopLine<CR>', { noremap = true })
+        vim.keymap.set('n', 'ff', ':HopPattern<CR>', keymap_opts)
+        vim.keymap.set('n', 'fw', ':HopWord<CR>', keymap_opts)
+        vim.keymap.set('n', 'fl', ':HopLine<CR>', keymap_opts)
         vim.api.nvim_set_hl(0, 'HopNextKey', { fg = '#E06C75' })
         vim.api.nvim_set_hl(0, 'HopNextKey1', { fg = '#E06C75' })
         vim.api.nvim_set_hl(0, 'HopNextKey2', { fg = '#E06C75' })
@@ -927,7 +933,7 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('yankbank').setup()
-        vim.keymap.set('n', '<C-p>', '<cmd>YankBank<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '<C-p>', '<cmd>YankBank<CR>', keymap_opts)
       end,
     },
 
@@ -1024,11 +1030,9 @@ require('lazy').setup {
             'help',
             'alpha',
             'Trouble',
-            'lazy',
             'mason',
             'notify',
             'toggleterm',
-            'lazyterm',
           },
           callback = function()
             vim.b.miniindentscope_disable = true
@@ -1116,7 +1120,6 @@ require('lazy').setup {
         local preview = require 'nvim-tree-preview'
         local function on_attach(bufnr)
           local api = require 'nvim-tree.api'
-
           local function opts(desc)
             return {
               desc = 'nvim-tree: ' .. desc,
@@ -1126,7 +1129,6 @@ require('lazy').setup {
               nowait = true,
             }
           end
-
           api.config.mappings.default_on_attach(bufnr)
           vim.keymap.set('n', 'x', api.node.run.system, opts 'Open System')
           vim.keymap.set('n', '?', api.tree.toggle_help, opts 'Help')
@@ -1136,7 +1138,6 @@ require('lazy').setup {
           vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts 'Close Node')
           vim.keymap.set('n', 's', '', opts '')
           vim.keymap.set('n', 'sl', '<c-w>l', opts '')
-
           vim.keymap.set('n', 'P', preview.watch, opts 'Preview (Watch)')
           vim.keymap.set('n', '<Esc>', preview.unwatch, opts 'Close Preview/Unwatch')
           vim.keymap.set('n', '<Tab>', function()
@@ -1175,6 +1176,10 @@ require('lazy').setup {
               },
             },
           },
+          update_focused_file = {
+            enable = true,
+            update_cwd = false,
+          },
           diagnostics = {
             enable = true,
             icons = {
@@ -1187,6 +1192,23 @@ require('lazy').setup {
           },
           renderer = {
             group_empty = true,
+            highlight_git = true,
+            highlight_opened_files = 'name',
+            icons = {
+              git_placement = 'signcolumn',
+              modified_placement = 'signcolumn',
+              glyphs = {
+                git = {
+                  deleted = '',
+                  unstaged = '',
+                  untracked = '',
+                  staged = '',
+                  unmerged = '',
+                  renamed = '»',
+                  ignored = '◌',
+                },
+              },
+            },
           },
           filters = {
             dotfiles = false,
@@ -1196,7 +1218,7 @@ require('lazy').setup {
             ignore = false,
           },
         }
-        vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', keymap_opts)
       end,
     },
 
@@ -1236,9 +1258,21 @@ require('lazy').setup {
       'sindrets/diffview.nvim',
       event = 'VeryLazy',
       keys = {
-        { '<Leader>gd', '<cmd>DiffviewOpen<CR>', mode = 'n', noremap = true },
-        { '<Leader>gh', '<cmd>DiffviewFileHistory<CR>', mode = 'n', noremap = true },
-        { '<Leader>gc', '<cmd>DiffviewFileHistory %<CR>', mode = 'n', noremap = true },
+        {
+          mode = 'n',
+          '<Leader>gd',
+          '<cmd>DiffviewOpen<CR>',
+        },
+        {
+          mode = 'n',
+          '<Leader>gh',
+          '<cmd>DiffviewFileHistory<CR>',
+        },
+        {
+          mode = 'n',
+          '<Leader>gc',
+          '<cmd>DiffviewFileHistory %<CR>',
+        },
       },
     },
 
@@ -1246,6 +1280,13 @@ require('lazy').setup {
     {
       'lewis6991/gitsigns.nvim',
       event = 'VeryLazy',
+      keys = {
+        {
+          mode = 'n',
+          '<Leader>g',
+          '<cmd>Gitsigns blame<CR>',
+        },
+      },
       config = function()
         require('gitsigns').setup {
           signs = {
@@ -1356,7 +1397,7 @@ require('lazy').setup {
             enable = true,
             disable = function(_, buf)
               local max_filesize = 100 * 1024 -- 100 KB
-              local check_stats = (vim.uv or vim.loop).fs_stat
+              local check_stats = vim.uv.fs_stat
               local ok, stats = pcall(check_stats, vim.api.nvim_buf_get_name(buf))
               if ok and stats and stats.size > max_filesize then
                 return true
@@ -1375,11 +1416,13 @@ require('lazy').setup {
       'nvim-telescope/telescope.nvim',
       dependencies = {
         'nvim-lua/plenary.nvim',
+        'stevearc/dressing.nvim',
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
         'nvim-telescope/telescope-ui-select.nvim',
         'nvim-telescope/telescope-media-files.nvim',
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
+        'debugloop/telescope-undo.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -1387,36 +1430,31 @@ require('lazy').setup {
           'n',
           '<C-o>',
           "<cmd>lua require('telescope.builtin').find_files({hidden = false})<CR>",
-          { noremap = true, silent = true }
+          keymap_opts
         )
-        vim.keymap.set(
-          'n',
-          '<C-g>',
-          "<cmd>lua require('telescope.builtin').live_grep()<CR>",
-          { noremap = true, silent = true }
-        )
+        vim.keymap.set('n', '<C-g>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", keymap_opts)
         -- vim.keymap.set(
         --   "n",
         --   "<C-p>",
         --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
-        --   { noremap = true, silent = true }
+        --   keymap_opts
         -- )
         -- vim.keymap.set(
         --   "n",
         --   "<C-x>",
         --   "<cmd>lua require('telescope.builtin').commands()<CR>",
-        --   { noremap = true, silent = true }
+        --   keymap_opts
         -- )
         -- vim.keymap.set(
         --   "n",
         --   "<C-m>",
         --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-        --   { noremap = true, silent = true }
+        --   keymap_opts
         -- )
-        vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', { noremap = true, silent = true })
-        vim.keymap.set('n', ':', ':Telescope cmdline<CR>', { noremap = true, desc = 'Cmdline' })
-        vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', { noremap = true, desc = 'Find Local' })
-        vim.api.nvim_create_user_command('Clear', function(opts)
+        vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts)
+        vim.keymap.set('n', ':', ':Telescope cmdline<CR>', keymap_opts)
+        vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts)
+        vim.api.nvim_create_user_command('Clear', function(_)
           vim.fn.histdel('cmd', -1)
         end, {})
 
@@ -1518,6 +1556,7 @@ require('lazy').setup {
                   run_input = '<CR>',
                 },
               },
+              undo = {},
             },
             preview = {
               treesitter = true,
@@ -1561,6 +1600,7 @@ require('lazy').setup {
         telescope.load_extension 'ui-select'
         telescope.load_extension 'media_files'
         telescope.load_extension 'cmdline'
+        telescope.load_extension 'undo'
         require('simulators').setup {
           android_emulator = true,
           apple_simulator = true,
@@ -1570,53 +1610,17 @@ require('lazy').setup {
 
     -- コードアクション、差分修正
     {
-      'rachartier/tiny-code-action.nvim',
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-        'nvim-telescope/telescope.nvim',
-      },
-      event = 'LspAttach',
-      keys = {
-        {
-          mode = { 'n' },
-          '<Leader>a',
-          "<cmd>lua require('tiny-code-action').code_action()<cr>",
-        },
-      },
+      'aznhe21/actions-preview.nvim',
+      event = 'VeryLazy',
       config = function()
-        require('tiny-code-action').setup {
-          backend = 'vim',
-          backend_opts = {
-            delta = {
-              override_cmd = nil,
-              use_git_config = false,
-              config_path = nil,
-              header_lines_to_removed = 4,
-            },
-          },
-          telescope_opts = {
-            layout_strategy = 'vertical',
+        vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions)
+        require('actions-preview').setup {
+          backend = { 'telescope' },
+          telescope = require('telescope.themes').get_dropdown {
             layout_config = {
-              width = 0.5,
-              height = 0.75,
-              preview_cutoff = 1,
-              preview_height = function(_, _, max_lines)
-                local h = math.floor(max_lines * 0.5)
-                return math.max(h, 10)
-              end,
+              width = 160,
+              height = 40,
             },
-          },
-          signs = {
-            quickfix = { '󰁨', { link = 'DiagnosticInfo' } },
-            others = { '?', { link = 'DiagnosticWarning' } },
-            refactor = { '', { link = 'DiagnosticWarning' } },
-            ['refactor.move'] = { '󰪹', { link = 'DiagnosticInfo' } },
-            ['refactor.extract'] = { '', { link = 'DiagnosticError' } },
-            ['source.organizeImports'] = { '', { link = 'TelescopeResultVariable' } },
-            ['source.fixAll'] = { '', { link = 'TelescopeResultVariable' } },
-            ['source'] = { '', { link = 'DiagnosticError' } },
-            ['rename'] = { '󰑕', { link = 'DiagnosticWarning' } },
-            ['codeAction'] = { '', { link = 'DiagnosticError' } },
           },
         }
       end,
@@ -1634,6 +1638,24 @@ require('lazy').setup {
           desc = 'Diagnostics (Trouble)',
         },
       },
+    },
+
+    -- Inline Diagnostics
+    {
+      'sontungexpt/better-diagnostic-virtual-text',
+      event = 'VeryLazy',
+      config = function(_)
+        require('better-diagnostic-virtual-text').setup {
+          ui = {
+            arrow = '  ',
+            up_arrow = '  ',
+            down_arrow = '  ',
+            above = false,
+          },
+          priority = 2003,
+          inline = true,
+        }
+      end,
     },
 
     -- Formatter
@@ -1654,7 +1676,7 @@ require('lazy').setup {
         require('conform').setup {
           -- format_on_save = { timeout_ms = 500 },
           formatters_by_ft = {
-            ['*'] = { 'trim_whitespace' },
+            ['*'] = { 'trim_whitespace', 'trim_newlines' },
             sh = { 'shfmt' },
             bash = { 'shfmt' },
             zsh = { 'shfmt' },
@@ -1683,6 +1705,7 @@ require('lazy').setup {
           formatters = {
             dprint = {
               prepend_args = function(self, ctx)
+                ---@diagnostic disable-next-line: param-type-mismatch
                 if not self:cwd(ctx) then
                   vim.notify 'Falling back to global dprint config'
                   return {
@@ -1690,6 +1713,7 @@ require('lazy').setup {
                     vim.fn.expand '~/.config/dprint.json',
                   }
                 end
+                return {}
               end,
             },
           },
@@ -1704,55 +1728,59 @@ require('lazy').setup {
       config = function()
         local lint = require 'lint'
         lint.linters_by_ft = {
-          javascript = { 'eslint_d' },
-          typescript = { 'eslint_d' },
-          javascriptreact = { 'eslint_d' },
-          typescriptreact = { 'eslint_d' },
-          css = { 'stylelint' },
-          sh = { 'shellcheck' },
-          lua = { 'selene' },
-          markdown = { 'markdownlint' }, -- stop vale
-          json = { 'jsonlint' },
-          yaml = { 'yamllint', 'actionlint' },
-          go = { 'golangcilint' },
-          swift = { 'swiftlint' },
-          kotlin = { 'ktlint' },
-          terraform = { 'tflint' },
+          javascript = { 'eslint_d', 'typos' },
+          typescript = { 'eslint_d', 'typos' },
+          javascriptreact = { 'eslint_d', 'typos' },
+          typescriptreact = { 'eslint_d', 'typos' },
+          css = { 'stylelint', 'typos' },
+          sh = { 'shellcheck', 'typos' },
+          lua = { 'selene', 'typos' },
+          markdown = { 'markdownlint', 'typos' }, -- stop vale
+          json = { 'jsonlint', 'typos' },
+          yaml = { 'yamllint', 'actionlint', 'typos' },
+          terraform = { 'tflint', 'typos' },
+          go = { 'golangcilint', 'typos' },
+          swift = { 'swiftlint', 'typos' },
+          kotlin = { 'ktlint', 'typos' },
+          dart = { 'typos' },
         }
+        -- for ft, _ in pairs(lint.linters_by_ft) do
+        --   table.insert(lint.linters_by_ft[ft], 'typos')
+        -- end
 
-        -- https://github.com/syphar/dotfiles/blob/a60a9b6337499ab9b48398374ddda49331b3ecd6/.config/nvim/lua/dc/plugins/lint.lua#L32
-        vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost', 'TextChanged' }, {
+        vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost', 'InsertLeave' }, {
+          -- https://github.com/syphar/dotfiles/blob/a60a9b6337499ab9b48398374ddda49331b3ecd6/.config/nvim/lua/dc/plugins/lint.lua#L32
           callback = function()
             if vim.bo.filetype == 'swift' then
-              lint.try_lint()
+              lint.try_lint 'swiftlint'
               return
-            end
+            else
+              local ctx = { filename = vim.api.nvim_buf_get_name(0) }
+              ctx.dirname = vim.fn.fnamemodify(ctx.filename, ':h')
 
-            local ctx = { filename = vim.api.nvim_buf_get_name(0) }
-            ctx.dirname = vim.fn.fnamemodify(ctx.filename, ':h')
+              if not lint.linters_by_ft[vim.bo.filetype] then
+                return
+              end
 
-            if not lint.linters_by_ft[vim.bo.filetype] then
-              return
-            end
+              local linters = vim.tbl_filter(function(name)
+                local linter = lint.linters[name]
 
-            local linters = vim.tbl_filter(function(name)
-              local linter = lint.linters[name]
+                assert(linter)
+                assert(type(linter) == 'table')
 
-              assert(linter)
-              assert(type(linter) == 'table')
+                ---@diagnostic disable-next-line: undefined-field
+                return not (linter.condition and not linter.condition(ctx))
+              end, lint.linters_by_ft[vim.bo.filetype])
 
-              ---@diagnostic disable-next-line: undefined-field
-              return not (linter.condition and not linter.condition(ctx))
-            end, lint.linters_by_ft[vim.bo.filetype])
-
-            if #linters > 0 then
-              lint.try_lint(linters)
+              if #linters > 0 then
+                lint.try_lint(linters)
+              end
             end
           end,
         })
 
         -- actionlint
-        ---@diagnostic disable-next-line: undefined-field
+        ---@diagnostic disable-next-line: undefined-field, inject-field
         lint.linters.actionlint.condition = function(ctx)
           return ctx.filename:find '.github'
         end
@@ -1823,14 +1851,22 @@ require('lazy').setup {
       },
       event = { 'BufReadPre', 'BufNewFile' },
       keys = {
-        { '[[', '<Plug>(cokeline-focus-prev)', { silent = true, desc = 'Prev Buffer' } },
-        { ']]', '<Plug>(cokeline-focus-next)', { silent = true, desc = 'Next Buffer' } },
+        {
+          '[[',
+          '<Plug>(cokeline-focus-prev)',
+        },
+        {
+          ']]',
+          '<Plug>(cokeline-focus-next)',
+        },
         {
           '\\][',
           ':lua for _, buf in ipairs(vim.api.nvim_list_bufs()) do if buf ~= vim.api.nvim_get_current_buf() then vim.api.nvim_buf_delete(buf, {force = true}) end end<CR>',
-          { silent = true, desc = 'Close Other Buffers' },
         },
-        { '\\\\', '<cmd>bd<CR>', { silent = true, desc = 'Close Current Buffer' } },
+        {
+          '\\\\',
+          '<cmd>bd<CR>',
+        },
       },
       config = function()
         local get_hex = require('cokeline.hlgroups').get_hl_attr
@@ -2053,7 +2089,7 @@ require('lazy').setup {
           -- quit_on_exit = "succss",
           dap = false,
         }
-        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts)
       end,
     },
 
@@ -2127,7 +2163,6 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>j', function()
           return pantran.motion_translate() .. '_'
         end, opts)
-        -- vim.keymap.set("n", "<leader>j", pantran.motion_translate, opts) -- do not enable this
         vim.keymap.set('x', '<Leader>j', pantran.motion_translate, opts)
       end,
     },
@@ -2141,7 +2176,6 @@ require('lazy').setup {
         {
           '<Leader>/',
           '<cmd>URLOpenUnderCursor<CR>',
-          desc = 'Open URL under cursor',
         },
       },
       config = function()
@@ -2181,16 +2215,14 @@ require('lazy').setup {
       event = 'VeryLazy',
       keys = {
         {
+          mode = { 'n' },
           '<Leader>?',
           '<cmd>BrowserSearch<CR>',
-          mode = { 'n' },
-          desc = 'Browser Search',
         },
         {
+          mode = { 'x' },
           '<Leader>?',
           ":'<,'>BrowserSearch<CR>",
-          mode = { 'x' },
-          desc = 'Browser Search',
         },
       },
       config = function()
@@ -2219,16 +2251,9 @@ require('lazy').setup {
       },
       event = 'VeryLazy',
       config = function()
-        local capabilities = require('cmp_nvim_lsp').default_capabilities {
-          textDocument = { completion = { completionItem = { snippetSupport = false } } },
-        }
-
-        local on_attach = function(client, bufnr)
-          vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-          -- Inlay hints
-          if client.server_capabilities.inlayHintProvider then
-            vim.lsp.inlay_hint.enable(true, { bufnr = buf })
-          end
+        local capabilities = require('cmp_nvim_lsp').default_capabilities()
+        local on_attach = function(_, bufnr)
+          vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
         end
 
         vim.diagnostic.config {
@@ -2254,7 +2279,6 @@ require('lazy').setup {
         require('mason-tool-installer').setup {
           ensure_installed = {
             -- LSP
-            'typos-lsp',
             'gopls',
             'lua-language-server', -- lua_ls
             'typescript-language-server',
@@ -2262,6 +2286,7 @@ require('lazy').setup {
             'jdtls',
 
             -- Formatter/Linter
+            'typo',
             'prettier',
             'prettierd',
             'eslint_d',
@@ -2290,17 +2315,29 @@ require('lazy').setup {
           start_delay = 3000,
           debounce_hours = 5,
         }
+
         require('mason-lspconfig').setup_handlers {
           function(server_name)
-            -- dartls を除く (flutter-tools.nvim で行う)
-            if server_name ~= 'dartls' then
-              lspconfig[server_name].setup {
-                on_attach = on_attach,
-                capabilities = capabilities,
-              }
-            end
+            lspconfig[server_name].setup {
+              on_attach = on_attach,
+              capabilities = capabilities,
+            }
           end,
         }
+
+        -- -- typo-lsp
+        -- lspconfig.typos_lsp.setup {
+        --   on_attach = function(client, bufnr)
+        --     if client.name == 'typos_lsp' and vim.tbl_contains({ 'log' }, vim.bo[bufnr].filetype) then
+        --       vim.lsp.handlers['textDocument/publishDiagnostics'] = function() end
+        --     end
+        --   end,
+        --   capabilities = capabilities,
+        --   init_options = {
+        --     config = '$HOME/.config/nvim/typos.toml',
+        --     diagnosticSeverity = 'Warning',
+        --   },
+        -- }
 
         -- tsserver
         local inlayHints = {
@@ -2348,6 +2385,11 @@ require('lazy').setup {
         lspconfig.graphql.setup {
           on_attach = on_attach,
           capabilities = capabilities,
+          settings = {
+            graphql = {
+              schema = 'path/to/your/schema.graphql',
+            },
+          },
         }
 
         -- gopls
@@ -2369,17 +2411,7 @@ require('lazy').setup {
           },
         }
 
-        -- -- typo-lsp
-        lspconfig.typos_lsp.setup {
-          on_attach = on_attach,
-          capabilities = capabilities,
-          init_options = {
-            config = '$HOME/.config/nvim/typos.toml',
-            diagnosticSeverity = 'Warning',
-          },
-        }
-
-        -- -- SourceKit-LSP
+        -- SourceKit-LSP
         local function execute(cmd)
           local file = assert(io.popen(cmd, 'r'))
           local output = file:read '*a'
@@ -2415,7 +2447,7 @@ require('lazy').setup {
         'hrsh8th/cmp-nvim-lsp',
       },
       ft = { 'dart' },
-      -- event = "BufRead *.dart",
+      -- event = 'BufRead',
       config = function()
         require('flutter-tools').setup {
           flutter_path = nil,
@@ -2473,20 +2505,17 @@ require('lazy').setup {
             color = {
               enabled = false,
             },
-            on_attach = function(_, bufnr)
-              local bufopts = { noremap = true, silent = true, buffer = bufnr }
-              vim.keymap.set(
-                'n',
-                '<Leader>m',
-                "<cmd>lua require('telescope').extensions.flutter.commands()<CR>",
-                bufopts
-              )
-              vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', bufopts)
+            on_attach = function(client, bufnr)
+              -- inlay hints
+              client.server_capabilities.inlayHintProvider = true
+              vim.lsp.inlay_hint.enable(true)
+
+              local opts = { noremap = true, silent = true, buffer = bufnr }
+              vim.keymap.set('n', '<Leader>n', '<cmd>FlutterRename<CR>', opts)
+              vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', opts)
+              vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", opts)
             end,
-            capabilities = require('cmp_nvim_lsp').default_capabilities {
-              textDocument = { completion = { completionItem = { snippetSupport = false } } },
-            },
-            inlay_hints = { enabled = true },
+            capabilities = require('cmp_nvim_lsp').default_capabilities {},
             settings = {
               showTodos = true,
               completeFunctionCalls = true,
@@ -2502,14 +2531,6 @@ require('lazy').setup {
           },
         }
 
-        -- flutter-tools の場合はアタッチされたタイミングで呼ぶ
-        -- vim.api.nvim_create_autocmd('LspAttach', {
-        --   desc = 'Enable inlayHint feature',
-        --   callback = function(args)
-        --     vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
-        --   end,
-        -- })
-
         require('telescope').load_extension 'flutter'
       end,
     },
@@ -2517,15 +2538,16 @@ require('lazy').setup {
     -- Inlay hints
     {
       'chrisgrieser/nvim-lsp-endhints',
-      ft = {
-        'typescript',
-        'typescriptreact',
-        'javascript',
-        'javascriptreact',
-        'lua',
-        'go',
-      },
-      -- event = "LspAttach",
+      -- ft = {
+      --   'typescript',
+      --   'typescriptreact',
+      --   'javascript',
+      --   'javascriptreact',
+      --   'lua',
+      --   'go',
+      --   'dart',
+      -- },
+      event = 'LspAttach',
       config = function()
         require('lsp-endhints').setup {
           icons = {
@@ -2566,7 +2588,7 @@ require('lazy').setup {
           hide_unstable_versions = false,
           package_manager = 'npm',
         }
-        vim.keymap.set('n', '<Leader>p', require('package-info').change_version, { silent = true, noremap = true })
+        vim.keymap.set('n', '<Leader>p', require('package-info').change_version, keymap_opts)
       end,
     },
 
@@ -2585,7 +2607,7 @@ require('lazy').setup {
       event = 'BufEnter pubspec.yaml',
       config = function()
         require('pubspec-assist').setup {}
-        vim.keymap.set('n', '<Leader>p', '<cmd>PubspecAssistPickVersion<CR>', { noremap = true, silent = true })
+        vim.keymap.set('n', '<Leader>p', '<cmd>PubspecAssistPickVersion<CR>', keymap_opts)
       end,
     },
 
@@ -2595,7 +2617,7 @@ require('lazy').setup {
       dependencies = 'neovim/nvim-lspconfig',
       event = 'VeryLazy',
       opts = {
-        excluded_lsp_clients = { 'copilot', 'typos_lsp', 'dartls' },
+        excluded_lsp_clients = { 'copilot', 'dartls' },
         aggressive_mode = false,
         grace_period = 60 * 30, -- 30 minutes
         wakeup_delay = 5000,
@@ -2835,15 +2857,12 @@ require('lazy').setup {
       },
       event = 'LspAttach',
       config = function()
-        -- Debugging
-        local bufnr = vim.api.nvim_get_current_buf()
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", bufopts)
+        vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
 
         require('dapui').setup {
           icons = { expanded = '▾', collapsed = '▸' },
@@ -2916,7 +2935,7 @@ require('lazy').setup {
           references = {
             telescope = require('telescope.themes').get_cursor {
               hide_preview = false,
-              path_display = function(opts, path)
+              path_display = function(_, path)
                 local tail = require('telescope.utils').path_tail(path)
                 local relative_path = vim.fn.fnamemodify(path, ':.')
                 return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }

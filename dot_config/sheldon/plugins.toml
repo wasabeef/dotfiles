@@ -44,7 +44,7 @@ apply = ["defer"]
 [plugins.git-branch]
 ## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
 inline = '''
-PROMPT='%(?.%F{yellow}%#.%F{red}%#)%f '
+PROMPT='%(?.%F{yellow} .%F{red}󰈸 )%f '
 autoload -Uz vcs_info
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
