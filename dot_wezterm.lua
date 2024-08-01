@@ -68,7 +68,9 @@ config.font = wezterm.font_with_fallback {
   'Cascadia Mono',
   'JetBrains Mono',
 }
-if os == 'macOS' then
+
+-- macOS and Linux settings
+if os == 'macOS' or os == 'linux' then
   config.font_size = 10.0
   config.initial_cols = 320
   config.initial_rows = 100
@@ -79,10 +81,6 @@ elseif os == 'windows' then
   config.font_size = 12.0
   config.initial_cols = 140
   config.initial_rows = 60
-
-  -- Linux settings
-  -- elseif os == "linux" then
-  --   -- Add any specific Linux configurations here
 end
 
 -- tab bar
@@ -119,7 +117,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     { Background = { Color = background } },
     { Foreground = { Color = foreground } },
     { Attribute = { Intensity = tab.is_active and 'Bold' or 'Normal' } },
-    { Text = ' ' .. (tab.tab_index + 1) .. ': ' .. title .. ' ' },
+    { Text = ' ' .. (tab.tab_index + 1) .. ': ' .. title .. '  ' },
     { Background = { Color = edge_background } },
     { Foreground = { Color = edge_foreground } },
     { Text = '' },
@@ -157,9 +155,6 @@ config.keys = {
 
   --
   { key = 'F5', action = 'ReloadConfiguration' },
-
-
-   {key="Q", mods="CTRL", action=wezterm.action{SendString="amazon-q"}}
 }
 
 return config

@@ -202,11 +202,6 @@ vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts)
 vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts)
 vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts)
 vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts)
--- vim.api.nvim_create_user_command(
---   'ToggleInlayHint',
---   'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())',
---   {}
--- )
 
 -- 前回開いたファイルのカーソル位置を復旧する
 vim.api.nvim_create_autocmd('BufReadPost', {
@@ -256,7 +251,7 @@ vim.g.loaded_rplugin = 1
 vim.g.loaded_rrhelper = 1
 vim.g.loaded_shada_plugin = 1
 vim.g.loaded_spec = 1
--- vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_spellfile_plugin = 1
 vim.g.loaded_tar = 1
 vim.g.loaded_tarPlugin = 1
 vim.g.loaded_tutor_mode_plugin = 1
@@ -296,7 +291,7 @@ require('lazy').setup {
     -- アイコン
     {
       'echasnovski/mini.icons',
-      lazy = true,
+      event = 'VimEnter',
       opts = {
         file = {
           ['.keep'] = { glyph = '󰊢', hl = 'MiniIconsGrey' },
@@ -690,6 +685,7 @@ require('lazy').setup {
             'dropbar_menu',
             'lazygit',
             'alpha',
+            'lazy',
           },
         }
       end,
@@ -753,7 +749,15 @@ require('lazy').setup {
       'm4xshen/smartcolumn.nvim',
       event = 'VeryLazy',
       opts = {
-        disabled_filetypes = { 'alpha' },
+        disabled_filetypes = {
+          'alpha',
+          'dropbar_menu',
+          'NvimTree',
+          'DiffviewFileHistory',
+          'DiffviewFiles',
+          'lazy',
+          'mason',
+        },
       },
     },
 
@@ -878,13 +882,14 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
-        vim.keymap.set('n', 'ff', ':HopPattern<CR>', keymap_opts)
+        vim.keymap.set('n', 'ff', ':HopWordCurrentLine<CR>', keymap_opts)
         vim.keymap.set('n', 'fw', ':HopWord<CR>', keymap_opts)
+        vim.keymap.set('n', 'fp', ':HopPattern<CR>', keymap_opts)
         vim.keymap.set('n', 'fl', ':HopLine<CR>', keymap_opts)
-        vim.api.nvim_set_hl(0, 'HopNextKey', { fg = '#E06C75' })
-        vim.api.nvim_set_hl(0, 'HopNextKey1', { fg = '#E06C75' })
-        vim.api.nvim_set_hl(0, 'HopNextKey2', { fg = '#E06C75' })
-        vim.api.nvim_set_hl(0, 'HopUnmatched', { fg = '#4B5263' })
+        vim.api.nvim_set_hl(0, 'HopNextKey', { fg = '#fbc114' })
+        vim.api.nvim_set_hl(0, 'HopNextKey1', { fg = '#fbc114' })
+        vim.api.nvim_set_hl(0, 'HopNextKey2', { fg = '#fbc114' })
+        vim.api.nvim_set_hl(0, 'HopUnmatched', { fg = '#787d8f' })
       end,
     },
 
@@ -906,6 +911,8 @@ require('lazy').setup {
             'NvimTree',
             'DiffviewFileHistory',
             'DiffviewFiles',
+            'lazy',
+            'mason',
           },
           filetypes_allowlist = {},
           modes_denylist = {},
@@ -982,12 +989,6 @@ require('lazy').setup {
       },
     },
 
-    -- ブラケットの移動
-    {
-      'echasnovski/mini.bracketed',
-      event = { 'BufRead', 'BufNewFile' },
-    },
-
     -- Visual モードで空白文字を表示
     {
       'mcauley-penney/visual-whitespace.nvim',
@@ -1041,6 +1042,13 @@ require('lazy').setup {
       end,
     },
 
+    {
+      'adelarsq/image_preview.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('image_preview').setup()
+      end,
+    },
     -- 通知
     {
       'echasnovski/mini.notify',
@@ -1114,6 +1122,7 @@ require('lazy').setup {
       dependencies = {
         'b0o/nvim-tree-preview.lua',
         'nvim-lua/plenary.nvim',
+        'adelarsq/image_preview.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -1411,6 +1420,45 @@ require('lazy').setup {
       end,
     },
 
+    -- クラス構造
+    {
+      'SmiteshP/nvim-navbuddy',
+      dependencies = {
+        'neovim/nvim-lspconfig',
+        'SmiteshP/nvim-navic',
+        'MunifTanjim/nui.nvim',
+      },
+      keys = {
+        { '<Leader>s', '<cmd>Navbuddy<cr>', desc = 'nabuddy' },
+      },
+      event = 'VeryLazy',
+      config = function()
+        require('nvim-navbuddy').setup {
+          window = {
+            border = 'rounded',
+            size = '80%',
+            position = '50%',
+            sections = {
+              left = {
+                size = '20%',
+              },
+              mid = {
+                size = '30%',
+              },
+              right = {
+                preview = 'always',
+              },
+            },
+          },
+          use_default_mappings = true,
+          lsp = {
+            auto_attach = true,
+          },
+        }
+      end,
+      -- opts = { lsp = { auto_attach = true } },
+    },
+
     -- fzf ファイル・コマンド検索
     {
       'nvim-telescope/telescope.nvim',
@@ -1476,6 +1524,7 @@ require('lazy').setup {
                 -- "--no-ignore",
                 '--hidden',
                 '--files',
+                '--sortr=modified',
               },
             },
           },
@@ -1611,12 +1660,17 @@ require('lazy').setup {
     -- コードアクション、差分修正
     {
       'aznhe21/actions-preview.nvim',
-      event = 'VeryLazy',
+      event = 'LspAttach',
       config = function()
         vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions)
         require('actions-preview').setup {
+          highlight_command = {
+            -- require("actions-preview.highlight").delta(),
+            -- require("actions-preview.highlight").diff_so_fancy(),
+            -- require("actions-preview.highlight").diff_highlight(),
+          },
           backend = { 'telescope' },
-          telescope = require('telescope.themes').get_dropdown {
+          telescope = require('telescope.themes').get_cursor {
             layout_config = {
               width = 160,
               height = 40,
@@ -1870,7 +1924,7 @@ require('lazy').setup {
       },
       config = function()
         local get_hex = require('cokeline.hlgroups').get_hl_attr
-        local mappings = require 'cokeline/mappings'
+        -- local mappings = require 'cokeline/mappings'
 
         local comments_fg = get_hex('Comment', 'fg')
         local errors_fg = get_hex('DiagnosticError', 'fg')
@@ -1885,10 +1939,6 @@ require('lazy').setup {
         -- local inactive_bg = get_hex("Normal", "bg")
         local inactive_bg = '#303030'
         local terminal_bg = '#282c34'
-
-        local red = vim.g.terminal_color_1
-        -- local green = vim.g.terminal_color_8
-        local yellow = vim.g.terminal_color_3
 
         local components = {
           margin = {
@@ -1919,13 +1969,10 @@ require('lazy').setup {
 
           devicon = {
             text = function(buffer)
-              return (mappings.is_picking_focus() or mappings.is_picking_close()) and buffer.pick_letter .. ' '
-                or buffer.devicon.icon
+              return buffer.devicon.icon
             end,
             fg = function(buffer)
-              return (mappings.is_picking_focus() and yellow)
-                or (mappings.is_picking_close() and red)
-                or buffer.devicon.color
+              return buffer.devicon.color
             end,
             truncation = { priority = 1 },
           },
@@ -2254,6 +2301,7 @@ require('lazy').setup {
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
         local on_attach = function(_, bufnr)
           vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+          vim.lsp.inlay_hint.enable(true)
         end
 
         vim.diagnostic.config {
@@ -2385,11 +2433,6 @@ require('lazy').setup {
         lspconfig.graphql.setup {
           on_attach = on_attach,
           capabilities = capabilities,
-          settings = {
-            graphql = {
-              schema = 'path/to/your/schema.graphql',
-            },
-          },
         }
 
         -- gopls
