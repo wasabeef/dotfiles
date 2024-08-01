@@ -118,25 +118,40 @@ vim.keymap.set('v', 'k', 'gk', keymap_opts)
 
 -- 画面分割
 vim.keymap.set('n', 's', '<Nop>', keymap_opts)
+-- 移動
 vim.keymap.set('n', 'sj', '<C-w>j', keymap_opts)
 vim.keymap.set('n', 'sk', '<C-w>k', keymap_opts)
 vim.keymap.set('n', 'sl', '<C-w>l', keymap_opts)
 vim.keymap.set('n', 'sh', '<C-w>h', keymap_opts)
+-- 最下段に移動し、幅を最大にする
 vim.keymap.set('n', 'sJ', '<C-w>J', keymap_opts)
+-- 最上段に移動し、幅を最大にする
 vim.keymap.set('n', 'sK', '<C-w>K', keymap_opts)
+-- 最右列に移動し、幅を最大にする
 vim.keymap.set('n', 'sL', '<C-w>L', keymap_opts)
+-- 最左列に移動し、幅を最大にする
 vim.keymap.set('n', 'sH', '<C-w>H', keymap_opts)
+-- 新しいタブページへ移動する
+vim.keymap.set('n', 'sT', '<C-w>T', keymap_opts)
 vim.keymap.set('n', 'sn', 'gt', keymap_opts)
 vim.keymap.set('n', 'sp', 'gT', keymap_opts)
 vim.keymap.set('n', 's=', '<C-w>=', keymap_opts)
 vim.keymap.set('n', 'sw', '<C-w>w', keymap_opts)
+-- バッファの最小化
 vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts)
+-- バッファの最小化を戻す
 vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts)
+-- 前のバッファ
 vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts)
+-- 次のバッファ
 vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts)
+-- 新規タブ
 vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts)
+-- 横分割
 vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts)
+-- 縦分割
 vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts)
+-- 閉じる
 vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts)
 vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts)
 
