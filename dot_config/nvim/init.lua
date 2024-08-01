@@ -1042,13 +1042,6 @@ require('lazy').setup {
       end,
     },
 
-    {
-      'adelarsq/image_preview.nvim',
-      event = 'VeryLazy',
-      config = function()
-        require('image_preview').setup()
-      end,
-    },
     -- 通知
     {
       'echasnovski/mini.notify',
@@ -1122,7 +1115,6 @@ require('lazy').setup {
       dependencies = {
         'b0o/nvim-tree-preview.lua',
         'nvim-lua/plenary.nvim',
-        'adelarsq/image_preview.nvim',
       },
       event = 'VeryLazy',
       config = function()
