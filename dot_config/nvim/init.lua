@@ -12,76 +12,76 @@ vim.g.maplocalleader = ','
 vim.keymap.set('n', ',', '<LocalLeader>', {})
 
 -- 保存されていないファイルがあるときは終了前に保存確認
-vim.o.confirm = true
+vim.opt.confirm = true
 -- バックアップファイル出力無効
-vim.o.backup = false
+vim.opt.backup = false
 -- swpファイル出力無効
-vim.o.swapfile = false
+vim.opt.swapfile = false
 -- 外部でファイルに変更がされた場合は読みなおす
-vim.o.autoread = true
+vim.opt.autoread = true
 -- 保存されていないファイルがあるときでも別のファイルを開くことが出来る
-vim.o.hidden = true
+vim.opt.hidden = true
 -- 入力中のコマンドを表示する
-vim.o.showcmd = true
+vim.opt.showcmd = true
 -- クリップボード連携
-vim.o.clipboard = 'unnamedplus'
+vim.opt.clipboard = 'unnamedplus'
 -- マウスを有効にする
-vim.o.mouse = 'a'
-vim.o.mousemoveevent = true
+vim.opt.mouse = 'a'
+vim.opt.mousemoveevent = true
 -- 文字コードの指定
-vim.o.encoding = 'utf-8'
-vim.o.fileencoding = 'utf-8'
-vim.o.fileencodings = 'utf-8,iso-2022-jp,cp932,euc-jp'
+vim.opt.encoding = 'utf-8'
+vim.opt.fileencoding = 'utf-8'
+vim.opt.fileencodings = 'utf-8,iso-2022-jp,cp932,euc-jp'
 -- 行番号
-vim.o.number = true
+vim.opt.number = true
 -- カーソル行をハイライト
-vim.o.cursorline = true
+vim.opt.cursorline = true
 -- カーソルを行末の一つ先まで移動可能にする
-vim.o.virtualedit = 'onemore'
+vim.opt.virtualedit = 'onemore'
 -- ビープ音を消す
-vim.o.visualbell = true
-vim.o.errorbells = false
+vim.opt.visualbell = true
+vim.opt.errorbells = false
 -- 対応する括弧を強調表示
-vim.o.showmatch = true
+vim.opt.showmatch = true
 -- 対応する括弧を表示する時間（最小設定）
-vim.o.matchtime = 1
+vim.opt.matchtime = 1
 -- ステータスを常に表示、複数バッファでも一つ
-vim.o.laststatus = 3
+vim.opt.laststatus = 3
 -- ファイル名補完
-vim.o.wildmode = 'list:longest'
+vim.opt.wildmode = 'list:longest'
 -- コマンドの補完
-vim.o.wildmenu = true
+vim.opt.wildmenu = true
 -- 空白文字の表示
--- vim.o.list = true
--- vim.o.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
+-- vim.opt.list = true
+-- vim.opt.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
 -- タブ文字をスペースにする
-vim.o.expandtab = true
-vim.o.tabstop = 2
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
 -- 自動インデント（前の行から引き継ぎ）
-vim.o.autoindent = true
+vim.opt.autoindent = true
 -- インデントのネスト上げ下げ
-vim.o.smartindent = true
+vim.opt.smartindent = true
 -- 自動インデントでずれる幅
-vim.o.shiftwidth = 2
+vim.opt.shiftwidth = 2
 -- 検索で大文字小文字を無視
-vim.o.ignorecase = true
-vim.o.smartcase = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 -- インクリメンタルサーチ
-vim.o.incsearch = true
+vim.opt.incsearch = true
 -- 最後尾まで検索を終えたら次の検索で先頭に移る
-vim.o.wrapscan = true
+vim.opt.wrapscan = true
 -- 検索文字列をハイライトする
-vim.o.hlsearch = true
+vim.opt.hlsearch = true
 -- 置換の時 g オプションをデフォルトで有効にする
-vim.o.gdefault = true
+vim.opt.gdefault = true
 -- 変更時にガタつかないようにサイン列を常に表示しておく
-vim.o.signcolumn = 'yes'
+vim.opt.signcolumn = 'yes'
 -- True Color
-vim.o.termguicolors = true
+vim.opt.termguicolors = true
 -- コマンドラインの高さを非表示
-vim.o.cmdheight = 0
+vim.opt.cmdheight = 0
 -- ウィンドウを半透明にする
-vim.o.winblend = 10
+vim.opt.winblend = 10
 vim.opt.pumblend = 10
 -- セッションの保存・復元
 -- blank: 空のウィンドウも含める
@@ -94,12 +94,12 @@ vim.opt.pumblend = 10
 -- winpos: ウィンドウの位置を含める
 -- terminal: ターミナルウィンドウも含める
 -- localoptions: ローカルオプション（バッファーやウィンドウの設定）を含める
-vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+vim.opt.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
 -- スクロール時に再描画しない
-vim.o.lazyredraw = true
+vim.opt.lazyredraw = true
 -- スペルチェック
--- vim.o.spell = true
--- vim.o.spelllang = "en,cjk"
+-- vim.opt.spell = true
+-- vim.opt.spelllang = "en,cjk"
 -- vim.opt_local.spelloptions:append("noplainbuffer")
 
 -- ---------------------------------------------------------
@@ -759,7 +759,7 @@ require('lazy').setup {
     },
 
     -- LineLength 80 に色を付ける
-    -- vim.o.colorcolumn = "80"
+    -- vim.opt.colorcolumn = "80"
     {
       'm4xshen/smartcolumn.nvim',
       event = 'VeryLazy',
@@ -1733,7 +1733,7 @@ require('lazy').setup {
         },
       },
       config = function()
-        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+        vim.opt.formatexpr = "v:lua.require'conform'.formatexpr()"
         require('conform').setup {
           -- format_on_save = { timeout_ms = 500 },
           formatters_by_ft = {
@@ -2729,7 +2729,7 @@ require('lazy').setup {
         }
 
         vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
-        vim.o.completefunc = 'v:lua.require("cmp").complete()'
+        vim.opt.completefunc = 'v:lua.require("cmp").complete()'
 
         cmp.setup {
           completion = {

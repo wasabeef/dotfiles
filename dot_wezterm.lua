@@ -106,6 +106,8 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = ''
   elseif title == 'bash' then
     title = '󱆃'
+  elseif title == 'sl' then
+    title = '󰔬'
   elseif title == 'wezterm' then
     title = ''
   end
