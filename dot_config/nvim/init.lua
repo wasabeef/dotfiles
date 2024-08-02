@@ -1120,8 +1120,16 @@ require('lazy').setup {
     {
       'fei6409/log-highlight.nvim',
       ft = 'log',
-      -- event = "VeryLazy",
-      config = true,
+      config = function()
+        -- ログのバッファだけ背景色を変える
+        vim.api.nvim_create_autocmd('FileType', {
+          pattern = 'log',
+          callback = function()
+            vim.cmd 'highlight LogNormal guibg=#282828 ctermbg=darkgray'
+            vim.cmd 'setlocal winhighlight=Normal:LogNormal'
+          end,
+        })
+      end,
     },
 
     -- ファイルツリー
