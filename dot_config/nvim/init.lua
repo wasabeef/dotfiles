@@ -689,8 +689,8 @@ require('lazy').setup {
       config = function()
         require('scrollbar').setup {
           throttle_ms = 1000,
-          show_in_active_only = false,
           hide_if_all_visible = true,
+          show_in_active_only = true,
           handle = { color = '#006df2' },
           excluded_buftypes = {
             'terminal',
@@ -1342,10 +1342,10 @@ require('lazy').setup {
           current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
           current_line_blame_opts = {
             virt_text = true,
-            virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+            virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
             delay = 1000,
             ignore_whitespace = false,
-            virt_text_priority = 100,
+            virt_text_priority = 1,
           },
           current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
           sign_priority = 6,
@@ -1420,6 +1420,10 @@ require('lazy').setup {
           highlight = {
             enable = true,
             disable = function(_, buf)
+              -- log は treesitter によるハイライトはしない
+              if vim.bo[buf].filetype == 'log' then
+                return false
+              end
               local max_filesize = 100 * 1024 -- 100 KB
               local check_stats = vim.uv.fs_stat
               local ok, stats = pcall(check_stats, vim.api.nvim_buf_get_name(buf))
@@ -1721,7 +1725,7 @@ require('lazy').setup {
             down_arrow = '  ',
             above = false,
           },
-          priority = 2003,
+          priority = 1000,
           inline = true,
         }
       end,

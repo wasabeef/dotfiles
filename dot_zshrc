@@ -148,7 +148,7 @@ alias '??'='gh copilot suggest'
 alias cat='bat'
 alias find='fd'
 alias grep='rg'
-alias lazygit='lg'
+alias lg='lazygit'
 
 # Zsh Plugin Manager
 if [[ -x $(which sheldon) ]]; then
