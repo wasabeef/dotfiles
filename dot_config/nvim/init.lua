@@ -2353,7 +2353,7 @@ require('lazy').setup {
             'jdtls',
 
             -- Formatter/Linter
-            'typo',
+            'typos',
             'prettier',
             'prettierd',
             'eslint_d',
@@ -2471,6 +2471,28 @@ require('lazy').setup {
               },
             },
           },
+        }
+
+        -- kotlin
+        local root_files = {
+          'settings.gradle', -- Gradle (multi-project)
+          'settings.gradle.kts', -- Gradle (multi-project)
+          'build.xml', -- Ant
+          'pom.xml', -- Maven
+        }
+
+        local fallback_root_files = {
+          'build.gradle', -- Gradle
+          'build.gradle.kts', -- Gradle
+        }
+        local util = require 'lspconfig.util'
+        lspconfig.kotlin_language_server.setup {
+          on_attach = on_attach,
+          capabilities = capabilities,
+          cmd = { 'kotlin-language-server' },
+          root_dir = function(fname)
+            return util.root_pattern(unpack(root_files))(fname) or util.root_pattern(unpack(fallback_root_files))(fname)
+          end,
         }
 
         -- SourceKit-LSP

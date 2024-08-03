@@ -1,4 +1,6 @@
 java temurin-17.0.11+9
+kotlin 1.9.25
+gradle 8.9
 nodejs 22.3.0
 flutter 3.22.2-stable
 dart 3.4.4
