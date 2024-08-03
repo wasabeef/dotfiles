@@ -32,30 +32,48 @@ vim.opt.mousemoveevent = true
 vim.opt.encoding = 'utf-8'
 vim.opt.fileencoding = 'utf-8'
 vim.opt.fileencodings = 'utf-8,iso-2022-jp,cp932,euc-jp'
--- 行番号
-vim.opt.number = true
--- カーソル行をハイライト
-vim.opt.cursorline = true
--- カーソルを行末の一つ先まで移動可能にする
-vim.opt.virtualedit = 'onemore'
 -- ビープ音を消す
 vim.opt.visualbell = true
 vim.opt.errorbells = false
--- 対応する括弧を強調表示
-vim.opt.showmatch = true
--- 対応する括弧を表示する時間（最小設定）
-vim.opt.matchtime = 1
 -- ステータスを常に表示、複数バッファでも一つ
 vim.opt.laststatus = 3
 -- ファイル名補完
 vim.opt.wildmode = 'list:longest'
 -- コマンドの補完
 vim.opt.wildmenu = true
+-- True Color
+vim.opt.termguicolors = true
+-- コマンドラインの高さを非表示
+vim.opt.cmdheight = 0
+-- ウィンドウを半透明にする
+vim.opt.winblend = 10
+vim.opt.pumblend = 10
+-- スクロール時に再描画しない
+vim.opt.lazyredraw = true
+
+-- ---------------------------------------------------------
+-- 表示設定
+-- ---------------------------------------------------------
+-- 行番号
+vim.opt.number = true
+-- カーソル行をハイライト
+vim.opt.cursorline = true
+-- カーソルを行末の一つ先まで移動可能にする
+-- vim.opt.virtualedit = 'onemore'
+-- 対応する括弧を強調表示
+vim.opt.showmatch = true
+-- 対応する括弧を表示する時間（最小設定）
+vim.opt.matchtime = 1
 -- 空白文字の表示
 -- vim.opt.list = true
 -- vim.opt.listchars = 'tab:→ ,eol:↵,trail:·,extends:↷,precedes:↶'
+
+-- ---------------------------------------------------------
+-- インデントとタブ設定
+-- ---------------------------------------------------------
 -- タブ文字をスペースにする
 vim.opt.expandtab = true
+-- タブの幅
 vim.opt.tabstop = 2
 -- 自動インデント（前の行から引き継ぎ）
 vim.opt.autoindent = true
@@ -63,6 +81,10 @@ vim.opt.autoindent = true
 vim.opt.smartindent = true
 -- 自動インデントでずれる幅
 vim.opt.shiftwidth = 2
+
+-- ---------------------------------------------------------
+-- 検索設定
+-- ---------------------------------------------------------
 -- 検索で大文字小文字を無視
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -74,15 +96,10 @@ vim.opt.wrapscan = true
 vim.opt.hlsearch = true
 -- 置換の時 g オプションをデフォルトで有効にする
 vim.opt.gdefault = true
--- 変更時にガタつかないようにサイン列を常に表示しておく
-vim.opt.signcolumn = 'yes'
--- True Color
-vim.opt.termguicolors = true
--- コマンドラインの高さを非表示
-vim.opt.cmdheight = 0
--- ウィンドウを半透明にする
-vim.opt.winblend = 10
-vim.opt.pumblend = 10
+
+-- ---------------------------------------------------------
+-- セッション設定
+-- ---------------------------------------------------------
 -- セッションの保存・復元
 -- blank: 空のウィンドウも含める
 -- buffers: 開いているバッファーも含める
@@ -95,8 +112,12 @@ vim.opt.pumblend = 10
 -- terminal: ターミナルウィンドウも含める
 -- localoptions: ローカルオプション（バッファーやウィンドウの設定）を含める
 vim.opt.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
--- スクロール時に再描画しない
-vim.opt.lazyredraw = true
+
+-- ---------------------------------------------------------
+-- その他の設定
+-- ---------------------------------------------------------
+-- 変更時にガタつかないようにサイン列を常に表示しておく
+vim.opt.signcolumn = 'yes'
 -- スペルチェック
 -- vim.opt.spell = true
 -- vim.opt.spelllang = "en,cjk"
@@ -218,18 +239,6 @@ vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts)
 vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts)
 vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts)
 
--- 前回開いたファイルのカーソル位置を復旧する
-vim.api.nvim_create_autocmd('BufReadPost', {
-  group = vim.api.nvim_create_augroup('restore_cursor', { clear = true }),
-  pattern = '*',
-  callback = function()
-    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
-    if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
-      vim.api.nvim_win_set_cursor(0, { row, col })
-    end
-  end,
-})
-
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
@@ -275,6 +284,18 @@ vim.g.loaded_vimballPlugin = 1
 vim.g.loaded_zip = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
+
+-- 前回開いたファイルのカーソル位置を復旧する
+vim.api.nvim_create_autocmd('BufReadPost', {
+  group = vim.api.nvim_create_augroup('restore_cursor', { clear = true }),
+  pattern = '*',
+  callback = function()
+    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+    if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
+      vim.api.nvim_win_set_cursor(0, { row, col })
+    end
+  end,
+})
 
 require('lazy').setup {
   checker = {
@@ -908,6 +929,19 @@ require('lazy').setup {
       end,
     },
 
+    -- 括弧位置ハイライト
+    {
+      'utilyre/sentiment.nvim',
+      event = 'VeryLazy', -- keep for lazy loading
+      opts = {
+        -- config
+      },
+      init = function()
+        -- `matchparen.vim` needs to be disabled manually in case of lazy loading
+        vim.g.loaded_matchparen = 1
+      end,
+    },
+
     -- カーソル位置ハイライト
     {
       'RRethy/vim-illuminate',
@@ -919,7 +953,7 @@ require('lazy').setup {
             'treesitter',
             'regex',
           },
-          delay = 100,
+          delay = 500,
           filetype_overrides = {},
           filetypes_denylist = {
             'dropbar_menu',
@@ -1342,10 +1376,10 @@ require('lazy').setup {
           current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
           current_line_blame_opts = {
             virt_text = true,
-            virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
-            delay = 1000,
+            virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+            delay = 500,
             ignore_whitespace = false,
-            virt_text_priority = 1,
+            virt_text_priority = 100,
           },
           current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
           sign_priority = 6,
@@ -1715,18 +1749,43 @@ require('lazy').setup {
 
     -- Inline Diagnostics
     {
-      'sontungexpt/better-diagnostic-virtual-text',
-      event = 'VeryLazy',
-      config = function(_)
-        require('better-diagnostic-virtual-text').setup {
-          ui = {
-            arrow = '  ',
-            up_arrow = '  ',
-            down_arrow = '  ',
-            above = false,
+      'dgagn/diagflow.nvim',
+      event = 'LspAttach',
+      opts = {},
+      config = function()
+        require('diagflow').setup {
+          enable = true,
+          max_width = 120,
+          max_height = 40,
+          severity_colors = {
+            error = 'DiagnosticFloatingError',
+            warning = 'DiagnosticFloatingWarn',
+            info = 'DiagnosticFloatingInfo',
+            hint = 'DiagnosticFloatingHint',
           },
-          priority = 1000,
-          inline = true,
+          format = function(diagnostic)
+            return diagnostic.message
+          end,
+          gap_size = 1,
+          scope = 'cursor',
+          padding_top = 0,
+          padding_right = 5,
+          text_align = 'right',
+          placement = 'top',
+          inline_padding_left = 0,
+          update_event = { 'DiagnosticChanged', 'BufReadPost' },
+          toggle_event = {},
+          show_sign = false,
+          render_event = { 'DiagnosticChanged', 'CursorMoved' },
+          border_chars = {
+            top_left = '┌',
+            top_right = '┐',
+            bottom_left = '└',
+            bottom_right = '┘',
+            horizontal = '─',
+            vertical = '│',
+          },
+          show_borders = false,
         }
       end,
     },
@@ -2619,6 +2678,45 @@ require('lazy').setup {
       end,
     },
 
+    -- シンボルの使用状況
+    {
+      'Wansmer/symbol-usage.nvim',
+      event = 'LspAttach',
+      config = function()
+        require('symbol-usage').setup {
+          hl = { link = 'Comment' },
+          -- available kinds: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#symbolKind
+          kinds = {
+            vim.lsp.protocol.SymbolKind.Function,
+            vim.lsp.protocol.SymbolKind.Method,
+            vim.lsp.protocol.SymbolKind.Class,
+            vim.lsp.protocol.SymbolKind.Interface,
+            vim.lsp.protocol.SymbolKind.Constructor,
+          },
+          kinds_filter = {},
+          vt_position = 'above',
+          vt_priority = nil,
+          references = { enabled = true, include_declaration = false },
+          definition = { enabled = false },
+          implementation = { enabled = false },
+          disable = {
+            lsp = {},
+            filetypes = {
+              'alpha',
+              'dropbar_menu',
+              'NvimTree',
+              'DiffviewFileHistory',
+              'DiffviewFiles',
+              'lazy',
+              'mason',
+            },
+            cond = {},
+          },
+          symbol_request_pos = 'end',
+        }
+      end,
+    },
+
     -- Inlay hints
     {
       'chrisgrieser/nvim-lsp-endhints',
@@ -3025,8 +3123,8 @@ require('lazy').setup {
                 return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
               end,
               layout_config = {
-                width = 180,
-                height = 40,
+                width = 160,
+                height = 20,
               },
             },
           },
