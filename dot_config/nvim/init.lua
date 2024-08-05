@@ -938,17 +938,17 @@ require('lazy').setup {
     },
 
     -- 括弧位置ハイライト
-    {
-      'utilyre/sentiment.nvim',
-      event = 'VeryLazy', -- keep for lazy loading
-      opts = {
-        -- config
-      },
-      init = function()
-        -- `matchparen.vim` needs to be disabled manually in case of lazy loading
-        vim.g.loaded_matchparen = 1
-      end,
-    },
+    -- {
+    --   'utilyre/sentiment.nvim',
+    --   event = 'VeryLazy', -- keep for lazy loading
+    --   opts = {
+    --     -- config
+    --   },
+    --   init = function()
+    --     -- `matchparen.vim` needs to be disabled manually in case of lazy loading
+    --     vim.g.loaded_matchparen = 1
+    --   end,
+    -- },
 
     -- カーソル位置ハイライト
     {
@@ -1667,6 +1667,10 @@ require('lazy').setup {
                 },
               },
               undo = {},
+              media_files = {
+                filetypes = { 'png', 'webp', 'jpg', 'jpeg' },
+                find_cmd = 'rg',
+              },
             },
             preview = {
               treesitter = true,
@@ -1991,21 +1995,14 @@ require('lazy').setup {
       },
       event = { 'BufReadPre', 'BufNewFile' },
       keys = {
-        {
-          '[[',
-          '<Plug>(cokeline-focus-prev)',
-        },
-        {
-          ']]',
-          '<Plug>(cokeline-focus-next)',
-        },
+        { '[[', '<Plug>(cokeline-focus-prev)' },
+        { '\\[[', '<Plug>(cokeline-switch-prev)' },
+        { ']]', '<Plug>(cokeline-focus-next)' },
+        { '\\]]', '<Plug>(cokeline-switch-next)' },
+        { '\\\\', '<cmd>bd<CR>' },
         {
           '\\][',
           ':lua for _, buf in ipairs(vim.api.nvim_list_bufs()) do if buf ~= vim.api.nvim_get_current_buf() then vim.api.nvim_buf_delete(buf, {force = true}) end end<CR>',
-        },
-        {
-          '\\\\',
-          '<cmd>bd<CR>',
         },
       },
       config = function()
@@ -2820,10 +2817,10 @@ require('lazy').setup {
       'hrsh7th/nvim-cmp',
       dependencies = {
         'neovim/nvim-lspconfig',
-        'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
+        { 'tzachar/cmp-tabnine', build = './install.sh' },
 
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
@@ -2840,6 +2837,7 @@ require('lazy').setup {
           mode = 'symbol_text',
           symbol_map = {
             Copilot = '',
+            TabNine = '󰚩',
             Text = '󰉿',
             Method = '󰆧',
             Function = '󰊕',
@@ -2919,6 +2917,8 @@ require('lazy').setup {
           },
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 2 },
+            { name = 'cmp_tabnine', group_index = 2 },
+            { name = 'nvim_lsp_document_symbol', group_index = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
             { name = 'nvim_lsp_signature_help', group_index = 2 },
@@ -2953,39 +2953,6 @@ require('lazy').setup {
           }),
           matching = { disallow_symbol_nonprefix_matching = false },
         })
-      end,
-    },
-
-    -- コマンドのデザイン
-    {
-      'Sam-programs/cmdline-hl.nvim',
-      event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
-      config = function()
-        local cmdline_hl = require 'cmdline-hl'
-        cmdline_hl.setup {
-          type_signs = {
-            [':'] = { '   ', 'Title' },
-            ['/'] = { '   ', 'Title' },
-            ['?'] = { '   ', 'Title' },
-            ['='] = { '   ', 'Title' },
-          },
-          custom_types = {
-            ['lua'] = { icon = '    ', icon_hl = 'Title', lang = 'lua', show_cmd = true },
-            ['='] = { pat = '=(.*)', lang = 'lua', show_cmd = true },
-            ['help'] = { icon = '  ? ', show_cmd = true },
-            ['substitute'] = { pat = '%w(.*)', lang = 'regex', show_cmd = true },
-          },
-          aliases = {},
-          input_hl = 'Title',
-          input_format = function(input)
-            return input
-          end,
-          range_hl = 'Constant',
-          ghost_text = false,
-          ghost_text_hl = 'Comment',
-          inline_ghost_text = false,
-          -- ghost_text_provider = require("cmdline-hl.ghost_text").history,
-        }
       end,
     },
 
@@ -3037,11 +3004,45 @@ require('lazy').setup {
       end,
     },
 
+    -- コマンドのデザイン
+    {
+      'Sam-programs/cmdline-hl.nvim',
+      event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
+      config = function()
+        local cmdline_hl = require 'cmdline-hl'
+        cmdline_hl.setup {
+          type_signs = {
+            [':'] = { '   ', 'Title' },
+            ['/'] = { '   ', 'Title' },
+            ['?'] = { '   ', 'Title' },
+            ['='] = { '   ', 'Title' },
+          },
+          custom_types = {
+            ['lua'] = { icon = '    ', icon_hl = 'Title', lang = 'lua', show_cmd = true },
+            ['='] = { pat = '=(.*)', lang = 'lua', show_cmd = true },
+            ['help'] = { icon = '  ? ', show_cmd = true },
+            ['substitute'] = { pat = '%w(.*)', lang = 'regex', show_cmd = true },
+          },
+          aliases = {},
+          input_hl = 'Title',
+          input_format = function(input)
+            return input
+          end,
+          range_hl = 'Constant',
+          ghost_text = false,
+          ghost_text_hl = 'Comment',
+          inline_ghost_text = false,
+          -- ghost_text_provider = require("cmdline-hl.ghost_text").history,
+        }
+      end,
+    },
+
     -- デバッグ
     {
       'mfussenegger/nvim-dap',
       dependencies = {
         'nvim-neotest/nvim-nio',
+        'theHamsta/nvim-dap-virtual-text',
         'rcarriga/nvim-dap-ui',
         'nvim-telescope/telescope-dap.nvim',
       },
@@ -3054,6 +3055,9 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
 
+        require('nvim-dap-virtual-text').setup {
+          virt_text_pos = 'eol',
+        }
         require('dapui').setup {
           icons = { expanded = '▾', collapsed = '▸' },
           layouts = {
