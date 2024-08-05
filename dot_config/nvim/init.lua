@@ -944,6 +944,16 @@ require('lazy').setup {
       end,
     },
 
+    -- 括弧位置ハイライト
+    {
+      'utilyre/sentiment.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('sentiment').setup {}
+        vim.api.nvim_set_hl(0, 'MatchParen', { bg = '#4c566a', fg = '#88c0d0' })
+      end,
+    },
+
     -- カーソル位置ハイライト
     {
       'RRethy/vim-illuminate',
@@ -1529,14 +1539,26 @@ require('lazy').setup {
       },
       event = 'VeryLazy',
       config = function()
-        vim.keymap.set(
-          'n',
-          '<C-o>',
-          "<cmd>lua require('telescope.builtin').find_files({hidden = false})<CR>",
-          keymap_opts
-        )
+        vim.keymap.set('n', '<C-o>', function()
+          require('telescope.builtin').find_files {
+            hidden = false,
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+            end,
+          }
+        end, keymap_opts)
+        vim.keymap.set('n', '<C-S-O>', function()
+          require('telescope.builtin').oldfiles {
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+            end,
+          }
+        end, keymap_opts)
         vim.keymap.set('n', '<C-g>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", keymap_opts)
-        vim.keymap.set('n', '<C-S-O>', "<cmd>lua require('telescope.builtin').oldfiles()<CR>", keymap_opts)
         -- vim.keymap.set(
         --   "n",
         --   "<C-x>",
@@ -1552,6 +1574,21 @@ require('lazy').setup {
         vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts)
         vim.keymap.set('n', ':', ':Telescope cmdline<CR>', keymap_opts)
         vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts)
+        vim.keymap.set('n', '<Leader>r', function()
+          require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
+            hide_preview = false,
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+            end,
+            layout_config = {
+              width = 160,
+              height = 20,
+            },
+          })
+        end, bufopsts)
+
         vim.api.nvim_create_user_command('Clear', function(_)
           vim.fn.histdel('cmd', -1)
         end, {})
@@ -3156,21 +3193,6 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
-        -- vim.keymap.set('n', '<Leader>r', "<cmd>lua require('goto-preview').goto_preview_references()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>r', function()
-          require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
-            hide_preview = false,
-            path_display = function(_, path)
-              local tail = require('telescope.utils').path_tail(path)
-              local relative_path = vim.fn.fnamemodify(path, ':.')
-              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
-            end,
-            layout_config = {
-              width = 160,
-              height = 20,
-            },
-          })
-        end, bufopsts)
       end,
     },
 
