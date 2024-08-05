@@ -403,18 +403,25 @@ require('lazy').setup {
 
         dashboard.section.buttons.val = {
           -- dashboard.button("e", "   New file",       ":ene <BAR> startinsert <CR>"),
-          dashboard.button('o', '   Find file', ':Telescope find_files<CR>'),
+          dashboard.button('f', '   Find file', ':Telescope find_files<CR>'),
           dashboard.button('g', '󰱼   Find word', ':Telescope live_grep<CR>'),
           dashboard.button('r', '󰈚   Recent', ':Telescope oldfiles<CR>'),
+          dashboard.button(
+            'o',
+            '󰏫   Obsidian Find file',
+            ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianQuickSwitch<CR>'
+          ),
+          dashboard.button(
+            'O',
+            '󰏫   Obsidian new file',
+            ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianNew<CR>'
+          ),
           dashboard.button('i', '   Edit init.lua', ':e $MYVIMRC <CR>'),
           dashboard.button('z', '   Edit .zshrc', ':e ~/.zshrc <CR>'),
           dashboard.button('w', '   Edit .wezterm.lua', ':e ~/.wezterm.lua <CR>'),
           dashboard.button('s', '   Edit sheldon config', ':e ~/.config/sheldon/plugins.toml <CR>'),
-          dashboard.button('t', '   Edit typos.toml', ':e ~/.config/typos.toml <CR>'),
-          dashboard.button('d', '   Edit dprint.json', ':e ~/.config/dprint.json <CR>'),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
-          dashboard.button('u', '󰂖   Update plugins', "<cmd>lua require('lazy').sync()<CR>"),
           dashboard.button('q', '   Quit NVIM', ':qa<CR>'),
         }
 
@@ -936,19 +943,6 @@ require('lazy').setup {
         vim.api.nvim_set_hl(0, 'HopUnmatched', { fg = '#787d8f' })
       end,
     },
-
-    -- 括弧位置ハイライト
-    -- {
-    --   'utilyre/sentiment.nvim',
-    --   event = 'VeryLazy', -- keep for lazy loading
-    --   opts = {
-    --     -- config
-    --   },
-    --   init = function()
-    --     -- `matchparen.vim` needs to be disabled manually in case of lazy loading
-    --     vim.g.loaded_matchparen = 1
-    --   end,
-    -- },
 
     -- カーソル位置ハイライト
     {
@@ -1542,12 +1536,7 @@ require('lazy').setup {
           keymap_opts
         )
         vim.keymap.set('n', '<C-g>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", keymap_opts)
-        -- vim.keymap.set(
-        --   "n",
-        --   "<C-p>",
-        --   "<cmd>lua require('telescope.builtin').oldfiles()<CR>",
-        --   keymap_opts
-        -- )
+        vim.keymap.set('n', '<C-S-O>', "<cmd>lua require('telescope.builtin').oldfiles()<CR>", keymap_opts)
         -- vim.keymap.set(
         --   "n",
         --   "<C-x>",
@@ -1879,7 +1868,7 @@ require('lazy').setup {
           css = { 'stylelint', 'typos' },
           sh = { 'shellcheck', 'typos' },
           lua = { 'selene', 'typos' },
-          markdown = { 'markdownlint', 'typos' }, -- stop vale
+          -- markdown = { 'markdownlint', 'typos' }, -- stop vale
           json = { 'jsonlint', 'typos' },
           yaml = { 'yamllint', 'actionlint', 'typos' },
           terraform = { 'tflint', 'typos' },
@@ -2257,6 +2246,7 @@ require('lazy').setup {
       'OXY2DEV/markview.nvim',
       dependencies = {
         'nvim-treesitter/nvim-treesitter',
+        'echasnovski/mini.icons',
       },
       ft = 'markdown',
       -- event = "VeryLazy",
@@ -2270,6 +2260,29 @@ require('lazy').setup {
       config = function()
         require('markdown-table-mode').setup()
       end,
+    },
+
+    -- Obsidian メモ
+    {
+      'epwalsh/obsidian.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+      },
+      event = 'VeryLazy',
+      opts = {
+        ui = {
+          enable = false,
+        },
+        workspaces = {
+          {
+            name = 'Memo',
+            path = '~/Google Drive/My Drive/Memo',
+          },
+        },
+        note_id_func = function(title)
+          return title
+        end,
+      },
     },
 
     -- Google 翻訳
@@ -2430,7 +2443,6 @@ require('lazy').setup {
             'swiftlint',
             'markdownlint',
             'markdownlint-cli2',
-            -- 'vale',
             'yamlfmt',
             'yamllint',
             'jsonlint',
@@ -2592,7 +2604,7 @@ require('lazy').setup {
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
-        'hrsh8th/cmp-nvim-lsp',
+        'hrsh7th/cmp-nvim-lsp',
       },
       ft = { 'dart' },
       -- event = 'BufRead',
@@ -3053,7 +3065,11 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bu', function()
+          vim.cmd 'lua require("dapui").toggle()'
+          -- DapUI を表示する際に Inlay hints を非表示にする
+          vim.cmd 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())'
+        end, keymap_opts)
 
         require('nvim-dap-virtual-text').setup {
           virt_text_pos = 'eol',
@@ -3126,20 +3142,7 @@ require('lazy').setup {
           debug = false,
           opacity = 30,
           resizing_mappings = false,
-          references = {
-            telescope = require('telescope.themes').get_cursor {
-              hide_preview = false,
-              path_display = function(_, path)
-                local tail = require('telescope.utils').path_tail(path)
-                local relative_path = vim.fn.fnamemodify(path, ':.')
-                return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
-              end,
-              layout_config = {
-                width = 160,
-                height = 20,
-              },
-            },
-          },
+          references = {}, -- use telescope built-in
           focus_on_open = true,
           dismiss_on_move = false,
           force_close = true,
@@ -3153,7 +3156,21 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>r', "<cmd>lua require('goto-preview').goto_preview_references()<CR>", bufopts)
+        -- vim.keymap.set('n', '<Leader>r', "<cmd>lua require('goto-preview').goto_preview_references()<CR>", bufopts)
+        vim.keymap.set('n', '<Leader>r', function()
+          require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
+            hide_preview = false,
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+            end,
+            layout_config = {
+              width = 160,
+              height = 20,
+            },
+          })
+        end, bufopsts)
       end,
     },
 

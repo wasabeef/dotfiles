@@ -149,6 +149,7 @@ alias cat='bat'
 alias find='fd'
 alias grep='rg'
 alias lg='lazygit'
+alias gl='lazygit'
 
 # Zsh Plugin Manager
 if [[ -x $(which sheldon) ]]; then
