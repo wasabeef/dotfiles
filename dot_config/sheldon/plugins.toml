@@ -46,7 +46,7 @@ apply = ["defer"]
 
 [plugins.zoxide]
 inline = '''
-eval "$(zoxide init zsh)"
+zsh-defer eval "$(zoxide init zsh)"
 function zoxide_zi() {
   zi
   zle reset-prompt
