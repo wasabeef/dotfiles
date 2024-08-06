@@ -145,23 +145,19 @@ alias simu-ls='xcrun simctl list'
 alias chez='chezmoi'
 alias '?'='gh copilot explain'
 alias '??'='gh copilot suggest'
+alias lg='lazygit'
+alias gl='lazygit'
 alias cat='bat'
 alias find='fd'
 alias grep='rg'
-alias lg='lazygit'
-alias gl='lazygit'
+alias cd='z'
+alias ci='zi'
+alias cdi='zi'
 
 # Zsh Plugin Manager
 if [[ -x $(which sheldon) ]]; then
   eval "$(sheldon source)"
 fi
-
-# fzf
-source <(fzf --zsh)
-
-
-# copilot
-# eval "$(gh copilot alias -- zsh)"
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then

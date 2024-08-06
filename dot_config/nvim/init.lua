@@ -1165,11 +1165,12 @@ require('lazy').setup {
     -- ログに色付け
     {
       'fei6409/log-highlight.nvim',
-      ft = 'log',
+      ft = { 'log' },
+      -- event = 'VeryLazy',
       config = function()
         -- ログのバッファだけ背景色を変える
         vim.api.nvim_create_autocmd('FileType', {
-          pattern = 'log',
+          pattern = { 'log' },
           callback = function()
             vim.cmd 'highlight LogNormal guibg=#282828 ctermbg=darkgray'
             vim.cmd 'setlocal winhighlight=Normal:LogNormal'
@@ -1549,7 +1550,7 @@ require('lazy').setup {
             end,
           }
         end, keymap_opts)
-        vim.keymap.set('n', '<C-S-O>', function()
+        vim.keymap.set('n', '<C-r>', function()
           require('telescope.builtin').oldfiles {
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
@@ -2638,6 +2639,7 @@ require('lazy').setup {
     -- Flutter
     {
       'akinsho/flutter-tools.nvim',
+      tag = 'v1.10.0',
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
@@ -2672,6 +2674,7 @@ require('lazy').setup {
                 type = 'executable',
                 command = paths.flutter_bin,
                 args = { 'debug_adapter' },
+                console = 'internalConsole',
               }
               dap.configurations.dart = {}
               require('dap.ext.vscode').load_launchjs()
@@ -2688,7 +2691,7 @@ require('lazy').setup {
           dev_log = {
             enabled = true,
             notify_errors = false,
-            open_cmd = 'botright 20split',
+            open_cmd = 'botright 15split',
           },
           dev_tools = {
             autostart = false,
@@ -3100,10 +3103,10 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', function()
-          vim.cmd 'lua require("dapui").toggle()'
+          vim.cmd "lua require('dapui').toggle()"
           -- DapUI を表示する際に Inlay hints を非表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())'
         end, keymap_opts)
@@ -3111,18 +3114,76 @@ require('lazy').setup {
         require('nvim-dap-virtual-text').setup {
           virt_text_pos = 'eol',
         }
+
+        -- .into-targets
+        -- .into
+        -- .next, .n
+        -- .back, .b
+        -- .clear
+        -- .goto
+        -- .reverse-continue, .rc
+        -- .frames
+        -- .continue, .c
+        -- .down
+        -- .up
+        -- .scopes
+        -- exit, .exit
+        -- .out
+        -- help, .help, .h
+        -- .capabilities
+        -- .pause, .p
+        -- .threads
+        -- local repl = require 'dap.repl'
+        -- repl.commands = vim.tbl_extend('force', repl.commands, {
+        --   continue = { '.continue', '.c', 'c' },
+        --   next_ = { '.next', '.n', 'n' },
+        --   into = { 'into', '.i', 'i' },
+        -- })
+
+        vim.api.nvim_set_hl(0, 'white', { fg = '#ffffff' })
+        vim.api.nvim_set_hl(0, 'green', { fg = '#3fc56b' })
+        vim.api.nvim_set_hl(0, 'yellow', { fg = '#f9c859' })
+        vim.fn.sign_define('DapBreakpoint', { text = ' ', texthl = 'white' })
+        vim.fn.sign_define('DapBreakpointCondition', { text = ' ', texthl = 'white' })
+        vim.fn.sign_define('DapBreakpointRejected', { text = ' ', texthl = 'white' })
+        vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green' })
+        vim.fn.sign_define('DapLogPoint', { text = ' ', texthl = 'yellow' })
+
         require('dapui').setup {
-          icons = { expanded = '▾', collapsed = '▸' },
+          icons = { collapsed = '', current_frame = '', expanded = '' },
+          floating = { border = 'rounded', mappings = { close = { 'q', '<Esc>' } } },
+          controls = {
+            element = 'repl',
+            enabled = true,
+            icons = {
+              disconnect = '',
+              pause = '',
+              play = '',
+              run_last = '',
+              step_back = '',
+              step_into = '',
+              step_out = '',
+              step_over = '',
+              terminate = '',
+            },
+          },
           layouts = {
             {
               elements = {
-                { id = 'scopes', size = 0.25 },
-                'breakpoints',
-                'stacks',
-                'watches',
+                { id = 'stacks', size = 0.2 },
+                { id = 'breakpoints', size = 0.2 },
+                { id = 'scopes', size = 0.2 },
+                { id = 'watches', size = 0.2 },
               },
-              size = 10, -- columns
+              size = 15, -- columns
               position = 'bottom',
+            },
+            {
+              elements = {
+                'repl',
+              },
+              size = 50, -- columns
+              position = 'right',
             },
           },
         }
@@ -3139,14 +3200,14 @@ require('lazy').setup {
         require('hover').setup {
           init = function()
             require 'hover.providers.lsp'
+            require 'hover.providers.dap'
             -- require('hover.providers.gh')
-            require 'hover.providers.gh_user'
-            -- require('hover.providers.jira')
-            -- require('hover.providers.dap')
-            -- require('hover.providers.fold_preview')
-            -- require("hover.providers.diagnostic")
-            -- require('hover.providers.man')
-            -- require('hover.providers.dictionary')
+            -- require 'hover.providers.gh_user'
+            -- require 'hover.providers.diagnostic'
+            -- require 'hover.providers.dictionary'
+            -- require 'hover.providers.fold_preview'
+            -- require 'hover.providers.man'
+            -- require 'hover.providers.jira'
           end,
           preview_opts = {
             border = 'rounded',

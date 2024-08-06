@@ -4,42 +4,8 @@ shell = "zsh"
 
 [plugins]
 
-[plugins.zsh-defer]
-github = "romkatv/zsh-defer"
-apply = ['source']
-
 [templates]
 defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
-
-[plugins.zsh-autosuggestions]
-github = "zsh-users/zsh-autosuggestions"
-apply = ['defer']
-
-[plugins.zsh-completions]
-github = "zsh-users/zsh-completions"
-apply = ['defer']
-
-[plugins.fzf-zsh-completions]
-github = "chitoku-k/fzf-zsh-completions"
-apply = ['defer']
-
-[plugins.fzf]
-github = "junegunn/fzf"
-apply = ['defer']
-
-[plugins.fzf-settings]
-inline = '''
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-'''
-
-[plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
-apply = ["defer"]
-
-[plugins.direnv]
-github = "ohmyzsh/ohmyzsh"
-dir = "plugins/direnv"
-apply = ["defer"]
 
 [plugins.git-branch]
 ## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
@@ -55,5 +21,50 @@ zstyle ':vcs_info:*' enable git
 zstyle ':completion:*:default' menu select=1
 '''
 
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+apply = ['source']
+
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
+
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ['defer']
+
+[plugins.fzf-settings]
+inline = '''
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+'''
+
+[plugins.fzf-zsh-completions]
+github = "chitoku-k/fzf-zsh-completions"
+apply = ['defer']
+
+[plugins.direnv]
+github = "ohmyzsh/ohmyzsh"
+dir = "plugins/direnv"
+apply = ["defer"]
+
+[plugins.zoxide]
+inline = '''
+eval "$(zoxide init zsh)"
+function zoxide_zi() {
+  zi
+  zle reset-prompt
+}
+zle -N zoxide_zi
+bindkey '^O' zoxide_zi
+'''
