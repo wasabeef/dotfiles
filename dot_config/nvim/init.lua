@@ -2429,6 +2429,7 @@ require('lazy').setup {
         'WhoIsSethDaniel/mason-tool-installer.nvim',
 
         'hrsh7th/cmp-nvim-lsp',
+        'b0o/schemastore.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -2466,6 +2467,8 @@ require('lazy').setup {
             'typescript-language-server',
             'graphql-language-service-cli',
             'jdtls',
+            'yaml-language-server',
+            'json-lsp',
 
             -- Formatter/Linter
             'typos',
@@ -2497,28 +2500,47 @@ require('lazy').setup {
           debounce_hours = 5,
         }
 
-        require('mason-lspconfig').setup_handlers {
-          function(server_name)
-            lspconfig[server_name].setup {
-              on_attach = on_attach,
-              capabilities = capabilities,
-            }
-          end,
+        -- require('mason-lspconfig').setup_handlers {
+        --   function(server_name)
+        --     lspconfig[server_name].setup {
+        --       on_attach = on_attach,
+        --       capabilities = capabilities,
+        --     }
+        --   end,
+        -- }
+
+        -- jsonls
+        lspconfig.jsonls.setup {
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            json = {
+              schemas = require('schemastore').json.schemas(),
+              validate = { enable = true },
+            },
+          },
         }
 
-        -- -- typo-lsp
-        -- lspconfig.typos_lsp.setup {
-        --   on_attach = function(client, bufnr)
-        --     if client.name == 'typos_lsp' and vim.tbl_contains({ 'log' }, vim.bo[bufnr].filetype) then
-        --       vim.lsp.handlers['textDocument/publishDiagnostics'] = function() end
-        --     end
-        --   end,
-        --   capabilities = capabilities,
-        --   init_options = {
-        --     config = '$HOME/.config/nvim/typos.toml',
-        --     diagnosticSeverity = 'Warning',
-        --   },
-        -- }
+        -- yamlls
+        lspconfig.yamlls.setup {
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            yaml = {
+              completion = true,
+              validate = true,
+              schemas = require('schemastore').yaml.schemas {
+                extra = {
+                  {
+                    url = 'https://raw.githubusercontent.com/blaugold/melos-code/main/melos.yaml.schema.json',
+                    name = 'Melos',
+                    fileMatch = 'melos.yaml',
+                  },
+                },
+              },
+            },
+          },
+        }
 
         -- tsserver
         local inlayHints = {
