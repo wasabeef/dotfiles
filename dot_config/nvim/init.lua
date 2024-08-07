@@ -1517,6 +1517,18 @@ require('lazy').setup {
       end,
     },
 
+    -- コードブロックをスティッキー表示
+    {
+      'romgrk/nvim-treesitter-context',
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter',
+      },
+      event = 'VeryLazy',
+      config = function()
+        require('treesitter-context').setup {}
+      end,
+    },
+
     -- クラス構造
     {
       'SmiteshP/nvim-navbuddy',
@@ -1609,7 +1621,6 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>r', function()
           require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
             hide_preview = false,
-            -- results_title = true,
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
