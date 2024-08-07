@@ -2712,8 +2712,8 @@ require('lazy').setup {
           },
           decorations = {
             statusline = {
-              device = false, -- {flutter_tools_decorations.app_version} lualine
-              app_version = false, -- {flutter_tools_decorations.device} lualine
+              device = false, -- {flutter_tools_decorations.app_version} if use lualine
+              app_version = false, -- {flutter_tools_decorations.device} if use lualine
               project_config = false,
             },
           },
@@ -2783,6 +2783,16 @@ require('lazy').setup {
             },
           },
         }
+
+        -- ログバッファを開いてもフォーカスを移動させない
+        local ui = require 'flutter-tools.ui'
+        local original_open_win = ui.open_win
+        ---@diagnostic disable-next-line: duplicate-set-field
+        ui.open_win = function(cmd, bufnr, opts)
+          local current_win = vim.api.nvim_get_current_win()
+          original_open_win(cmd, bufnr, opts)
+          vim.api.nvim_set_current_win(current_win)
+        end
 
         require('telescope').load_extension 'flutter'
       end,
@@ -3043,12 +3053,9 @@ require('lazy').setup {
 
         cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
           enabled = true,
-          sources = require('cmp').config.sources({
+          sources = require('cmp').config.sources {
             { name = 'dap' },
-            { name = 'nvim_lsp' },
-          }, {
-            { name = 'buffer' },
-          }),
+          },
         })
 
         cmp.setup.cmdline({ '/', '?' }, {
@@ -3175,6 +3182,10 @@ require('lazy').setup {
         vim.fn.sign_define('DapBreakpointRejected', { text = ' ', texthl = 'white' })
         vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green' })
         vim.fn.sign_define('DapLogPoint', { text = ' ', texthl = 'yellow' })
+
+
+        local dap = require('dap')
+        dap.listeners.after['event_output']['custom_log_handler'] =
 
         require('nvim-dap-virtual-text').setup {
           virt_text_pos = 'eol',
