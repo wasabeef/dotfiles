@@ -1652,20 +1652,9 @@ require('lazy').setup {
             prompt_prefix = ' ',
             selection_caret = '󰁕 ',
             file_ignore_patterns = {
-              'node_modules/',
-              'Pods/',
-              'vendor/',
-              'build/',
-              'temp/',
-              '.git/info/',
-              '.git/logs/',
-              '.git/objects/',
-              '.git/refs/',
-              'logs/',
-              'screenshots/',
-              '.gradle/',
-              '.symlinks/',
-              '.dart_tool/',
+              '.git/HEAD',
+              '.git/[^c][^o][^n][^f][^i][^g]', -- 除外するパターンの正規表現
+              '.git/[^h][^o][^o][^k][^s]',
             },
             vimgrep_arguments = {
               'rg',
