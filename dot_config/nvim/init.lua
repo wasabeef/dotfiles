@@ -726,9 +726,7 @@ require('lazy').setup {
           excluded_filetypes = {
             'prompt',
             'dropbar_menu',
-            'lazygit',
             'alpha',
-            'lazy',
           },
         }
       end,
@@ -1550,7 +1548,7 @@ require('lazy').setup {
             end,
           }
         end, keymap_opts)
-        vim.keymap.set('n', '<C-r>', function()
+        vim.keymap.set('n', '<C-S-O>', function()
           require('telescope.builtin').oldfiles {
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
@@ -3123,10 +3121,11 @@ require('lazy').setup {
       event = 'LspAttach',
       config = function()
         vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>B', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>br', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', function()
           vim.cmd "lua require('dapui').toggle()"
           -- DapUI を表示する際に Inlay hints を非表示にする
@@ -3137,30 +3136,28 @@ require('lazy').setup {
           virt_text_pos = 'eol',
         }
 
-        -- .into-targets
-        -- .into
-        -- .next, .n
-        -- .back, .b
-        -- .clear
-        -- .goto
-        -- .reverse-continue, .rc
-        -- .frames
-        -- .continue, .c
-        -- .down
-        -- .up
-        -- .scopes
-        -- exit, .exit
-        -- .out
-        -- help, .help, .h
-        -- .capabilities
-        -- .pause, .p
-        -- .threads
-        -- local repl = require 'dap.repl'
-        -- repl.commands = vim.tbl_extend('force', repl.commands, {
-        --   continue = { '.continue', '.c', 'c' },
-        --   next_ = { '.next', '.n', 'n' },
-        --   into = { 'into', '.i', 'i' },
-        -- })
+        local repl = require 'dap.repl'
+        repl.commands = vim.tbl_extend('force', repl.commands, {
+          continue = { '.continue', '.c', 'c' },
+          next_ = { '.next', '.n', 'n' },
+          step_back = { '.back', '.b', 'b' },
+          reverse_continue = { '.reverse-continue', '.rc', 'rc' },
+          into = { '.into', '.i', 'i' },
+          into_targets = { '.into-targets', '.it', 'it' },
+          out = { '.out', '.o', 'o' },
+          scopes = { '.scopes', '.s', 's' },
+          threads = { '.threads', '.t', 't' },
+          frames = { '.frames', '.f', 'f' },
+          exit = { 'exit', '.exit', '.e', 'e', '.q', 'q' },
+          up = { '.up', '.u', 'u' },
+          down = { '.down', '.d', 'd' },
+          goto_ = { '.goto', '.g', 'g' },
+          pause = { '.pause', '.p', 'p' },
+          clear = { '.clear', 'clear' },
+          capabilities = { '.capabilities', '.cap', 'cap' },
+          help = { 'help', '.help', '.h', 'h' },
+          custom_commands = {},
+        })
 
         vim.api.nvim_set_hl(0, 'white', { fg = '#ffffff' })
         vim.api.nvim_set_hl(0, 'green', { fg = '#3fc56b' })
