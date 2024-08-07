@@ -3183,10 +3183,6 @@ require('lazy').setup {
         vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green' })
         vim.fn.sign_define('DapLogPoint', { text = ' ', texthl = 'yellow' })
 
-
-        local dap = require('dap')
-        dap.listeners.after['event_output']['custom_log_handler'] =
-
         require('nvim-dap-virtual-text').setup {
           virt_text_pos = 'eol',
         }
