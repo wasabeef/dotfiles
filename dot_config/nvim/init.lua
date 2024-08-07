@@ -1411,6 +1411,39 @@ require('lazy').setup {
       end,
     },
 
+    -- コマンドのデザイン
+    {
+      'Sam-programs/cmdline-hl.nvim',
+      event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
+      config = function()
+        local cmdline_hl = require 'cmdline-hl'
+        cmdline_hl.setup {
+          type_signs = {
+            [':'] = { '   ', 'Title' },
+            ['/'] = { '   ', 'Title' },
+            ['?'] = { '   ', 'Title' },
+            ['='] = { '   ', 'Title' },
+          },
+          custom_types = {
+            ['lua'] = { icon = '    ', icon_hl = 'Title', lang = 'lua', show_cmd = true },
+            ['='] = { pat = '=(.*)', lang = 'lua', show_cmd = true },
+            ['help'] = { icon = '  ? ', show_cmd = true },
+            ['substitute'] = { pat = '%w(.*)', lang = 'regex', show_cmd = true },
+          },
+          aliases = {},
+          input_hl = 'Title',
+          input_format = function(input)
+            return input
+          end,
+          range_hl = 'Constant',
+          ghost_text = false,
+          ghost_text_hl = 'Comment',
+          inline_ghost_text = false,
+          -- ghost_text_provider = require("cmdline-hl.ghost_text").history,
+        }
+      end,
+    },
+
     -- コードハイライト
     {
       'nvim-treesitter/nvim-treesitter',
@@ -2892,6 +2925,7 @@ require('lazy').setup {
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
+        'rcarriga/cmp-dap',
         { 'tzachar/cmp-tabnine', build = './install.sh' },
 
         'hrsh7th/cmp-nvim-lsp-signature-help',
@@ -3007,6 +3041,16 @@ require('lazy').setup {
           },
         }
 
+        cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
+          enabled = true,
+          sources = require('cmp').config.sources({
+            { name = 'dap' },
+            { name = 'nvim_lsp' },
+          }, {
+            { name = 'buffer' },
+          }),
+        })
+
         cmp.setup.cmdline({ '/', '?' }, {
           mapping = cmp.mapping.preset.cmdline(),
           sources = cmp.config.sources({
@@ -3076,39 +3120,6 @@ require('lazy').setup {
       end,
     },
 
-    -- コマンドのデザイン
-    {
-      'Sam-programs/cmdline-hl.nvim',
-      event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
-      config = function()
-        local cmdline_hl = require 'cmdline-hl'
-        cmdline_hl.setup {
-          type_signs = {
-            [':'] = { '   ', 'Title' },
-            ['/'] = { '   ', 'Title' },
-            ['?'] = { '   ', 'Title' },
-            ['='] = { '   ', 'Title' },
-          },
-          custom_types = {
-            ['lua'] = { icon = '    ', icon_hl = 'Title', lang = 'lua', show_cmd = true },
-            ['='] = { pat = '=(.*)', lang = 'lua', show_cmd = true },
-            ['help'] = { icon = '  ? ', show_cmd = true },
-            ['substitute'] = { pat = '%w(.*)', lang = 'regex', show_cmd = true },
-          },
-          aliases = {},
-          input_hl = 'Title',
-          input_format = function(input)
-            return input
-          end,
-          range_hl = 'Constant',
-          ghost_text = false,
-          ghost_text_hl = 'Comment',
-          inline_ghost_text = false,
-          -- ghost_text_provider = require("cmdline-hl.ghost_text").history,
-        }
-      end,
-    },
-
     -- デバッグ
     {
       'mfussenegger/nvim-dap',
@@ -3126,36 +3137,33 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bw', "<cmd>lua require('dapui').elements.watches.add()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', function()
           vim.cmd "lua require('dapui').toggle()"
           -- DapUI を表示する際に Inlay hints を非表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())'
         end, keymap_opts)
 
-        require('nvim-dap-virtual-text').setup {
-          virt_text_pos = 'eol',
-        }
-
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
-          continue = { '.continue', '.c', 'c' },
-          next_ = { '.next', '.n', 'n' },
-          step_back = { '.back', '.b', 'b' },
-          reverse_continue = { '.reverse-continue', '.rc', 'rc' },
-          into = { '.into', '.i', 'i' },
-          into_targets = { '.into-targets', '.it', 'it' },
-          out = { '.out', '.o', 'o' },
-          scopes = { '.scopes', '.s', 's' },
-          threads = { '.threads', '.t', 't' },
-          frames = { '.frames', '.f', 'f' },
-          exit = { 'exit', '.exit', '.e', 'e', '.q', 'q' },
-          up = { '.up', '.u', 'u' },
-          down = { '.down', '.d', 'd' },
-          goto_ = { '.goto', '.g', 'g' },
-          pause = { '.pause', '.p', 'p' },
-          clear = { '.clear', 'clear' },
-          capabilities = { '.capabilities', '.cap', 'cap' },
-          help = { 'help', '.help', '.h', 'h' },
+          continue = { '.continue', 'continue', '.c', 'c' },
+          next_ = { '.next', 'next', '.n', 'n' },
+          step_back = { '.back', 'back', '.b', 'b' },
+          reverse_continue = { '.reverse-continue', 'reverse-continue', '.rc', 'rc' },
+          into = { '.into', 'into', '.i', 'i' },
+          into_targets = { '.into-targets', 'into-targets', '.it', 'it' },
+          out = { '.out', 'out', '.o', 'o' },
+          scopes = { '.scopes', 'scopes', '.s', 's' },
+          threads = { '.threads', 'threads', '.t', 't' },
+          frames = { '.frames', 'frames', '.f', 'f' },
+          exit = { '.exit', 'exit', '.e', 'e', '.q', 'q' },
+          up = { '.up', 'up', '.u', 'u' },
+          down = { '.down', 'down', '.d', 'd' },
+          goto_ = { '.goto', 'goto', '.g', 'g' },
+          pause = { '.pause', 'pause', '.p', 'p' },
+          clear = { '.clear', 'clear', '.cr', 'cr' },
+          capabilities = { '.capabilities', 'capabilities', '.cap', 'cap' },
+          help = { '.help', 'help', '.h', 'h' },
           custom_commands = {},
         })
 
@@ -3168,6 +3176,9 @@ require('lazy').setup {
         vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green' })
         vim.fn.sign_define('DapLogPoint', { text = ' ', texthl = 'yellow' })
 
+        require('nvim-dap-virtual-text').setup {
+          virt_text_pos = 'eol',
+        }
         require('dapui').setup {
           icons = { collapsed = '', current_frame = '', expanded = '' },
           floating = { border = 'rounded', mappings = { close = { 'q', '<Esc>' } } },
@@ -3189,10 +3200,10 @@ require('lazy').setup {
           layouts = {
             {
               elements = {
-                { id = 'stacks', size = 0.2 },
-                { id = 'breakpoints', size = 0.2 },
-                { id = 'scopes', size = 0.2 },
-                { id = 'watches', size = 0.2 },
+                { id = 'watches', size = 0.25 },
+                { id = 'scopes', size = 0.25 },
+                { id = 'breakpoints', size = 0.25 },
+                { id = 'stacks', size = 0.25 },
               },
               size = 15, -- columns
               position = 'bottom',
