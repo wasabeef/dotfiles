@@ -3176,13 +3176,7 @@ require('lazy').setup {
         ]]
 
         -- Breakpoint の現在行をハイライト
-        vim.cmd [[
-          hi DapCurrentLine  guibg=#304577
-          augroup dapui_highlights
-            autocmd!
-            autocmd FileType dap-repl syntax match DapReplPrompt '^dap>'
-          augroup END
-        ]]
+        vim.cmd 'hi DapCurrentLine  guibg=#304577'
 
         vim.api.nvim_set_hl(0, 'white', { fg = '#ffffff' })
         vim.api.nvim_set_hl(0, 'green', { fg = '#3fc56b' })
