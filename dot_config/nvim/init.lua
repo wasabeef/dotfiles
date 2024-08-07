@@ -1517,18 +1517,6 @@ require('lazy').setup {
       end,
     },
 
-    -- コードブロックをスティッキー表示
-    {
-      'romgrk/nvim-treesitter-context',
-      dependencies = {
-        'nvim-treesitter/nvim-treesitter',
-      },
-      event = 'VeryLazy',
-      config = function()
-        require('treesitter-context').setup {}
-      end,
-    },
-
     -- クラス構造
     {
       'SmiteshP/nvim-navbuddy',
@@ -1580,6 +1568,7 @@ require('lazy').setup {
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
         'debugloop/telescope-undo.nvim',
+        'nvim-telescope/telescope-frecency.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -1767,6 +1756,7 @@ require('lazy').setup {
         telescope.load_extension 'media_files'
         telescope.load_extension 'cmdline'
         telescope.load_extension 'undo'
+        telescope.load_extension 'frecency'
         require('simulators').setup {
           android_emulator = true,
           apple_simulator = true,
@@ -3147,26 +3137,52 @@ require('lazy').setup {
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
-          continue = { '.continue', 'continue', '.c', 'c' },
-          next_ = { '.next', 'next', '.n', 'n' },
-          step_back = { '.back', 'back', '.b', 'b' },
-          reverse_continue = { '.reverse-continue', 'reverse-continue', '.rc', 'rc' },
-          into = { '.into', 'into', '.i', 'i' },
-          into_targets = { '.into-targets', 'into-targets', '.it', 'it' },
-          out = { '.out', 'out', '.o', 'o' },
-          scopes = { '.scopes', 'scopes', '.s', 's' },
-          threads = { '.threads', 'threads', '.t', 't' },
-          frames = { '.frames', 'frames', '.f', 'f' },
-          exit = { '.exit', 'exit', '.e', 'e', '.q', 'q' },
-          up = { '.up', 'up', '.u', 'u' },
-          down = { '.down', 'down', '.d', 'd' },
-          goto_ = { '.goto', 'goto', '.g', 'g' },
-          pause = { '.pause', 'pause', '.p', 'p' },
-          clear = { '.clear', 'clear', '.cr', 'cr' },
-          capabilities = { '.capabilities', 'capabilities', '.cap', 'cap' },
-          help = { '.help', 'help', '.h', 'h' },
+          continue = { '.continue', 'continue', 'c' },
+          next_ = { '.next', 'next', 'n' },
+          step_back = { '.back', 'back', 'b' },
+          reverse_continue = { '.reverse-continue', 'reverse-continue', 'rc' },
+          into = { '.into', 'into', 'i' },
+          into_targets = { '.into-targets', 'into-targets', 'it' },
+          out = { '.out', 'out', 'o' },
+          scopes = { '.scopes', 'scopes', 's' },
+          threads = { '.threads', 'threads', 't' },
+          frames = { '.frames', 'frames', 'f' },
+          exit = { '.exit', 'exit', 'e', 'q' },
+          up = { '.up', 'up', 'u' },
+          down = { '.down', 'down', 'd' },
+          goto_ = { '.goto', 'goto', 'g' },
+          pause = { '.pause', 'pause', 'p' },
+          clear = { '.clear', 'clear', 'cr' },
+          capabilities = { '.capabilities', 'capabilities', 'cap' },
+          help = { '.help', 'help', 'h' },
           custom_commands = {},
         })
+
+        vim.api.nvim_create_autocmd('FileType', { -- add completion in DAP Repl
+          group = vim.api.nvim_create_augroup('dap', { clear = true }),
+          pattern = 'dap-repl',
+          callback = function()
+            require('dap.ext.autocompl').attach()
+          end,
+        })
+
+        -- dap-repl の dap> プロンプトの色を変更
+        vim.cmd [[
+          hi DapReplPrompt guifg=#f9c859 gui=NONE
+          augroup dapui_highlights
+            autocmd!
+            autocmd FileType dap-repl syntax match DapReplPrompt '^dap>'
+          augroup END
+        ]]
+
+        -- Breakpoint の現在行をハイライト
+        vim.cmd [[
+          hi DapCurrentLine  guibg=#304577
+          augroup dapui_highlights
+            autocmd!
+            autocmd FileType dap-repl syntax match DapReplPrompt '^dap>'
+          augroup END
+        ]]
 
         vim.api.nvim_set_hl(0, 'white', { fg = '#ffffff' })
         vim.api.nvim_set_hl(0, 'green', { fg = '#3fc56b' })
@@ -3174,7 +3190,7 @@ require('lazy').setup {
         vim.fn.sign_define('DapBreakpoint', { text = ' ', texthl = 'white' })
         vim.fn.sign_define('DapBreakpointCondition', { text = ' ', texthl = 'white' })
         vim.fn.sign_define('DapBreakpointRejected', { text = ' ', texthl = 'white' })
-        vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green' })
+        vim.fn.sign_define('DapStopped', { text = '󰁕 ', texthl = 'green', linehl = 'DapCurrentLine' })
         vim.fn.sign_define('DapLogPoint', { text = ' ', texthl = 'yellow' })
 
         require('nvim-dap-virtual-text').setup {
