@@ -1609,6 +1609,7 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>r', function()
           require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
             hide_preview = false,
+            -- results_title = true,
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
@@ -1619,17 +1620,12 @@ require('lazy').setup {
               height = 20,
             },
           })
-        end, bufopsts)
-
-        vim.api.nvim_create_user_command('Clear', function(_)
-          vim.fn.histdel('cmd', -1)
-        end, {})
+        end, keymap_opts)
 
         local telescope = require 'telescope'
         -- local builtin_schemes = require("telescope._extensions.themes").builtin_schemes
         telescope.setup {
           pickers = {
-            -- current_buffer_fuzzy_find = { theme = "ivy" },
             find_files = {
               find_command = {
                 'rg',
@@ -1644,18 +1640,15 @@ require('lazy').setup {
                 '--hidden',
                 '--files',
                 '--sortr=modified',
+                '--glob=!{.git/**}',
               },
             },
           },
           defaults = {
+            file_ignore_patterns = {}, -- lsp_references にも影響がある
             initial_mode = 'insert',
             prompt_prefix = ' ',
             selection_caret = '󰁕 ',
-            file_ignore_patterns = {
-              '.git/HEAD',
-              '.git/[^c][^o][^n][^f][^i][^g]', -- 除外するパターンの正規表現
-              '.git/[^h][^o][^o][^k][^s]',
-            },
             vimgrep_arguments = {
               'rg',
               '--color=never',
@@ -1667,6 +1660,7 @@ require('lazy').setup {
               '--trim',
               -- "--no-ignore",
               '--hidden',
+              '--glob=!{.git/**}',
             },
             mappings = {
               n = {
@@ -1715,7 +1709,7 @@ require('lazy').setup {
               },
               undo = {},
               media_files = {
-                filetypes = { 'png', 'webp', 'jpg', 'jpeg' },
+                filetypes = { 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp' },
                 find_cmd = 'rg',
               },
             },
