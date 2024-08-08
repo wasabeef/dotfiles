@@ -1568,7 +1568,8 @@ require('lazy').setup {
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
         'debugloop/telescope-undo.nvim',
-        'nvim-telescope/telescope-frecency.nvim',
+        'roycrippen4/telescope-treesitter-info.nvim',
+        'fdschmidt93/telescope-egrepify.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -1584,6 +1585,7 @@ require('lazy').setup {
         end, keymap_opts)
         vim.keymap.set('n', '<C-S-O>', function()
           require('telescope.builtin').oldfiles {
+            only_cwd = true,
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
@@ -1591,19 +1593,7 @@ require('lazy').setup {
             end,
           }
         end, keymap_opts)
-        vim.keymap.set('n', '<C-g>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", keymap_opts)
-        -- vim.keymap.set(
-        --   "n",
-        --   "<C-x>",
-        --   "<cmd>lua require('telescope.builtin').commands()<CR>",
-        --   keymap_opts
-        -- )
-        -- vim.keymap.set(
-        --   "n",
-        --   "<C-m>",
-        --   "<cmd>lua require('telescope.builtin').keymaps()<CR>",
-        --   keymap_opts
-        -- )
+        vim.keymap.set('n', '<C-g>', '<cmd>Telescope egrepify<CR>', keymap_opts)
         vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts)
         vim.keymap.set('n', ':', ':Telescope cmdline<CR>', keymap_opts)
         vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts)
@@ -1640,12 +1630,15 @@ require('lazy').setup {
                 '--hidden',
                 '--files',
                 '--sortr=modified',
-                '--glob=!{.git/**}',
               },
             },
           },
           defaults = {
-            file_ignore_patterns = {}, -- lsp_references にも影響がある
+            file_ignore_patterns = {
+              '^.git/HEAD',
+              '^.git/[^c][^o][^n][^f][^i][^g]',
+              '^.git/[^h][^o][^o][^k][^s]',
+            },
             initial_mode = 'insert',
             prompt_prefix = ' ',
             selection_caret = '󰁕 ',
@@ -1660,7 +1653,6 @@ require('lazy').setup {
               '--trim',
               -- "--no-ignore",
               '--hidden',
-              '--glob=!{.git/**}',
             },
             mappings = {
               n = {
@@ -1712,6 +1704,17 @@ require('lazy').setup {
                 filetypes = { 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp' },
                 find_cmd = 'rg',
               },
+              egrepify = {
+                AND = true, -- default
+                permutations = false, -- opt-in to imply AND & match all permutations of prompt tokens
+                lnum = true, -- default, not required
+                lnum_hl = 'EgrepifyLnum', -- default, not required, links to `Constant`
+                col = false, -- default, not required
+                col_hl = 'EgrepifyCol', -- default, not required, links to `Constant`
+                title = true, -- default, not required, show filename as title rather than inline
+                filename_hl = 'EgrepifyFile', -- default, not required, links to `Title`
+                results_ts_hl = false, -- set to true if you want results ts highlighting, may increase latency!
+              },
             },
             preview = {
               treesitter = true,
@@ -1756,7 +1759,8 @@ require('lazy').setup {
         telescope.load_extension 'media_files'
         telescope.load_extension 'cmdline'
         telescope.load_extension 'undo'
-        telescope.load_extension 'frecency'
+        telescope.load_extension 'treesitter_info'
+        telescope.load_extension 'egrepify'
         require('simulators').setup {
           android_emulator = true,
           apple_simulator = true,
@@ -1771,9 +1775,12 @@ require('lazy').setup {
       config = function()
         vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions)
         require('actions-preview').setup {
+          diff = {
+            ctxlen = 5, -- 差分の前後に表示するコンテキスト行数
+          },
           highlight_command = {
             -- require("actions-preview.highlight").delta(),
-            -- require("actions-preview.highlight").diff_so_fancy(),
+            require('actions-preview.highlight').diff_so_fancy(),
             -- require("actions-preview.highlight").diff_highlight(),
           },
           backend = { 'telescope' },
@@ -3212,25 +3219,25 @@ require('lazy').setup {
                 { id = 'breakpoints', size = 0.25 },
                 { id = 'stacks', size = 0.25 },
               },
-              size = 15, -- columns
+              size = 15,
               position = 'bottom',
             },
             {
               elements = {
                 'repl',
               },
-              size = 50, -- columns
+              size = 50,
               position = 'right',
             },
           },
         }
 
-        require('dap').listeners.before['event_initialized']['custom'] = function(session, body)
-          -- DapUI を表示する際に Inlay hints を非表示にする
+        require('dap').listeners.after.event_initialized['dapui_config'] = function(session, body)
+          -- Inlay hints を非表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
         end
-        require('dap').listeners.before['event_terminated']['custom'] = function(session, body)
-          -- DapUI を表示する際に Inlay hints を表示にする
+        require('dap').listeners.after.event_terminated['dapui_config'] = function(session, body)
+          -- Inlay hints を表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
         end
 
