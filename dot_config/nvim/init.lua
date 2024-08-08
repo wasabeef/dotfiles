@@ -3129,11 +3129,7 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bw', "<cmd>lua require('dapui').elements.watches.add()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bu', function()
-          vim.cmd "lua require('dapui').toggle()"
-          -- DapUI を表示する際に Inlay hints を非表示にする
-          vim.cmd 'lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())'
-        end, keymap_opts)
+        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
@@ -3228,6 +3224,15 @@ require('lazy').setup {
             },
           },
         }
+
+        require('dap').listeners.before['event_initialized']['custom'] = function(session, body)
+          -- DapUI を表示する際に Inlay hints を非表示にする
+          vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
+        end
+        require('dap').listeners.before['event_terminated']['custom'] = function(session, body)
+          -- DapUI を表示する際に Inlay hints を表示にする
+          vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
+        end
 
         require('telescope').load_extension 'dap'
       end,
