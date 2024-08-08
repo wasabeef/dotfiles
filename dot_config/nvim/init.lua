@@ -320,7 +320,9 @@ require('lazy').setup {
           guicursor = false,
         }
 
+        -- https://github.com/uloco/bluloco.nvim/blob/main/lua/lush_theme/bluloco.lua
         vim.cmd 'colorscheme bluloco'
+        vim.cmd 'hi LspInlayHint gui=italic guibg=NONE  guifg=#8990b3'
       end,
     },
 
@@ -404,8 +406,6 @@ require('lazy').setup {
         dashboard.section.buttons.val = {
           -- dashboard.button("e", "   New file",       ":ene <BAR> startinsert <CR>"),
           dashboard.button('f', '   Find file', ':Telescope find_files<CR>'),
-          dashboard.button('g', '󰱼   Find word', ':Telescope live_grep<CR>'),
-          dashboard.button('r', '󰈚   Recent', ':Telescope oldfiles<CR>'),
           dashboard.button(
             'o',
             '󰏫   Obsidian Find file',
@@ -1606,8 +1606,8 @@ require('lazy').setup {
               return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
             end,
             layout_config = {
-              width = 160,
-              height = 20,
+              width = 180,
+              height = 40,
             },
           })
         end, keymap_opts)
@@ -3126,11 +3126,17 @@ require('lazy').setup {
         'theHamsta/nvim-dap-virtual-text',
         'rcarriga/nvim-dap-ui',
         'nvim-telescope/telescope-dap.nvim',
+        'Weissle/persistent-breakpoints.nvim',
       },
       event = 'LspAttach',
       config = function()
-        vim.keymap.set('n', '<Leader>b', "<cmd>lua require('dap').toggle_breakpoint()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>B', "<cmd>lua require('dap').clear_breakpoints()<CR>", keymap_opts)
+        require('persistent-breakpoints').setup {
+          load_breakpoints_event = { 'BufReadPost' },
+        }
+        vim.keymap.set('n', '<Leader>b', "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>B', "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bb', "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bl', "<cmd>lua require('persistent-breakpoints.api').set_log_point()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
@@ -3232,11 +3238,12 @@ require('lazy').setup {
           },
         }
 
-        require('dap').listeners.after.event_initialized['dapui_config'] = function(session, body)
+        local dap = require 'dap'
+        dap.listeners.after.event_initialized['dapui_config'] = function(session, body)
           -- Inlay hints を非表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
         end
-        require('dap').listeners.after.event_terminated['dapui_config'] = function(session, body)
+        dap.listeners.after.event_terminated['dapui_config'] = function(session, body)
           -- Inlay hints を表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
         end
