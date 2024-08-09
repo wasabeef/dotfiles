@@ -4,12 +4,90 @@ shell = "zsh"
 
 [plugins]
 
-[templates]
-defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
-
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
 apply = ['source']
+
+[templates]
+defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
+
+[plugins.asdf]
+github = "asdf-vm/asdf"
+use = ["asdf.sh"]
+apply = ['defer']
+
+[plugins.java]
+inline = '''
+export JAVA_HOME=`/usr/libexec/java_home`
+'''
+
+[plugins.go]
+inline = '''
+function _go() {
+  export ASDF_GOLANG_MOD_VERSION_ENABLED=true
+  export GOPATH=$HOME/.go
+  export GOROOT=$(go env GOROOT)
+  export GOBIN=$GOROOT/bin
+  export PATH=$GOBIN:$PATH
+}
+zsh-defer _go
+'''
+
+[plugins.android]
+inline = '''
+function _android() {
+  export ANDROID_HOME="$HOME/Android/sdk"
+  export ANDROID_SDK_ROOT="$HOME/Android/sdk"
+  export PATH=$ANDROID_HOME/platform-tools:$PATH
+  export PATH=$ANDROID_HOME/tools:$PATH
+  export PATH=$ANDROID_HOME/tools/bin:$PATH
+  export PATH=$ANDROID_HOME/emulator:$PATH
+  export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+}
+zsh-defer _android
+'''
+
+[plugins.flutter]
+inline = '''
+function _flutter() {
+  export FLUTTER_ROOT="$(asdf where flutter)"
+  export PATH="$PATH":"$HOME/.pub-cache/bin"
+}
+zsh-defer _flutter
+'''
+
+[plugins.gem]
+inline = '''
+function _gem() {
+  export GEM_HOME=$HOME/.gem
+  export PATH=$GEM_HOME/bin:$PATH
+}
+zsh-defer _gem
+'''
+
+[plugins.bun]
+inline = '''
+function _bun() {
+  [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+}
+zsh-defer _bun
+'''
+
+[plugins.rust]
+inline = '''
+function _rust() {
+  export PATH=$HOME/.cargo/bin:$PATH
+}
+zsh-defer _rust
+'''
+
+[plugins.maestro]
+inline = '''
+function _maestro() {
+  export PATH="$PATH":"$HOME/.maestro/bin"
+}
+zsh-defer _maestro
+'''
 
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
@@ -26,18 +104,28 @@ apply = ["defer"]
 github = "zsh-users/zsh-completions"
 apply = ['defer']
 
-[plugins.fzf]
-github = "junegunn/fzf"
-apply = ['defer']
-
-[plugins.fzf-settings]
-inline = '''
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-'''
+# [plugins.fzf]
+# github = "junegunn/fzf"
+# apply = ['defer']
+#
+# [plugins.fzf-settings]
+# inline = '''
+# export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+# '''
 
 [plugins.fzf-zsh-completions]
 github = "chitoku-k/fzf-zsh-completions"
 apply = ['defer']
+
+[plugins.mcfly]
+inline = '''
+export MCFLY_FUZZY=2
+export MCFLY_KEY_SCHEME=vim
+export MCFLY_DISABLE_MENU=TRUE
+export MCFLY_RESULTS=50
+export MCFLY_PROMPT=""
+zsh-defer eval "$(mcfly init zsh)"
+'''
 
 [plugins.direnv]
 github = "ohmyzsh/ohmyzsh"
@@ -54,6 +142,20 @@ function zoxide_zi() {
 zle -N zoxide_zi
 bindkey '^O' zoxide_zi
 '''
+
+[plugins.gh]
+inline = '''
+function _gh() {
+  unfunction "$0"
+  eval "$(gh completion --shell zsh)"
+  $0 "$@"
+}
+zsh-defer compdef _gh gh
+'''
+
+[plugins.git]
+remote = "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh"
+apply = ["fpath"]
 
 [plugins.git-branch]
 ## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/

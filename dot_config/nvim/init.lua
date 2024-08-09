@@ -50,6 +50,8 @@ vim.opt.winblend = 10
 vim.opt.pumblend = 10
 -- スクロール時に再描画しない
 vim.opt.lazyredraw = true
+-- ファイル末尾以降の`~`の表示を削除
+vim.opt.fillchars = { eob = ' ' }
 
 -- ---------------------------------------------------------
 -- 表示設定
@@ -232,7 +234,7 @@ vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts)
 vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts)
 -- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts)
 vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts)
-vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts)
+-- vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts)
 vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts)
 vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts)
 vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts)
@@ -3133,10 +3135,30 @@ require('lazy').setup {
         require('persistent-breakpoints').setup {
           load_breakpoints_event = { 'BufReadPost' },
         }
-        vim.keymap.set('n', '<Leader>b', "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>B', "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bb', "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bl', "<cmd>lua require('persistent-breakpoints.api').set_log_point()<CR>", keymap_opts)
+        vim.keymap.set(
+          'n',
+          '<Leader>b',
+          "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<CR>",
+          keymap_opts
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>B',
+          "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<CR>",
+          keymap_opts
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>bb',
+          "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<CR>",
+          keymap_opts
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>bl',
+          "<cmd>lua require('persistent-breakpoints.api').set_log_point()<CR>",
+          keymap_opts
+        )
         vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
@@ -3313,7 +3335,7 @@ require('lazy').setup {
         -- LSP Popup
         vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
         vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
+        -- vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
       end,
     },
 

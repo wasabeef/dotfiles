@@ -1,6 +1,8 @@
 # zsh
 export LANG=en_US.UTF-8
+export LANGUAGE=${LANG}
 export LC_ALL=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
 
 # Proile
 # zmodload zsh/zprof && zprof
@@ -37,21 +39,14 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # OS別
 case $(uname | tr '[:upper:]' '[:lower:]') in
 linux*)
-  # HomeBrew
   export HOMEBREW="/home/linuxbrew/.linuxbrew/"
   export HOMEBREW_REPOSITORY=$HOMEBREW
   export HOMEBREW_CELLAR="$HOMEBREW/Cellar"
   export PATH="$HOMEBREW/bin:$HOMEBREW/sbin${PATH+:$PATH}"
   export MANPATH="$HOMEBREW/share/man${MANPATH+:$MANPATH}:"
   export INFOPATH="$HOMEBREW/share/info:${INFOPATH:-}"
-
-  # asdf
-  . $HOME/.asdf/asdf.sh
-  . ~/.asdf/plugins/java/set-java-home.zsh
-
   ;;
 darwin*)
-  # HomeBrew
   # eval "$(/opt/homebrew/bin/brew shellenv)"
   export HOMEBREW="/opt/homebrew"
   export HOMEBREW_REPOSITORY=$HOMEBREW
@@ -59,59 +54,9 @@ darwin*)
   export PATH="$HOMEBREW/bin:$HOMEBREW/sbin${PATH+:$PATH}"
   export MANPATH="$HOMEBREW/share/man${MANPATH+:$MANPATH}:"
   export INFOPATH="$HOMEBREW/share/info:${INFOPATH:-}"
-
-  # asdf
-  . $HOMEBREW/opt/asdf/libexec/asdf.sh
-  # . ~/.asdf/plugins/java/set-java-home.zsh
-  # eval "$(mise activate zsh)"
-  export JAVA_HOME=$(/usr/libexec/java_home)
-  export JDK_HOME=${JAVA_HOME}
-
-  ## Clang/LLVM
-  # export LLVM_PATH="$(brew --prefix llvm)"
-  # export LLVM_PATH="/opt/homebrew/opt/llvm"
-  # export PATH="$LLVM_PATH/bin:${PATH}"
-
-  # export LDFLAGS="-L$LLVM_PATH/lib"
-  # export CPPFLAGS="-I$LLVM_PATH/include"
-
   ;;
 *) ;;
 esac
-
-## Android
-export ANDROID_HOME="$HOME/Android/sdk"
-export ANDROID_SDK_ROOT="$HOME/Android/sdk"
-export PATH=$ANDROID_HOME/platform-tools:$PATH
-export PATH=$ANDROID_HOME/tools:$PATH
-export PATH=$ANDROID_HOME/tools/bin:$PATH
-export PATH=$ANDROID_HOME/emulator:$PATH
-export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-
-## Flutter
-export FLUTTER_ROOT="$(asdf where flutter)"
-export PATH="$PATH":"$HOME/.pub-cache/bin"
-export GEM_HOME=$HOME/.gem
-export PATH=$GEM_HOME/bin:$PATH
-
-## Fastlane
-# export PATH=$HOME/.fastlane/bin:$PATH
-
-## Rust
-# export PATH=$HOME/.cargo/bin:$PATH
-
-## Go
-export ASDF_GOLANG_MOD_VERSION_ENABLED=true
-export GOPATH=$HOME/.go
-export GOROOT=$(go env GOROOT)
-export GOBIN=$GOROOT/bin
-export PATH=$GOBIN:$PATH
-
-# Bun
-# [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-## Maestro
-export PATH="$PATH":"$HOME/.maestro/bin"
 
 ## Aliases
 alias v='nvim'
@@ -122,9 +67,9 @@ alias p='pwd'
 alias g='git'
 alias gi='git'
 alias c="clear"
-alias ls='lsd'
-alias l='lsd'
-alias ll='lsd -lrta'
+alias ls='eza --icons --git'
+alias l='eza --icons --git'
+alias ll='eza --icons --git --sort time -la'
 alias m='melos'
 alias mbs='melos bootstrap'
 alias mgt='melos get'
@@ -153,6 +98,8 @@ alias grep='rg'
 alias cd='z'
 alias ci='zi'
 alias cdi='zi'
+alias man='tldr'
+alias ps='procs'
 
 # Zsh Plugin Manager
 if [[ -x $(which sheldon) ]]; then

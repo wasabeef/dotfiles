@@ -112,6 +112,10 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = ''
   elseif title == 'wezterm' then
     title = ''
+  elseif title == 'mcfly' then
+    title = ''
+  else
+    title = ''
   end
 
   return {
