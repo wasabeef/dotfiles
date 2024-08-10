@@ -197,6 +197,7 @@ vim.keymap.set('n', '<s>', ':update<CR>', keymap_opts)
 
 -- Ctrl+q で :q
 vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts)
+-- Ctrl+Shift+Q で :qa
 vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts)
 
 -- w!!でsudoを忘れても保存
@@ -584,6 +585,7 @@ require('lazy').setup {
           options = {
             disabled_filetypes = {
               statusline = { 'alpha' },
+              winbar = { 'alpha' },
             },
             theme = bubbles_theme,
             component_separators = '',
@@ -648,21 +650,24 @@ require('lazy').setup {
                 'filename',
                 path = 1, -- 1: Relative path
                 file_status = false,
+              },
+              {
+                'diff',
+                colored = true,
+                diff_color = {
+                  added = { fg = '#92f535' },
+                  modified = { fg = '#44A5FF' },
+                  removed = { fg = '#FF6666' },
+                },
+                symbols = { added = '  ', modified = '  ', removed = '  ' },
                 separator = { right = '' },
               },
             },
             lualine_c = {
               "'%='",
-              {
-                'diff',
-                symbols = { added = '  ', modified = '  ', removed = '  ' },
-                separator = ' ',
-              },
-              {
-                'diagnostics',
-                sources = { 'nvim_diagnostic' },
-                symbols = { error = '  ', warn = '  ', info = '  ', hint = '  ' },
-              },
+              function()
+                return require('screenkey').get_keys()
+              end,
             },
             lualine_x = {
               function()
@@ -735,6 +740,38 @@ require('lazy').setup {
             lualine_x = {},
             lualine_y = {},
             lualine_z = {},
+          },
+          winbar = {
+            lualine_a = {},
+            lualine_b = {},
+            lualine_c = {
+              {
+                '%{%v:lua.dropbar.get_dropbar_str()%}',
+              },
+            },
+            lualine_x = {
+              {
+                'diagnostics',
+                sources = { 'nvim_diagnostic' },
+                symbols = { error = '  ', warn = '  ', info = '  ', hint = '  ' },
+              },
+            },
+            lualine_y = {},
+            lualine_z = {},
+          },
+          inactive_winbar = {
+            lualine_c = {
+              {
+                '%{%v:lua.dropbar.get_dropbar_str()%}',
+              },
+            },
+            lualine_x = {
+              {
+                'diagnostics',
+                sources = { 'nvim_diagnostic' },
+                symbols = { error = '  ', warn = '  ', info = '  ', hint = '  ' },
+              },
+            },
           },
         }
         lualine.setup(config)
@@ -868,8 +905,6 @@ require('lazy').setup {
             next_option_prefix = 'to]',
             status_dashboard = 'tog',
           },
-          -- keymap_registry = require('toggle.keymap').keymap_registry(),
-          -- notify_on_set_default_option = true,
         }
       end,
     },
@@ -2373,6 +2408,31 @@ require('lazy').setup {
           strategy = 'toggleterm',
         }
         vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts)
+      end,
+    },
+
+    -- キー入力
+    {
+      'NStefan002/screenkey.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('screenkey').setup {
+          disable = {
+            filetypes = {
+              'alpha',
+            },
+          },
+          win_opts = {
+            title = 'Keys',
+            width = 60,
+            height = 1,
+          },
+          display_infront = { '*' },
+          keys = {
+            ['<leader>'] = '<Space>',
+          },
+        }
+        vim.g.screenkey_statusline_component = true
       end,
     },
 
