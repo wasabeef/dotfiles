@@ -143,6 +143,7 @@ config.keys = {
   { key = 'u', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(-0.5) },
   { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(0.5) },
   { key = 'g', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollToBottom },
+  { key = 'Q', mods = 'SHIFT|CTRL', action = wezterm.action.SendString '\x1b[81;6u' },
 
   -- Tab
   { key = '{', mods = 'SHIFT|ALT', action = wezterm.action.MoveTabRelative(-1) },

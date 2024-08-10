@@ -197,6 +197,7 @@ vim.keymap.set('n', '<s>', ':update<CR>', keymap_opts)
 
 -- Ctrl+q で :q
 vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts)
+vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts)
 
 -- w!!でsudoを忘れても保存
 vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts)
@@ -287,18 +288,6 @@ vim.g.loaded_zip = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.skip_loading_mswin = 1
 
--- 前回開いたファイルのカーソル位置を復旧する
-vim.api.nvim_create_autocmd('BufReadPost', {
-  group = vim.api.nvim_create_augroup('restore_cursor', { clear = true }),
-  pattern = '*',
-  callback = function()
-    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
-    if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
-      vim.api.nvim_win_set_cursor(0, { row, col })
-    end
-  end,
-})
-
 require('lazy').setup {
   checker = {
     enabled = false,
@@ -323,8 +312,77 @@ require('lazy').setup {
         }
 
         -- https://github.com/uloco/bluloco.nvim/blob/main/lua/lush_theme/bluloco.lua
+        -- local dark = {
+        --   -- syntax
+        --   bg = hsl '#282C34',
+        --   bgFloat = hsl '#21242D',
+        --   fg = hsl '#ABB2BF',
+        --   cursor = hsl '#FFCC00',
+        --   keyword = hsl '#10B1FE',
+        --   comment = hsl '#636D83',
+        --   punctuation = hsl '#7A82DA',
+        --   method = hsl '#3FC56B',
+        --   type = hsl '#FF6480',
+        --   string = hsl '#F9C859',
+        --   number = hsl '#FF78F8',
+        --   constant = hsl '#9F7EFE',
+        --   tag = hsl '#3691FF',
+        --   attribute = hsl '#FF936A',
+        --   property = hsl '#CE9887',
+        --   parameter = hsl '#8bcdef',
+        --   label = hsl '#50acae',
+        --   module = hsl '#FF839B',
+        --   -- workspace
+        --   primary = hsl '#3691ff',
+        --   selection = hsl '#274670',
+        --   search = hsl '#1A7247',
+        --   diffAdd = hsl '#105B3D',
+        --   diffChange = hsl '#10415B',
+        --   diffDelete = hsl '#522E34',
+        --   added = hsl '#177F55',
+        --   changed = hsl '#1B6E9B',
+        --   deleted = hsl '#A14D5B',
+        --   diffText = hsl('#10415B').lighten(12),
+        --   error = hsl '#ff2e3f',
+        --   errorBG = hsl '#FDCFD1',
+        --   warning = hsl '#da7a43',
+        --   warningBG = hsl '#F2DBCF',
+        --   info = hsl '#3691ff',
+        --   infoBG = hsl '#D4E3FA',
+        --   hint = hsl '#7982DA',
+        --   mergeCurrent = hsl '#4B3D3F',
+        --   mergeCurrentLabel = hsl '#604B47',
+        --   mergeIncoming = hsl '#2F476B',
+        --   mergeIncomingLabel = hsl '#305C95',
+        --   mergeParent = hsl(235, 28, 32),
+        --   mergeParentLabel = hsl(235, 29, 41),
+        --   -- terminal
+        --   terminalBlack = hsl '#42444d',
+        --   terminalRed = hsl '#fc2e51',
+        --   terminalGreen = hsl '#25a45c',
+        --   terminalYellow = hsl '#ff9369',
+        --   terminalBlue = hsl '#3375fe',
+        --   terminalMagenta = hsl '#9f7efe',
+        --   terminalCyan = hsl '#4483aa',
+        --   terminalWhite = hsl '#cdd3e0',
+        --   terminalBrightBlack = hsl '#8f9aae',
+        --   terminalBrightRed = hsl '#ff637f',
+        --   terminalBrightGreen = hsl '#3fc56a',
+        --   terminalBrightYellow = hsl '#f9c858',
+        --   terminalBrightBlue = hsl '#10b0fe',
+        --   terminalBrightMagenta = hsl '#ff78f8',
+        --   terminalBrightCyan = hsl '#5fb9bc',
+        --   terminalBrightWhite = hsl '#ffffff',
+        --   rainbowRed = hsl '#FF6666',
+        --   rainbowYellow = hsl '#f4ff78',
+        --   rainbowBlue = hsl '#44A5FF',
+        --   rainbowOrange = hsl '#ffa023',
+        --   rainbowGreen = hsl '#92f535',
+        --   rainbowViolet = hsl '#ff78ff',
+        --   rainbowCyan = hsl '#28e4eb',
+        -- }
         vim.cmd 'colorscheme bluloco'
-        vim.cmd 'hi LspInlayHint gui=italic guibg=NONE  guifg=#8990b3'
+        vim.cmd 'hi LspInlayHint gui=italic guibg=NONE  guifg=#7A82DA'
       end,
     },
 
@@ -422,6 +480,7 @@ require('lazy').setup {
           dashboard.button('z', '   Edit .zshrc', ':e ~/.zshrc <CR>'),
           dashboard.button('w', '   Edit .wezterm.lua', ':e ~/.wezterm.lua <CR>'),
           dashboard.button('s', '   Edit sheldon config', ':e ~/.config/sheldon/plugins.toml <CR>'),
+          dashboard.button('r', '󱌣   Restore Session', "<cmd>lua require('persistence').load()<CR>"),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
           dashboard.button('q', '   Quit NVIM', ':qa<CR>'),
@@ -443,6 +502,26 @@ require('lazy').setup {
             pcall(vim.cmd.AlphaRedraw)
           end,
         })
+      end,
+    },
+
+    -- セッションの復元
+    {
+      'folke/persistence.nvim',
+      event = 'BufReadPre',
+      config = function()
+        -- 前回開いたファイルのカーソル位置を復旧する
+        vim.api.nvim_create_autocmd('BufReadPost', {
+          group = vim.api.nvim_create_augroup('restore_cursor', { clear = true }),
+          pattern = '*',
+          callback = function()
+            local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+            if row > 0 and row <= vim.api.nvim_buf_line_count(0) then
+              vim.api.nvim_win_set_cursor(0, { row, col })
+            end
+          end,
+        })
+        require('persistence').setup()
       end,
     },
 
@@ -668,6 +747,28 @@ require('lazy').setup {
       event = 'VeryLazy',
     },
 
+    {
+      'nvim-zh/colorful-winsep.nvim',
+      event = { 'WinLeave' },
+      config = function()
+        require('colorful-winsep').setup {
+          hi = {
+            fg = '#9F7EFE',
+          },
+          smooth = false,
+          no_exec_files = {
+            'alpha',
+            'dropbar_menu',
+            'NvimTree',
+            'DiffviewFileHistory',
+            'DiffviewFiles',
+            'lazy',
+            'mason',
+          },
+        }
+      end,
+    },
+
     -- スムーススクロール
     {
       'karb94/neoscroll.nvim',
@@ -715,13 +816,13 @@ require('lazy').setup {
     -- スクロールバー
     {
       'petertriho/nvim-scrollbar',
-      event = 'VeryLazy',
+      event = 'BufReadPost',
       config = function()
         require('scrollbar').setup {
           throttle_ms = 1000,
           hide_if_all_visible = true,
           show_in_active_only = true,
-          handle = { color = '#006df2' },
+          handle = { color = '#3375fe' },
           excluded_buftypes = {
             'terminal',
           },
@@ -749,7 +850,7 @@ require('lazy').setup {
           'i',
           -- Disables or enables inlay hints for the current buffer.
           toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
-            name = 'inlay hints',
+            name = 'Inlay hints',
             get_state = function()
               return vim.lsp.inlay_hint.is_enabled {}
             end,
@@ -759,6 +860,7 @@ require('lazy').setup {
           }),
           { buffer = bufnr }
         )
+
         toggle.setup {
           keymaps = {
             toggle_option_prefix = 'to',
@@ -766,8 +868,8 @@ require('lazy').setup {
             next_option_prefix = 'to]',
             status_dashboard = 'tog',
           },
-          keymap_registry = require('toggle.keymap').keymap_registry(),
-          notify_on_set_default_option = true,
+          -- keymap_registry = require('toggle.keymap').keymap_registry(),
+          -- notify_on_set_default_option = true,
         }
       end,
     },
@@ -1581,7 +1683,7 @@ require('lazy').setup {
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
-              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
             end,
           }
         end, keymap_opts)
@@ -1591,7 +1693,7 @@ require('lazy').setup {
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
-              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
             end,
           }
         end, keymap_opts)
@@ -1605,7 +1707,7 @@ require('lazy').setup {
             path_display = function(_, path)
               local tail = require('telescope.utils').path_tail(path)
               local relative_path = vim.fn.fnamemodify(path, ':.')
-              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'Constant' } }
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
             end,
             layout_config = {
               width = 180,
@@ -1668,15 +1770,17 @@ require('lazy').setup {
                   local picker = action_state.get_current_picker(prompt_bufnr)
                   local prompt_win = picker.prompt_win
                   local previewer = picker.previewer
-                  local bufnr = previewer.state.bufnr or previewer.state.termopen_bufnr
-                  local winid = previewer.state.winid or vim.fn.bufwinid(bufnr)
-                  vim.keymap.set('n', '<Tab>', function()
-                    vim.cmd(string.format('noautocmd lua vim.api.nvim_set_current_win(%s)', prompt_win))
-                  end, { buffer = bufnr })
-                  vim.keymap.set('n', '<esc>', function()
-                    actions.close(prompt_bufnr)
-                  end, { buffer = bufnr })
-                  vim.cmd(string.format('noautocmd lua vim.api.nvim_set_current_win(%s)', winid))
+                  if previewer then
+                    local bufnr = previewer.state.bufnr or previewer.state.termopen_bufnr
+                    local winid = previewer.state.winid or vim.fn.bufwinid(bufnr)
+                    vim.keymap.set('n', '<Tab>', function()
+                      vim.cmd(string.format('noautocmd lua vim.api.nvim_set_current_win(%s)', prompt_win))
+                    end, { buffer = bufnr })
+                    vim.keymap.set('n', '<esc>', function()
+                      actions.close(prompt_bufnr)
+                    end, { buffer = bufnr })
+                    vim.cmd(string.format('noautocmd lua vim.api.nvim_set_current_win(%s)', winid))
+                  end
                 end,
               },
             },
@@ -2267,39 +2371,8 @@ require('lazy').setup {
 
         overseer.setup {
           strategy = 'toggleterm',
-          -- quit_on_exit = "succss",
-          dap = false,
         }
         vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts)
-      end,
-    },
-
-    -- キー入力
-    {
-      'NStefan002/screenkey.nvim',
-      event = 'VeryLazy',
-      config = function()
-        require('screenkey').setup {
-          disable = {
-            filetypes = {
-              'alpha',
-            },
-          },
-          win_opts = {
-            title = 'Keys',
-            width = 40,
-            height = 1,
-          },
-          display_infront = { '*' },
-          keys = {
-            ['<leader>'] = '<Space>',
-          },
-        }
-        vim.api.nvim_create_autocmd('BufAdd', {
-          group = vim.api.nvim_create_augroup('AutostartScreenkey', {}),
-          command = 'Screenkey toggle',
-          desc = 'Autostart Screenkey on BufRead',
-        })
       end,
     },
 
@@ -2720,7 +2793,6 @@ require('lazy').setup {
                 type = 'executable',
                 command = paths.flutter_bin,
                 args = { 'debug_adapter' },
-                console = 'internalConsole',
               }
               dap.configurations.dart = {}
               require('dap.ext.vscode').load_launchjs()
@@ -2822,6 +2894,7 @@ require('lazy').setup {
               'DiffviewFiles',
               'lazy',
               'mason',
+              'lua',
             },
             cond = {},
           },
@@ -3286,6 +3359,7 @@ require('lazy').setup {
         -- https://github.com/sidlatau/neotest-dart/pull/13
         -- 'sidlatau/neotest-dart',
         'IgorKhramtsov/neotest-dart',
+        'nvim-neotest/neotest-jest',
       },
       event = 'VeryLazy',
       config = function()
@@ -3296,13 +3370,14 @@ require('lazy').setup {
               use_lsp = true,
               custom_test_method_names = {},
             },
+            require 'neotest-jest' {},
           },
           consumers = { require('neotest').diagnostic, require('neotest').status },
         }
         vim.keymap.set('n', '<Leader>t', "<cmd>lua require('neotest').run.run()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>ta', "<cmd>lua require('neotest').run.run(vim.fn.expand '%')<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>td', "<cmd>lua require('neotest').run.run({strategy = 'dap'})<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>tu', "<cmd>lua require('neotest').output_panel.open()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>tu', "<cmd>lua require('neotest').output_panel.toggle()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>ts', "<cmd>lua require('neotest').summary.toggle()<CR>", keymap_opts)
       end,
     },
