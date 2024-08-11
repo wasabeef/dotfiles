@@ -1320,8 +1320,8 @@ require('lazy').setup {
     {
       'nvim-tree/nvim-tree.lua',
       dependencies = {
-        'b0o/nvim-tree-preview.lua',
         'nvim-lua/plenary.nvim',
+        'b0o/nvim-tree-preview.lua',
       },
       event = 'VeryLazy',
       config = function()
@@ -1337,7 +1337,32 @@ require('lazy').setup {
               nowait = true,
             }
           end
+
           api.config.mappings.default_on_attach(bufnr)
+          -- カーソルの巡回を行う
+          local function wrap_cursor(direction)
+            local line_count = vim.api.nvim_buf_line_count(bufnr)
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            if direction == 'j' then
+              if cursor[1] == line_count then
+                vim.api.nvim_win_set_cursor(0, { 1, 0 })
+              else
+                vim.api.nvim_win_set_cursor(0, { cursor[1] + 1, 0 })
+              end
+            elseif direction == 'k' then
+              if cursor[1] == 1 then
+                vim.api.nvim_win_set_cursor(0, { line_count, 0 })
+              else
+                vim.api.nvim_win_set_cursor(0, { cursor[1] - 1, 0 })
+              end
+            end
+          end
+          vim.keymap.set('n', 'j', function()
+            wrap_cursor 'j'
+          end, opts 'Down')
+          vim.keymap.set('n', 'k', function()
+            wrap_cursor 'k'
+          end, opts 'Up')
           vim.keymap.set('n', 'x', api.node.run.system, opts 'Open System')
           vim.keymap.set('n', '?', api.tree.toggle_help, opts 'Help')
           vim.keymap.set('n', '=', api.tree.change_root_to_node, opts 'CD')
