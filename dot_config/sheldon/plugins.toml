@@ -11,6 +11,22 @@ apply = ['source']
 [templates]
 defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
 
+[plugins.brew]
+github = "wintermi/zsh-brew"
+
+[plugins.direnv]
+github = "ohmyzsh/ohmyzsh"
+dir = "plugins/direnv"
+apply = ["defer"]
+
+[plugins.nvim]
+inline = '''
+function _nvim() {
+  export XDG_CONFIG_HOME="$HOME/.config"
+}
+zsh-defer _nvim
+'''
+
 [plugins.asdf]
 github = "asdf-vm/asdf"
 use = ["asdf.sh"]
@@ -126,11 +142,6 @@ export MCFLY_RESULTS=50
 export MCFLY_PROMPT=""
 zsh-defer eval "$(mcfly init zsh)"
 '''
-
-[plugins.direnv]
-github = "ohmyzsh/ohmyzsh"
-dir = "plugins/direnv"
-apply = ["defer"]
 
 [plugins.zoxide]
 inline = '''

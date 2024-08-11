@@ -49,7 +49,7 @@ vim.opt.cmdheight = 0
 vim.opt.winblend = 10
 vim.opt.pumblend = 10
 -- スクロール時に再描画しない
-vim.opt.lazyredraw = true
+-- vim.opt.lazyredraw = true
 -- ファイル末尾以降の`~`の表示を削除
 vim.opt.fillchars = { eob = ' ' }
 
@@ -506,6 +506,13 @@ require('lazy').setup {
       end,
     },
 
+    -- タイピングウォームアップ
+    {
+      'NStefan002/speedtyper.nvim',
+      cmd = 'Speedtyper',
+      opts = {},
+    },
+
     -- セッションの復元
     {
       'folke/persistence.nvim',
@@ -627,7 +634,7 @@ require('lazy').setup {
                     [''] = evil_colors.orange,
                     ic = evil_colors.yellow,
                     R = evil_colors.violet,
-                    Rv = evil_colors.violet,
+                    Rv = evil_colors.violetGame,
                     cv = evil_colors.blue,
                     ce = evil_colors.blue,
                     r = evil_colors.cyan,
@@ -906,6 +913,14 @@ require('lazy').setup {
             status_dashboard = 'tog',
           },
         }
+      end,
+    },
+
+    -- Normal <-> Insert モードの切り替え
+    {
+      'max397574/better-escape.nvim',
+      config = function()
+        require('better_escape').setup()
       end,
     },
 
@@ -1322,6 +1337,7 @@ require('lazy').setup {
       dependencies = {
         'nvim-lua/plenary.nvim',
         'b0o/nvim-tree-preview.lua',
+        'adelarsq/image_preview.nvim',
       },
       event = 'VeryLazy',
       config = function()
@@ -1717,7 +1733,6 @@ require('lazy').setup {
           },
         }
       end,
-      -- opts = { lsp = { auto_attach = true } },
     },
 
     -- fzf ファイル・コマンド検索

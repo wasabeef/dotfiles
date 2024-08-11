@@ -28,35 +28,21 @@ setopt HIST_VERIFY            # Don't execute immediately upon history expansion
 setopt HIST_BEEP              # Beep when accessing nonexistent history.
 setopt AUTO_CD
 
+# OS別
+case $(uname | tr '[:upper:]' '[:lower:]') in
+linux*)
+  eval "$(/home/linuxbrew/.linuxbrew/bin/sheldon source)"
+  ;;
+darwin*)
+  eval "$(/opt/homebrew/bin/sheldon source)"
+  ;;
+*) ;;
+esac
+
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
-
-# vim
-export XDG_CONFIG_HOME="$HOME/.config"
-
-# OS別
-case $(uname | tr '[:upper:]' '[:lower:]') in
-linux*)
-  export HOMEBREW="/home/linuxbrew/.linuxbrew/"
-  export HOMEBREW_REPOSITORY=$HOMEBREW
-  export HOMEBREW_CELLAR="$HOMEBREW/Cellar"
-  export PATH="$HOMEBREW/bin:$HOMEBREW/sbin${PATH+:$PATH}"
-  export MANPATH="$HOMEBREW/share/man${MANPATH+:$MANPATH}:"
-  export INFOPATH="$HOMEBREW/share/info:${INFOPATH:-}"
-  ;;
-darwin*)
-  # eval "$(/opt/homebrew/bin/brew shellenv)"
-  export HOMEBREW="/opt/homebrew"
-  export HOMEBREW_REPOSITORY=$HOMEBREW
-  export HOMEBREW_CELLAR="$HOMEBREW/Cellar"
-  export PATH="$HOMEBREW/bin:$HOMEBREW/sbin${PATH+:$PATH}"
-  export MANPATH="$HOMEBREW/share/man${MANPATH+:$MANPATH}:"
-  export INFOPATH="$HOMEBREW/share/info:${INFOPATH:-}"
-  ;;
-*) ;;
-esac
 
 ## Aliases
 alias vi='nvim'
@@ -99,11 +85,6 @@ alias ci='zi'
 alias cdi='zi'
 alias man='tldr'
 alias ps='procs'
-
-# Zsh Plugin Manager
-if [[ -x $(which sheldon) ]]; then
-  eval "$(sheldon source)"
-fi
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then
