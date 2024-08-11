@@ -1951,10 +1951,8 @@ require('lazy').setup {
                     end
                   end
                   vim.fn.jobstart({
-                    'viu',
-                    '-w',
-                    '100',
-                    '-b',
+                    'chafa',
+                    '--format=symbols',
                     filepath,
                   }, {
                     on_stdout = send_output,
