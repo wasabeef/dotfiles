@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global, missing-fields
+---@diagnostic disable: missing-fields
 -- ---------------------------------------------------------
 -- 基本設定
 -- ---------------------------------------------------------
@@ -58,8 +58,46 @@ vim.opt.fillchars = { eob = ' ' }
 -- ---------------------------------------------------------
 -- 行番号
 vim.opt.number = true
+-- 行番号を相対値で表示
+vim.opt.relativenumber = true
 -- カーソル行をハイライト
 vim.opt.cursorline = true
+-- CursorLineNr の色を設定する
+local function set_cursorline_nr_color(mode)
+  if mode == 'n' then
+    vim.cmd 'highlight CursorLineNr guifg=#61afef'
+  elseif mode == 'i' then
+    vim.cmd 'highlight CursorLineNr guifg=#98c379'
+  elseif mode == 'v' then
+    vim.cmd 'highlight CursorLineNr guifg=#e06c75'
+  end
+end
+-- Normalモード
+vim.api.nvim_create_autocmd('InsertLeave', {
+  callback = function()
+    set_cursorline_nr_color 'n'
+  end,
+})
+-- Insertモード
+vim.api.nvim_create_autocmd('InsertEnter', {
+  callback = function()
+    set_cursorline_nr_color 'i'
+  end,
+})
+-- Visualモード
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = '*:[vV\x16]*',
+  callback = function()
+    set_cursorline_nr_color 'v'
+  end,
+})
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = '*:[n]',
+  callback = function()
+    set_cursorline_nr_color 'n'
+  end,
+})
+
 -- カーソルを行末の一つ先まで移動可能にする
 -- vim.opt.virtualedit = 'onemore'
 -- 対応する括弧を強調表示
@@ -2389,11 +2427,6 @@ require('lazy').setup {
                 text = function(buf)
                   return buf.filetype
                 end,
-                fg = yellow,
-                bg = function()
-                  return get_hex('NvimTreeNormal', 'bg')
-                end,
-                bold = true,
               },
             },
           },
@@ -3433,11 +3466,11 @@ require('lazy').setup {
         }
 
         local dap = require 'dap'
-        dap.listeners.after.event_initialized['dapui_config'] = function(session, body)
+        dap.listeners.after.event_initialized['dapui_config'] = function()
           -- Inlay hints を非表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
         end
-        dap.listeners.after.event_terminated['dapui_config'] = function(session, body)
+        dap.listeners.after.event_terminated['dapui_config'] = function()
           -- Inlay hints を表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
         end
@@ -3540,8 +3573,13 @@ require('lazy').setup {
         }
 
         -- LSP Popup
-        vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", bufopts)
-        vim.keymap.set('n', '<Leader>i', "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", bufopts)
+        vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", keymap_opts)
+        vim.keymap.set(
+          'n',
+          '<Leader>i',
+          "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>",
+          keymap_opts
+        )
         -- vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
       end,
     },
