@@ -586,9 +586,11 @@ require('lazy').setup {
     {
       'nvim-lualine/lualine.nvim',
       dependencies = {
+        'uloco/bluloco.nvim',
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
-        'uloco/bluloco.nvim',
+        'nvim-telescope/telescope-fzf-native.nvim',
+        'Bekaboo/dropbar.nvim',
       },
       event = 'VimEnter', -- 画面がちらつく
       config = function()
@@ -630,7 +632,15 @@ require('lazy').setup {
           options = {
             disabled_filetypes = {
               statusline = { 'alpha' },
-              winbar = { 'alpha' },
+              winbar = {
+                'alpha',
+                'dropbar_menu',
+                'NvimTree',
+                'DiffviewFileHistory',
+                'DiffviewFiles',
+                'lazy',
+                'mason',
+              },
             },
             theme = bubbles_theme,
             component_separators = '',
@@ -706,9 +716,11 @@ require('lazy').setup {
                 },
                 symbols = { added = '  ', modified = '  ', removed = '  ' },
                 separator = { right = '' },
+                draw_empty = true,
               },
             },
             lualine_c = {
+              "'%='",
               function()
                 return require('screenkey').get_keys()
               end,
@@ -818,14 +830,33 @@ require('lazy').setup {
             },
           },
         }
+        require('dropbar').setup {}
         lualine.setup(config)
       end,
     },
 
     -- ウィンドウサイズ変更
     {
-      'simeji/winresizer',
-      event = 'VeryLazy',
+      'mrjones2014/smart-splits.nvim',
+      config = function()
+        require('smart-splits').setup {
+          ignored_filetypes = {
+            'alpha',
+            'dropbar_menu',
+            'NvimTree',
+            'DiffviewFileHistory',
+            'DiffviewFiles',
+            'lazy',
+            'mason',
+            'toggleterm',
+          },
+          resize_mode = {
+            quit_key = '<CR>',
+            silent = true,
+          },
+        }
+        vim.keymap.set('n', '<C-e>', require('smart-splits').start_resize_mode)
+      end,
     },
 
     {
@@ -949,28 +980,6 @@ require('lazy').setup {
             next_option_prefix = 'to]',
             status_dashboard = 'tog',
           },
-        }
-      end,
-    },
-
-    -- Normal <-> Insert モードの切り替え
-    {
-      'max397574/better-escape.nvim',
-      config = function()
-        require('better_escape').setup()
-      end,
-    },
-
-    -- winbar
-    {
-      'Bekaboo/dropbar.nvim',
-      dependencies = {
-        'nvim-telescope/telescope-fzf-native.nvim',
-      },
-      event = 'VeryLazy',
-      config = function()
-        require('dropbar').setup {
-          background = false,
         }
       end,
     },
@@ -1538,6 +1547,32 @@ require('lazy').setup {
       },
     },
 
+    {
+      'isakbm/gitgraph.nvim',
+      dependencies = { 'sindrets/diffview.nvim' },
+      keys = {
+        {
+          '<leader>gg',
+          function()
+            require('gitgraph').draw({}, { all = true, max_count = 5000 })
+          end,
+          desc = 'GitGraph - Draw',
+        },
+      },
+      opts = {
+        hooks = {
+          on_select_commit = function(commit)
+            vim.notify('DiffviewOpen ' .. commit.hash .. '^!')
+            vim.cmd(':DiffviewOpen ' .. commit.hash .. '^!')
+          end,
+          on_select_range_commit = function(from, to)
+            vim.notify('DiffviewOpen ' .. from.hash .. '~1..' .. to.hash)
+            vim.cmd(':DiffviewOpen ' .. from.hash .. '~1..' .. to.hash)
+          end,
+        },
+      },
+    },
+
     -- Git 差分表示
     {
       'sindrets/diffview.nvim',
@@ -1568,7 +1603,7 @@ require('lazy').setup {
       keys = {
         {
           mode = 'n',
-          '<Leader>g',
+          '<Leader>gs',
           '<cmd>Gitsigns blame<CR>',
         },
       },
@@ -2567,10 +2602,10 @@ require('lazy').setup {
           },
         }
         local opts = { noremap = true, silent = true, expr = true }
-        vim.keymap.set('n', '<Leader>j', function()
+        vim.keymap.set('n', '<Leader>g', function()
           return pantran.motion_translate() .. '_'
         end, opts)
-        vim.keymap.set('x', '<Leader>j', pantran.motion_translate, opts)
+        vim.keymap.set('x', '<Leader>g', pantran.motion_translate, opts)
       end,
     },
 
@@ -2608,6 +2643,16 @@ require('lazy').setup {
               prefix = 'https://pub.dev/packages/',
               suffix = '/changelog',
               file_patterns = { 'pubspec.yaml' },
+              excluded_file_patterns = nil,
+              extra_condition = nil,
+            },
+
+            -- Github Actions
+            {
+              -- pattern = 'uses: ([^%s]+)@',
+              pattern = 'uses:%s*(%S+)%s*@',
+              prefix = 'https://github.com/',
+              file_patterns = { '%w+%.yml', '%w+%.yaml' },
               excluded_file_patterns = nil,
               extra_condition = nil,
             },
@@ -3136,12 +3181,17 @@ require('lazy').setup {
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
 
+        'L3MON4D3/LuaSnip',
+        'rafamadriz/friendly-snippets',
+        'saadparwaiz1/cmp_luasnip',
+
         'onsails/lspkind-nvim',
       },
       event = { 'InsertEnter', 'LspAttach' },
       config = function()
         local cmp = require 'cmp'
         local types = require 'cmp.types'
+        local luasnip = require 'luasnip'
         local lspkind = require 'lspkind'
 
         lspkind.init {
@@ -3181,6 +3231,11 @@ require('lazy').setup {
         vim.opt.completefunc = 'v:lua.require("cmp").complete()'
 
         cmp.setup {
+          snippet = {
+            expand = function(args)
+              luasnip.lsp_expand(args.body)
+            end,
+          },
           completion = {
             autocomplete = {
               types.cmp.TriggerEvent.InsertEnter,
@@ -3229,22 +3284,43 @@ require('lazy').setup {
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 2 },
             { name = 'cmp_tabnine', group_index = 2 },
-            { name = 'nvim_lsp_document_symbol', group_index = 2 },
+            { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
-            { name = 'nvim_lsp_signature_help', group_index = 2 },
             { name = 'path', group_index = 2 },
+            { name = 'nvim_lsp_document_symbol', group_index = 2 },
+            { name = 'nvim_lsp_signature_help', group_index = 2 },
           }, {
             { name = 'buffer', group_index = 2 },
           }),
           performance = {
-            max_view_entries = 30,
+            max_view_entries = 50,
           },
           experimental = {
             native_menu = false,
             ghost_text = true,
           },
         }
+
+        -- snippets
+        require('luasnip.loaders.from_vscode').lazy_load()
+        require('luasnip.loaders.from_vscode').lazy_load { paths = { '~/.config/snippets' } }
+        require('luasnip').filetype_extend('c', { 'cdoc' })
+        require('luasnip').filetype_extend('cpp', { 'cppdoc' })
+        require('luasnip').filetype_extend('cs', { 'csharpdoc' })
+        require('luasnip').filetype_extend('java', { 'javadoc' })
+        require('luasnip').filetype_extend('javascript', { 'javascriptreact', 'typescriptreact', 'jsdoc' })
+        require('luasnip').filetype_extend('javascriptreact', { 'html' })
+        require('luasnip').filetype_extend('typescript', { 'tsdoc' })
+        require('luasnip').filetype_extend('typescriptreact', { 'html' })
+        require('luasnip').filetype_extend('kotlin', { 'kdoc' })
+        require('luasnip').filetype_extend('lua', { 'luadoc' })
+        require('luasnip').filetype_extend('php', { 'phpdoc' })
+        require('luasnip').filetype_extend('python', { 'pydoc' })
+        require('luasnip').filetype_extend('ruby', { 'rdoc' })
+        require('luasnip').filetype_extend('rust', { 'rustdoc' })
+        require('luasnip').filetype_extend('sh', { 'shelldoc' })
+        require('luasnip').filetype_extend('dart', { 'flutter' })
 
         cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
           enabled = true,
