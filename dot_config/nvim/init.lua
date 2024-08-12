@@ -709,7 +709,6 @@ require('lazy').setup {
               },
             },
             lualine_c = {
-              "'%='",
               function()
                 return require('screenkey').get_keys()
               end,
@@ -1772,7 +1771,7 @@ require('lazy').setup {
       end,
     },
 
-    -- fzf ファイル・コマンド検索
+    -- ファイル・コマンド検索
     {
       'nvim-telescope/telescope.nvim',
       dependencies = {
@@ -3368,6 +3367,7 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bw', "<cmd>lua require('dapui').elements.watches.add()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bsl', [[:lua require"osv".launch({port = 8086})<CR>]], { noremap = true })
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
@@ -3471,6 +3471,17 @@ require('lazy').setup {
         dap.listeners.after.event_terminated['dapui_config'] = function()
           -- Inlay hints を表示にする
           vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
+        end
+
+        dap.configurations.lua = {
+          {
+            type = 'nlua',
+            request = 'attach',
+            name = 'Attach to running Neovim instance',
+          },
+        }
+        dap.adapters.nlua = function(callback, config)
+          callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
         end
 
         require('telescope').load_extension 'dap'
@@ -3591,6 +3602,13 @@ require('lazy').setup {
         library = {
           { path = 'luvit-meta/library', words = { 'vim%.uv' } },
         },
+      },
+    },
+    {
+      'jbyuki/one-small-step-for-vimkind',
+      event = 'LspAttach',
+      dependencies = {
+        'mfussenegger/nvim-dap',
       },
     },
   },
