@@ -1,11 +1,11 @@
+# Proile
+# zmodload zsh/zprof && zprof
+
 # zsh
 export LANG=en_US.UTF-8
 export LANGUAGE=${LANG}
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-
-# Proile
-# zmodload zsh/zprof && zprof
 
 ## Save command history
 export HISTFILE="$HOME/.zsh_history"
@@ -35,7 +35,6 @@ linux*)
   ;;
 darwin*)
   eval "$(/opt/homebrew/bin/sheldon source)"
-
   # ScreenCapture Shadow Off
   defaults write com.apple.screencapture disable-shadow -boolean true
   ;;
@@ -48,13 +47,23 @@ export VISUAL='nvim'
 export PAGER='less'
 
 ## Aliases
+alias .="cd .."
+alias ..="cd ../.."
+alias ...="cd ../../.."
+alias ....="cd ../../../.."
+alias .....="cd ../../../../.."
+alias p='pwd'
+alias c="clear"
 alias vi='nvim'
 alias vim='nvim'
 alias neovim='nvim'
-alias p='pwd'
+alias reload='exec -l $SHELL;source ~/.zshrc'
 alias g='git'
 alias gi='git'
-alias c="clear"
+alias lg='lazygit'
+alias gl='lazygit'
+alias '?'='gh copilot explain'
+alias '??'='gh copilot suggest'
 alias ls='eza --icons --git'
 alias l='eza --icons --git'
 alias ll='eza --icons --git --sort time -la'
@@ -65,21 +74,11 @@ alias mgn='melos get'
 alias mget='melos get'
 alias mgen='melos gen'
 alias mr='melos refresh'
-alias .="cd .."
-alias ..="cd ../.."
-alias ...="cd ../../.."
-alias ....="cd ../../../.."
-alias .....="cd ../../../../.."
-alias reload='exec -l $SHELL;source ~/.zshrc'
 alias emu='emulator @$(emulator -list-avds | peco)'
 alias emu-ls='avdmanager list avd'
 alias simu='open -a Simulator'
 alias simu-ls='xcrun simctl list'
 alias chez='chezmoi'
-alias '?'='gh copilot explain'
-alias '??'='gh copilot suggest'
-alias lg='lazygit'
-alias gl='lazygit'
 alias cat='bat'
 alias find='fd'
 alias grep='rg'
@@ -93,8 +92,3 @@ alias ps='procs'
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
-
-## [Completion]
-## Completion scripts setup. Remove the following line to uninstall
-# [[ -f /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh || true
-## [/Completion]
