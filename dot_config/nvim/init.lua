@@ -883,7 +883,6 @@ require('lazy').setup {
             'lazy',
             'mason',
             'toggleterm',
-            'toggleterm',
           },
           resize_mode = {
             quit_key = '<CR>',
@@ -985,9 +984,9 @@ require('lazy').setup {
       config = function()
         local bufnr = vim.api.nvim_get_current_buf()
         local toggle = require 'toggle'
+
         toggle.register(
           'i',
-          -- Disables or enables inlay hints for the current buffer.
           toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
             name = 'Inlay hints',
             get_state = function()
@@ -999,6 +998,16 @@ require('lazy').setup {
           }),
           { buffer = bufnr }
         )
+
+        -- | background     | `b`    | dark-light switch                      |
+        -- | conceallevel   | `cl`   | 0–3 slider with 0-sticky toggle        |
+        -- | cursorline     | `-`    | on-off switch for `cursorline`         |
+        -- | diff           | `d`    | on-off switch for `diffthis`/`diffoff` |
+        -- | diff all       | `D`    | option for diffing all visible windows |
+        -- | list           | `l`    | on-off switch for `list`               |
+        -- | number         | `n`    | on-off switch for `number`             |
+        -- | relativenumber | `r`    | on-off switch for `relativenumber`     |
+        -- | wrap           | `w`    | on-off switch for `wrap`               |
 
         toggle.setup {
           keymaps = {
@@ -1325,7 +1334,6 @@ require('lazy').setup {
             goto_top = '[i',
             goto_bottom = ']i',
           },
-          -- symbol = "󰍳",
         }
 
         vim.api.nvim_create_autocmd('FileType', {
@@ -3069,7 +3077,6 @@ require('lazy').setup {
       event = 'LspAttach',
       config = function()
         require('symbol-usage').setup {
-          hl = { link = 'Comment' },
           -- available kinds: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#symbolKind
           kinds = {
             vim.lsp.protocol.SymbolKind.Function,
@@ -3079,8 +3086,9 @@ require('lazy').setup {
             vim.lsp.protocol.SymbolKind.Constructor,
           },
           kinds_filter = {},
-          vt_position = 'above',
-          vt_priority = nil,
+          vt_position = 'signcolumn',
+          vt_priority = 0,
+          request_pending_text = '󰍳',
           references = { enabled = true, include_declaration = false },
           definition = { enabled = false },
           implementation = { enabled = false },
