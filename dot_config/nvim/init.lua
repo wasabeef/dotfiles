@@ -134,7 +134,7 @@ vim.opt.smartcase = true
 -- インクリメンタルサーチ
 vim.opt.incsearch = true
 -- 最後尾まで検索を終えたら次の検索で先頭に移る
-vim.opt.wrapscan = true
+-- vim.opt.wrapscan = true
 -- 検索文字列をハイライトする
 vim.opt.hlsearch = true
 -- 置換の時 g オプションをデフォルトで有効にする
@@ -1879,7 +1879,7 @@ require('lazy').setup {
         end, keymap_opts)
         vim.keymap.set('n', '<C-g>', '<cmd>Telescope egrepify<CR>', keymap_opts)
         vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts)
-        vim.keymap.set('n', ':', ':Telescope cmdline<CR>', keymap_opts)
+        vim.keymap.set('n', '<C-;>', ':Telescope cmdline<CR>', keymap_opts)
         vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts)
         vim.keymap.set('n', '<Leader>r', function()
           require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
@@ -2571,6 +2571,39 @@ require('lazy').setup {
           },
         }
         vim.g.screenkey_statusline_component = true
+      end,
+    },
+
+    -- ヘルプ
+    {
+      'Tyler-Barham/floating-help.nvim',
+      event = 'VeryLazy',
+      config = function()
+        local fh = require 'floating-help'
+
+        fh.setup {
+          width = 160,
+          height = 0.9,
+          position = 'C', -- NW,N,NW,W,C,E,SW,S,SE (C==center)
+          border = 'rounded',
+        }
+
+        local function cmd_abbrev(abbrev, expansion)
+          local cmd = 'cabbr '
+            .. abbrev
+            .. ' <c-r>=(getcmdpos() == 1 && getcmdtype() == ":" ? "'
+            .. expansion
+            .. '" : "'
+            .. abbrev
+            .. '")<CR>'
+          vim.cmd(cmd)
+        end
+
+        -- Redirect `:h` to `:FloatingHelp`
+        cmd_abbrev('h', 'FloatingHelp')
+        cmd_abbrev('help', 'FloatingHelp')
+        cmd_abbrev('helpc', 'FloatingHelpClose')
+        cmd_abbrev('helpclose', 'FloatingHelpClose')
       end,
     },
 
