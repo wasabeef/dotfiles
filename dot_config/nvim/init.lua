@@ -588,7 +588,12 @@ require('lazy').setup {
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
         'nvim-telescope/telescope-fzf-native.nvim',
-        'Bekaboo/dropbar.nvim',
+        {
+          'Bekaboo/dropbar.nvim',
+          config = function()
+            require('dropbar').setup {}
+          end,
+        },
       },
       event = 'BufReadPre',
       config = function()
@@ -829,7 +834,6 @@ require('lazy').setup {
             },
           },
         }
-        require('dropbar').setup {}
         lualine.setup(config)
       end,
     },
