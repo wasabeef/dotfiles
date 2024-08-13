@@ -64,12 +64,15 @@ vim.opt.relativenumber = true
 vim.opt.cursorline = true
 -- CursorLineNr の色を設定する
 local function set_cursorline_nr_color(mode)
-  if mode == 'n' then
-    vim.cmd 'highlight CursorLineNr guifg=#61afef'
-  elseif mode == 'i' then
-    vim.cmd 'highlight CursorLineNr guifg=#98c379'
-  elseif mode == 'v' then
-    vim.cmd 'highlight CursorLineNr guifg=#e06c75'
+  local colors = {
+    n = '#61afef', -- Normal モード
+    i = '#98c379', -- Insert モード
+    v = '#e06c75', -- Visual モード
+  }
+
+  local color = colors[mode]
+  if color then
+    vim.cmd('highlight CursorLineNr guifg=' .. color)
   end
 end
 -- Normalモード
@@ -451,6 +454,9 @@ require('lazy').setup {
       'goolord/alpha-nvim',
       event = 'VimEnter',
       config = function()
+        -- ステータスラインを非表示
+        vim.opt.laststatus = 0
+
         local alpha = require 'alpha'
         local dashboard = require 'alpha.themes.dashboard'
         dashboard.section.header.val = {
@@ -544,13 +550,6 @@ require('lazy').setup {
       end,
     },
 
-    -- タイピングウォームアップ
-    {
-      'NStefan002/speedtyper.nvim',
-      cmd = 'Speedtyper',
-      opts = {},
-    },
-
     -- セッションの復元
     {
       'folke/persistence.nvim',
@@ -586,13 +585,12 @@ require('lazy').setup {
     {
       'nvim-lualine/lualine.nvim',
       dependencies = {
-        'uloco/bluloco.nvim',
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
         'nvim-telescope/telescope-fzf-native.nvim',
         'Bekaboo/dropbar.nvim',
       },
-      event = 'VimEnter', -- 画面がちらつく
+      event = 'BufReadPre',
       config = function()
         require('lsp-progress').setup {}
         local lualine = require 'lualine'
@@ -645,6 +643,7 @@ require('lazy').setup {
             theme = bubbles_theme,
             component_separators = '',
             section_separators = { right = '', left = '' },
+            globalstatus = true,
           },
           sections = {
             lualine_a = {
@@ -838,6 +837,7 @@ require('lazy').setup {
     -- ウィンドウサイズ変更
     {
       'mrjones2014/smart-splits.nvim',
+      event = 'VeryLazy',
       config = function()
         require('smart-splits').setup {
           ignored_filetypes = {
@@ -998,6 +998,7 @@ require('lazy').setup {
           'DiffviewFiles',
           'lazy',
           'mason',
+          'gitgraph',
         },
       },
     },
@@ -3171,6 +3172,7 @@ require('lazy').setup {
     {
       'hrsh7th/nvim-cmp',
       dependencies = {
+        'onsails/lspkind-nvim',
         'neovim/nvim-lspconfig',
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
@@ -3181,17 +3183,86 @@ require('lazy').setup {
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
 
-        'L3MON4D3/LuaSnip',
-        'rafamadriz/friendly-snippets',
         'saadparwaiz1/cmp_luasnip',
+        {
+          'L3MON4D3/LuaSnip',
+          build = 'make install_jsregexp',
+          dependencies = 'rafamadriz/friendly-snippets',
+          config = function()
+            local vscode = require 'luasnip.loaders.from_vscode'
+            vscode.lazy_load()
+            vscode.lazy_load { paths = { '~/.config/snippets' } }
+            local luasnip = require 'luasnip'
+            luasnip.filetype_extend('c', { 'cdoc' })
+            luasnip.filetype_extend('cpp', { 'cppdoc' })
+            luasnip.filetype_extend('cs', { 'csharpdoc' })
+            luasnip.filetype_extend('java', { 'javadoc' })
+            luasnip.filetype_extend('javascript', { 'javascriptreact', 'typescriptreact', 'jsdoc' })
+            luasnip.filetype_extend('javascriptreact', { 'html' })
+            luasnip.filetype_extend('typescript', { 'tsdoc' })
+            luasnip.filetype_extend('typescriptreact', { 'html' })
+            luasnip.filetype_extend('kotlin', { 'kdoc' })
+            luasnip.filetype_extend('lua', { 'luadoc' })
+            luasnip.filetype_extend('php', { 'phpdoc' })
+            luasnip.filetype_extend('python', { 'pydoc' })
+            luasnip.filetype_extend('ruby', { 'rdoc' })
+            luasnip.filetype_extend('rust', { 'rustdoc' })
+            luasnip.filetype_extend('sh', { 'shelldoc' })
+            luasnip.filetype_extend('dart', { 'flutter' })
+          end,
+        },
 
-        'onsails/lspkind-nvim',
+        -- LSP Copilot
+        {
+          'zbirenbaum/copilot-cmp',
+          dependencies = {
+            'zbirenbaum/copilot.lua',
+          },
+          fix_pairs = true,
+          cmd = 'Copilot',
+          config = function()
+            require('copilot').setup {
+              panel = {
+                enabled = false,
+              },
+              suggestion = {
+                enabled = false,
+              },
+              filetypes = {
+                yaml = true,
+                markdown = false,
+                help = false,
+                gitcommit = false,
+                gitrebase = false,
+                hgcommit = false,
+                svn = false,
+                cvs = false,
+                ['.'] = false,
+              },
+              copilot_node_command = vim.env.HOME .. '/.asdf/shims/node',
+              server_opts_overrides = {},
+            }
+            require('copilot.api').register_status_notification_handler(function(data)
+              local ns = vim.api.nvim_create_namespace 'user.copilot'
+              vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+              if vim.fn.mode() == 'i' and data.status == 'InProgress' then
+                vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line '.' - 1, 0, {
+                  virt_text = { { '  Thinking...', 'Comment' } },
+                  virt_text_pos = 'eol',
+                  hl_mode = 'combine',
+                })
+              end
+            end)
+            require('copilot_cmp').setup {
+              method = 'getCompletionsCycling',
+            }
+          end,
+        },
       },
       event = { 'InsertEnter', 'LspAttach' },
       config = function()
         local cmp = require 'cmp'
         local types = require 'cmp.types'
-        local luasnip = require 'luasnip'
         local lspkind = require 'lspkind'
 
         lspkind.init {
@@ -3233,7 +3304,7 @@ require('lazy').setup {
         cmp.setup {
           snippet = {
             expand = function(args)
-              luasnip.lsp_expand(args.body)
+              require('luasnip').lsp_expand(args.body)
             end,
           },
           completion = {
@@ -3302,29 +3373,9 @@ require('lazy').setup {
           },
         }
 
-        -- snippets
-        require('luasnip.loaders.from_vscode').lazy_load()
-        require('luasnip.loaders.from_vscode').lazy_load { paths = { '~/.config/snippets' } }
-        require('luasnip').filetype_extend('c', { 'cdoc' })
-        require('luasnip').filetype_extend('cpp', { 'cppdoc' })
-        require('luasnip').filetype_extend('cs', { 'csharpdoc' })
-        require('luasnip').filetype_extend('java', { 'javadoc' })
-        require('luasnip').filetype_extend('javascript', { 'javascriptreact', 'typescriptreact', 'jsdoc' })
-        require('luasnip').filetype_extend('javascriptreact', { 'html' })
-        require('luasnip').filetype_extend('typescript', { 'tsdoc' })
-        require('luasnip').filetype_extend('typescriptreact', { 'html' })
-        require('luasnip').filetype_extend('kotlin', { 'kdoc' })
-        require('luasnip').filetype_extend('lua', { 'luadoc' })
-        require('luasnip').filetype_extend('php', { 'phpdoc' })
-        require('luasnip').filetype_extend('python', { 'pydoc' })
-        require('luasnip').filetype_extend('ruby', { 'rdoc' })
-        require('luasnip').filetype_extend('rust', { 'rustdoc' })
-        require('luasnip').filetype_extend('sh', { 'shelldoc' })
-        require('luasnip').filetype_extend('dart', { 'flutter' })
-
         cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
           enabled = true,
-          sources = require('cmp').config.sources {
+          sources = cmp.config.sources {
             { name = 'dap' },
           },
         })
@@ -3347,54 +3398,6 @@ require('lazy').setup {
           }),
           matching = { disallow_symbol_nonprefix_matching = false },
         })
-      end,
-    },
-
-    -- LSP Copilot
-    {
-      'zbirenbaum/copilot-cmp',
-      dependencies = {
-        'zbirenbaum/copilot.lua',
-      },
-      event = { 'InsertEnter', 'LspAttach' },
-      fix_pairs = true,
-      cmd = 'Copilot',
-      config = function()
-        require('copilot').setup {
-          panel = {
-            enabled = false,
-          },
-          suggestion = {
-            enabled = false,
-          },
-          filetypes = {
-            yaml = true,
-            markdown = false,
-            help = false,
-            gitcommit = false,
-            gitrebase = false,
-            hgcommit = false,
-            svn = false,
-            cvs = false,
-            ['.'] = false,
-          },
-          copilot_node_command = vim.env.HOME .. '/.asdf/shims/node',
-          server_opts_overrides = {},
-        }
-        require('copilot.api').register_status_notification_handler(function(data)
-          local ns = vim.api.nvim_create_namespace 'user.copilot'
-          vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-          if vim.fn.mode() == 'i' and data.status == 'InProgress' then
-            vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line '.' - 1, 0, {
-              virt_text = { { '  Thinking...', 'Comment' } },
-              virt_text_pos = 'eol',
-              hl_mode = 'combine',
-            })
-          end
-        end)
-        require('copilot_cmp').setup {
-          method = 'getCompletionsCycling',
-        }
       end,
     },
 
@@ -3443,7 +3446,6 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bw', "<cmd>lua require('dapui').elements.watches.add()<CR>", keymap_opts)
         vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bsl', [[:lua require"osv".launch({port = 8086})<CR>]], { noremap = true })
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {

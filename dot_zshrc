@@ -35,6 +35,9 @@ linux*)
   ;;
 darwin*)
   eval "$(/opt/homebrew/bin/sheldon source)"
+
+  # ScreenCapture Shadow Off
+  defaults write com.apple.screencapture disable-shadow -boolean true
   ;;
 *) ;;
 esac
