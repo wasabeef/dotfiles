@@ -550,6 +550,36 @@ require('lazy').setup {
       end,
     },
 
+    -- キーマップ
+    {
+      'mrjones2014/legendary.nvim',
+      event = 'VeryLazy',
+      keys = {
+        { mode = 'n', '<Leader><Leader>', '<cmd>Legendary<CR>' },
+      },
+      config = function()
+        require('legendary').setup {
+          keymaps = {},
+          commands = {},
+          funcs = {},
+          autocmds = {},
+          extensions = {
+            lazy_nvim = true,
+            nvim_tree = true,
+            smart_splits = {
+              directions = { 'h', 'j', 'k', 'l' },
+              mods = {
+                move = '<C>',
+                resize = '<M>',
+              },
+            },
+            op_nvim = false,
+            diffview = true,
+          },
+        }
+      end,
+    },
+
     -- セッションの復元
     {
       'folke/persistence.nvim',
@@ -853,6 +883,7 @@ require('lazy').setup {
             'lazy',
             'mason',
             'toggleterm',
+            'toggleterm',
           },
           resize_mode = {
             quit_key = '<CR>',
@@ -863,6 +894,7 @@ require('lazy').setup {
       end,
     },
 
+    -- ウィンドウセパレータカラー
     {
       'nvim-zh/colorful-winsep.nvim',
       event = { 'WinLeave' },
@@ -872,15 +904,6 @@ require('lazy').setup {
             fg = '#9F7EFE',
           },
           smooth = false,
-          no_exec_files = {
-            'alpha',
-            'dropbar_menu',
-            'NvimTree',
-            'DiffviewFileHistory',
-            'DiffviewFiles',
-            'lazy',
-            'mason',
-          },
         }
       end,
     },
@@ -1005,6 +1028,21 @@ require('lazy').setup {
           'gitgraph',
         },
       },
+    },
+
+    -- 行コマンド移動
+    {
+      'nacro90/numb.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('numb').setup {
+          show_numbers = true,
+          show_cursorline = true,
+          hide_relativenumbers = false,
+          number_only = false,
+          centered_peeking = true,
+        }
+      end,
     },
 
     -- コメントアウト

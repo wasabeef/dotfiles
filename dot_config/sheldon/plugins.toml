@@ -27,13 +27,12 @@ precmd_functions+=( precmd_vcs_info )
 setopt prompt_subst
 zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
 zstyle ':vcs_info:*' enable git
+PROMPT='%(?.%F{blue} .%F{red}󰈸 )%f '
+RPROMPT=\$vcs_info_msg_0_
 
 zstyle ':completion:*:default' menu select=2
 eval "$($(brew --prefix coreutils)/libexec/gnubin/dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-
-PROMPT='%(?.%F{blue} .%F{red}󰈸 )%f '
-RPROMPT=\$vcs_info_msg_0_
 '''
 
 [plugins.fzf]
