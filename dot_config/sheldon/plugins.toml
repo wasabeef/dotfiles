@@ -1,23 +1,93 @@
-# `sheldon` configuration file
+# sheldon configuration file
 # ----------------------------
 shell = "zsh"
 
 [plugins]
-
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
 apply = ['source']
 
-[templates]
-defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
-
 [plugins.brew]
 github = "wintermi/zsh-brew"
+
+[templates]
+defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
 
 [plugins.direnv]
 github = "ohmyzsh/ohmyzsh"
 dir = "plugins/direnv"
 apply = ["defer"]
+
+[plugins.prompt]
+## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
+inline = '''
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
+zstyle ':vcs_info:*' enable git
+
+zstyle ':completion:*:default' menu select=2
+eval "$($(brew --prefix coreutils)/libexec/gnubin/dircolors -b)"
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+PROMPT='%(?.%F{blue} .%F{red}󰈸 )%f '
+RPROMPT=\$vcs_info_msg_0_
+'''
+
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ['defer']
+
+[plugins.fzf-settings]
+inline = '''
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+'''
+
+[plugins.fzf-zsh-completions]
+github = "chitoku-k/fzf-zsh-completions"
+apply = ['defer']
+
+[plugins.zoxide]
+inline = '''
+zsh-defer eval "$(zoxide init zsh)"
+function zoxide_zi() {
+  zi
+  zle reset-prompt
+}
+zle -N zoxide_zi
+bindkey '^O' zoxide_zi
+'''
+
+[plugins.gh]
+inline = '''
+function _gh() {
+  unfunction "$0"
+  eval "$(gh completion --shell zsh)"
+  $0 "$@"
+}
+zsh-defer compdef _gh gh
+'''
+
+[plugins.git]
+remote = "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh"
+apply = ["fpath"]
+
+[plugins.compinit]
+inline = 'autoload -Uz compinit && zsh-defer compinit'
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
 
 [plugins.nvim]
 inline = '''
@@ -103,81 +173,4 @@ function _maestro() {
   export PATH="$PATH":"$HOME/.maestro/bin"
 }
 zsh-defer _maestro
-'''
-
-[plugins.compinit]
-inline = 'autoload -Uz compinit && zsh-defer compinit'
-
-[plugins.zsh-autosuggestions]
-github = "zsh-users/zsh-autosuggestions"
-apply = ['defer']
-
-[plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
-apply = ["defer"]
-
-[plugins.zsh-completions]
-github = "zsh-users/zsh-completions"
-apply = ['defer']
-
-# [plugins.fzf]
-# github = "junegunn/fzf"
-# apply = ['defer']
-#
-# [plugins.fzf-settings]
-# inline = '''
-# export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-# '''
-
-[plugins.fzf-zsh-completions]
-github = "chitoku-k/fzf-zsh-completions"
-apply = ['defer']
-
-[plugins.mcfly]
-inline = '''
-export MCFLY_FUZZY=2
-export MCFLY_KEY_SCHEME=vim
-export MCFLY_DISABLE_MENU=TRUE
-export MCFLY_RESULTS=50
-export MCFLY_PROMPT=""
-zsh-defer eval "$(mcfly init zsh)"
-'''
-
-[plugins.zoxide]
-inline = '''
-zsh-defer eval "$(zoxide init zsh)"
-function zoxide_zi() {
-  zi
-  zle reset-prompt
-}
-zle -N zoxide_zi
-bindkey '^O' zoxide_zi
-'''
-
-[plugins.gh]
-inline = '''
-function _gh() {
-  unfunction "$0"
-  eval "$(gh completion --shell zsh)"
-  $0 "$@"
-}
-zsh-defer compdef _gh gh
-'''
-
-[plugins.git]
-remote = "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh"
-apply = ["fpath"]
-
-[plugins.git-branch]
-## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
-inline = '''
-PROMPT='%(?.%F{yellow} .%F{red}󰈸 )%f '
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-RPROMPT=\$vcs_info_msg_0_
-zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
-zstyle ':vcs_info:*' enable git
-zstyle ':completion:*:default' menu select=1
 '''

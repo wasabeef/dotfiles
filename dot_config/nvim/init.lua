@@ -1552,32 +1552,6 @@ require('lazy').setup {
       },
     },
 
-    {
-      'isakbm/gitgraph.nvim',
-      dependencies = { 'sindrets/diffview.nvim' },
-      keys = {
-        {
-          '<leader>gg',
-          function()
-            require('gitgraph').draw({}, { all = true, max_count = 5000 })
-          end,
-          desc = 'GitGraph - Draw',
-        },
-      },
-      opts = {
-        hooks = {
-          on_select_commit = function(commit)
-            vim.notify('DiffviewOpen ' .. commit.hash .. '^!')
-            vim.cmd(':DiffviewOpen ' .. commit.hash .. '^!')
-          end,
-          on_select_range_commit = function(from, to)
-            vim.notify('DiffviewOpen ' .. from.hash .. '~1..' .. to.hash)
-            vim.cmd(':DiffviewOpen ' .. from.hash .. '~1..' .. to.hash)
-          end,
-        },
-      },
-    },
-
     -- Git 差分表示
     {
       'sindrets/diffview.nvim',
@@ -1716,6 +1690,13 @@ require('lazy').setup {
         pcall(require, 'nvim-treesitter.query_predicates')
       end,
       config = function()
+        vim.filetype.add {
+          extension = {
+            -- Flutter .arb files should be considered as json files
+            arb = 'json',
+          },
+        }
+
         require('nvim-treesitter.configs').setup {
           ensure_installed = {
             'gitignore',
@@ -1748,6 +1729,8 @@ require('lazy').setup {
             'yaml',
             'toml',
             'xml',
+            'editorconfig',
+            'diff',
           },
           sync_install = false,
           auto_install = false,
@@ -3648,7 +3631,6 @@ require('lazy').setup {
         require('goto-preview').setup {
           width = 160,
           height = 40,
-          border = { '↖', '─', '┐', '│', '┘', '─', '└', '│' },
           default_mappings = false,
           debug = false,
           opacity = 30,
