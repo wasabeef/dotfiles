@@ -52,7 +52,7 @@ apply = ['defer']
 inline = '''
 zsh-defer eval "$(zoxide init zsh)"
 function zoxide_zi() {
-  zi
+  zi && pwd
   zle reset-prompt
 }
 zle -N zoxide_zi
