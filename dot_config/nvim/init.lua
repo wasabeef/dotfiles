@@ -1148,6 +1148,13 @@ require('lazy').setup {
     -- w, e, b 移動の最適化
     {
       'chrisgrieser/nvim-spider',
+      dependencies = {
+        'theHamsta/nvim_rocks',
+        build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
+        config = function()
+          require('nvim_rocks').ensure_installed 'luautf8'
+        end,
+      },
       event = 'VeryLazy',
       keys = {
         {
@@ -1692,8 +1699,7 @@ require('lazy').setup {
       'Sam-programs/cmdline-hl.nvim',
       event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
       config = function()
-        local cmdline_hl = require 'cmdline-hl'
-        cmdline_hl.setup {
+        require('cmdline-hl').setup {
           type_signs = {
             [':'] = { '   ', 'Title' },
             ['/'] = { '   ', 'Title' },
@@ -3747,6 +3753,8 @@ require('lazy').setup {
         },
       },
     },
+
+    -- init.lua のデバッグ
     {
       'jbyuki/one-small-step-for-vimkind',
       event = 'LspAttach',
