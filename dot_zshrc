@@ -36,8 +36,10 @@ linux*)
   ;;
 darwin*)
   eval "$(/opt/homebrew/bin/sheldon source)"
-  # ScreenCapture Shadow Off
-  defaults write com.apple.screencapture disable-shadow -boolean true
+  # ScreenCapture の影をなくす
+  defaults write com.apple.screencapture disable-shadow -bool true
+  # .DS_Store を作らない
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
   ;;
 *) ;;
 esac

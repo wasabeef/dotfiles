@@ -33,6 +33,8 @@ RPROMPT=\$vcs_info_msg_0_
 zstyle ':completion:*:default' menu select=2
 eval "$($(brew --prefix coreutils)/libexec/gnubin/dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+export EZA_COLORS="reset:$LS_COLORS"
 '''
 
 [plugins.fzf]

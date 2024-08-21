@@ -5,6 +5,7 @@
 	helper = osxkeychain
 [core]
     editor = nvim
+	  pager = cat
     attributesfile = ~/.gitattributes
 [color]
     ui = auto

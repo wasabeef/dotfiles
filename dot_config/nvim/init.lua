@@ -134,7 +134,7 @@ vim.opt.smartcase = true
 -- インクリメンタルサーチ
 vim.opt.incsearch = true
 -- 最後尾まで検索を終えたら次の検索で先頭に移る
--- vim.opt.wrapscan = true
+vim.opt.wrapscan = true
 -- 検索文字列をハイライトする
 vim.opt.hlsearch = true
 -- 置換の時 g オプションをデフォルトで有効にする
@@ -169,101 +169,107 @@ vim.opt.signcolumn = 'yes'
 -- ---------------------------------------------------------
 -- キーマップ
 -- ---------------------------------------------------------
-local keymap_opts = { noremap = true, silent = false }
+local function keymap_opts(desc)
+  return {
+    noremap = true,
+    silent = true,
+    desc = desc,
+  }
+end
 
 -- ESC連打でハイライト解除
-vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', keymap_opts)
+vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', keymap_opts 'Cancel Highlight')
 
 -- 折り返し時に表示行単位での移動できるようにする
-vim.keymap.set('n', 'j', 'gj', keymap_opts)
-vim.keymap.set('v', 'j', 'gj', keymap_opts)
-vim.keymap.set('n', 'k', 'gk', keymap_opts)
-vim.keymap.set('v', 'k', 'gk', keymap_opts)
+vim.keymap.set('n', 'j', 'gj', keymap_opts())
+vim.keymap.set('v', 'j', 'gj', keymap_opts())
+vim.keymap.set('n', 'k', 'gk', keymap_opts())
+vim.keymap.set('v', 'k', 'gk', keymap_opts())
 
 -- 画面分割
-vim.keymap.set('n', 's', '<Nop>', keymap_opts)
+vim.keymap.set('n', 's', '<Nop>', keymap_opts())
 -- 移動
-vim.keymap.set('n', 'sj', '<C-w>j', keymap_opts)
-vim.keymap.set('n', 'sk', '<C-w>k', keymap_opts)
-vim.keymap.set('n', 'sl', '<C-w>l', keymap_opts)
-vim.keymap.set('n', 'sh', '<C-w>h', keymap_opts)
+vim.keymap.set('n', 'sj', '<C-w>j', keymap_opts 'Move to Down Window')
+vim.keymap.set('n', 'sk', '<C-w>k', keymap_opts 'Move to Up Window')
+vim.keymap.set('n', 'sl', '<C-w>l', keymap_opts 'Move to Right Window')
+vim.keymap.set('n', 'sh', '<C-w>h', keymap_opts 'Move to Left Window')
 -- 最下段に移動し、幅を最大にする
-vim.keymap.set('n', 'sJ', '<C-w>J', keymap_opts)
+vim.keymap.set('n', 'sJ', '<C-w>J', keymap_opts 'Move to Down Window and Maximize Width')
 -- 最上段に移動し、幅を最大にする
-vim.keymap.set('n', 'sK', '<C-w>K', keymap_opts)
+vim.keymap.set('n', 'sK', '<C-w>K', keymap_opts 'Move to Up Window and Maximize Width')
 -- 最右列に移動し、幅を最大にする
-vim.keymap.set('n', 'sL', '<C-w>L', keymap_opts)
+vim.keymap.set('n', 'sL', '<C-w>L', keymap_opts 'Move to Right Window and Maximize Width')
 -- 最左列に移動し、幅を最大にする
-vim.keymap.set('n', 'sH', '<C-w>H', keymap_opts)
+vim.keymap.set('n', 'sH', '<C-w>H', keymap_opts 'Move to Left Window and Maximize Width')
 -- 新しいタブページへ移動する
-vim.keymap.set('n', 'sT', '<C-w>T', keymap_opts)
-vim.keymap.set('n', 'sn', 'gt', keymap_opts)
-vim.keymap.set('n', 'sp', 'gT', keymap_opts)
-vim.keymap.set('n', 's=', '<C-w>=', keymap_opts)
-vim.keymap.set('n', 'sw', '<C-w>w', keymap_opts)
+vim.keymap.set('n', 'sT', '<C-w>T', keymap_opts())
+vim.keymap.set('n', 'sn', 'gt', keymap_opts())
+vim.keymap.set('n', 'sp', 'gT', keymap_opts())
+vim.keymap.set('n', 's=', '<C-w>=', keymap_opts())
+vim.keymap.set('n', 'sw', '<C-w>w', keymap_opts())
 -- バッファの最小化
-vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts)
+vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts())
 -- バッファの最小化を戻す
-vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts)
+vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts())
 -- 前のバッファ
-vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts)
+vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts())
 -- 次のバッファ
-vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts)
+vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts())
 -- 新規タブ
-vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts)
+vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts())
 -- 横分割
-vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts)
+vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts())
 -- 縦分割
-vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts)
+vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts())
 -- 閉じる
-vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts)
-vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts)
+vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts())
+vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts())
 
 -- ノーマルモードではセミコロンをコロンに
-vim.keymap.set('n', ';', ':', keymap_opts)
+vim.keymap.set('n', ';', ':', keymap_opts 'Change ; to :')
 -- ノーマルモードでは 0 で行頭、9 で行末
-vim.keymap.set('n', '0', '^', keymap_opts)
-vim.keymap.set('n', '9', '$', keymap_opts)
+vim.keymap.set('n', '0', '^', keymap_opts 'Move to Line Head')
+vim.keymap.set('n', '9', '$', keymap_opts 'Move to Line End')
 
 -- 保存・終了時のタイポ修正
-vim.keymap.set('c', 'Q', 'q', keymap_opts)
-vim.keymap.set('c', 'Q!', 'q!', keymap_opts)
-vim.keymap.set('c', 'W', 'w', keymap_opts)
-vim.keymap.set('c', 'W!', 'w!', keymap_opts)
-vim.keymap.set('c', 'WQ!', 'wq!', keymap_opts)
+vim.keymap.set('c', 'Q', 'q', keymap_opts 'Quit')
+vim.keymap.set('c', 'Q!', 'q!', keymap_opts 'Quit')
+vim.keymap.set('c', 'W', 'w', keymap_opts 'Write')
+vim.keymap.set('c', 'W!', 'w!', keymap_opts 'Write')
+vim.keymap.set('c', 'WQ!', 'wq!', keymap_opts 'Write and Quit')
 
 -- Ctrl+s で保存
-vim.keymap.set('n', '<C-s>', ':update<CR>', keymap_opts)
-vim.keymap.set('n', '<s>', ':update<CR>', keymap_opts)
+vim.keymap.set('n', '<C-s>', ':update<CR>', keymap_opts 'Save')
+vim.keymap.set('n', '<s>', ':update<CR>', keymap_opts 'Save')
 
 -- Ctrl+q で :q
-vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts)
+vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts 'Quit')
 -- Ctrl+Shift+Q で :qa
-vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts)
+vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts 'Quit All')
 
 -- w!!でsudoを忘れても保存
-vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts)
+vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts())
 
 -- <C-a> で全選択
-vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', keymap_opts)
+vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', keymap_opts 'Select All Text')
 
 -- 入力モード中のカーソル移動
-vim.keymap.set('i', '<C-h>', '<Left>', keymap_opts)
-vim.keymap.set('i', '<C-j>', '<Down>', keymap_opts)
-vim.keymap.set('i', '<C-k>', '<Up>', keymap_opts)
-vim.keymap.set('i', '<C-l>', '<Right>', keymap_opts)
+vim.keymap.set('i', '<C-h>', '<Left>', keymap_opts 'Move to Left')
+vim.keymap.set('i', '<C-j>', '<Down>', keymap_opts 'Move to Down')
+vim.keymap.set('i', '<C-k>', '<Up>', keymap_opts 'Move to Up')
+vim.keymap.set('i', '<C-l>', '<Right>', keymap_opts 'Move to Right')
 
--- 対象の行を移動 -- use mini.move
--- vim.keymap.set("n", "<M-k>", '"zdd<Up>"zP', keymap_opts)
--- vim.keymap.set("n", "<M-j>", '"zdd"zp', keymap_opts)
--- 対象の複数行を移動 -- use mini.move
--- vim.keymap.set("v", "<M-k>", '"zx<Up>"zP`[V`]', keymap_opts)
--- vim.keymap.set("v", "<M-j>", '"zx"zp`[V`]', keymap_opts)
+-- -- 対象の行を移動 -- use mini.move
+-- vim.keymap.set('n', '<M-k>', '"zdd<Up>"zP', keymap_opts())
+-- vim.keymap.set('n', '<M-j>', '"zdd"zp', keymap_opts())
+-- -- 対象の複数行を移動 -- use mini.move
+-- vim.keymap.set('v', '<M-k>', '"zx<Up>"zP`[V`]', keymap_opts())
+-- vim.keymap.set('v', '<M-j>', '"zx"zp`[V`]', keymap_opts())
 
--- Ctrl + p で繰り返しヤンクした文字をペースト
--- vim.keymap.set("v", "<C-p>", '"0p', { silent = true })
--- Ctrl + m を無効
--- vim.keymap.set("n", "<C-m>", "<Nop>", keymap_opts)
+-- -- Ctrl + p で繰り返しヤンクした文字をペースト
+-- vim.keymap.set('v', '<C-p>', '"0p', { silent = true })
+-- -- Ctrl + m を無効
+-- vim.keymap.set('n', '<C-m>', '<Nop>', keymap_opts())
 
 -- コマンドラインウィンドウ (:~)
 -- 入力途中での上下キーでヒストリー出すのを Ctrl+n/p にも割り当て
@@ -271,18 +277,18 @@ vim.keymap.set('c', '<C-n>', 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr =
 vim.keymap.set('c', '<C-p>', 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
 -- LSP
-vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, keymap_opts)
--- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, keymap_opts) -- use conform
-vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts)
-vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts)
--- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts)
-vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts)
--- vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts)
-vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts)
-vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts)
-vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts)
-vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts)
-vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts)
+vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, keymap_opts 'vim.lsp.buf.hover')
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, keymap_opts 'vim.lsp.buf.formatting')-- use conform
+vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts 'vim.lsp.buf.references')
+vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts 'vim.lsp.buf.definition')
+-- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts 'vim.lsp.buf.declaration')
+vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts 'vim.lsp.buf.implementation')
+-- vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts 'vim.lsp.buf.type_definition')
+vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts 'vim.lsp.buf.rename')
+vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts 'vim.lsp.buf.code_action')
+vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts 'vim.diagnostic.open_float')
+vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts 'vim.diagnostic.goto_next')
+vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts 'vim.diagnostic.goto_prev')
 
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
@@ -552,32 +558,37 @@ require('lazy').setup {
 
     -- キーマップ
     {
-      'mrjones2014/legendary.nvim',
+      'folke/which-key.nvim',
       event = 'VeryLazy',
-      keys = {
-        { mode = 'n', '<Leader><Leader>', '<cmd>Legendary<CR>' },
-      },
-      config = function()
-        require('legendary').setup {
-          keymaps = {},
-          commands = {},
-          funcs = {},
-          autocmds = {},
-          extensions = {
-            lazy_nvim = true,
-            nvim_tree = true,
-            smart_splits = {
-              directions = { 'h', 'j', 'k', 'l' },
-              mods = {
-                move = '<C>',
-                resize = '<M>',
-              },
-            },
-            op_nvim = false,
-            diffview = true,
+      opts = {
+        preset = 'modern',
+        triggers = {},
+        win = {
+          height = { min = 20, max = 80 },
+          border = 'rounded',
+          wo = {
+            winblend = 10,
           },
-        }
-      end,
+        },
+        disable = {
+          ft = {
+            'prompt',
+            'dropbar_menu',
+            'toggleterm',
+            'NvimTree',
+            'DiffviewFileHistory',
+            'DiffviewFiles',
+          },
+        },
+      },
+      keys = {
+        {
+          mode = 'n',
+          '<leader><Leader>',
+          "<cmd>lua require('which-key').show()<CR>",
+          desc = 'Buffer Local Keymaps (which-key)',
+        },
+      },
     },
 
     -- セッションの復元
@@ -871,7 +882,7 @@ require('lazy').setup {
     -- ウィンドウサイズ変更
     {
       'mrjones2014/smart-splits.nvim',
-      event = 'VeryLazy',
+      event = 'WinNew',
       config = function()
         require('smart-splits').setup {
           ignored_filetypes = {
@@ -889,19 +900,20 @@ require('lazy').setup {
             silent = true,
           },
         }
-        vim.keymap.set('n', '<C-e>', require('smart-splits').start_resize_mode)
+        vim.keymap.set('n', '<C-e>', require('smart-splits').start_resize_mode, keymap_opts 'Start Window Resize Mode')
       end,
     },
 
     -- ウィンドウセパレータカラー
     {
       'nvim-zh/colorful-winsep.nvim',
-      event = { 'WinLeave' },
+      event = { 'WinNew' },
       config = function()
         require('colorful-winsep').setup {
           hi = {
             fg = '#9F7EFE',
           },
+          only_line_seq = false,
           smooth = false,
         }
       end,
@@ -919,35 +931,25 @@ require('lazy').setup {
             '<C-d>',
             '<C-b>',
             '<C-f>',
-            -- "<C-y>",
-            -- "<C-e>", -- use simeji/winresizer
-            -- "zt",
-            -- "zz",
-            -- "zb",
           },
           easing = 'sine',
           hide_cursor = true,
           performance_mode = true,
         }
-        local keymap = {
-          ['<C-u>'] = function()
-            neoscroll.ctrl_u { duration = 50 }
-          end,
-          ['<C-d>'] = function()
-            neoscroll.ctrl_d { duration = 50 }
-          end,
-          ['<C-b>'] = function()
-            neoscroll.ctrl_b { duration = 120 }
-          end,
-          ['<C-f>'] = function()
-            neoscroll.ctrl_f { duration = 120 }
-          end,
-        }
 
         local modes = { 'n', 'v', 'x' }
-        for key, func in pairs(keymap) do
-          vim.keymap.set(modes, key, func)
-        end
+        vim.keymap.set(modes, '<C-u>', function()
+          neoscroll.ctrl_u { duration = 50 }
+        end, { desc = 'Scroll-Up with Neoscroll' })
+        vim.keymap.set(modes, '<C-d>', function()
+          neoscroll.ctrl_d { duration = 50 }
+        end, { desc = 'Scroll-Down with Neoscroll' })
+        vim.keymap.set(modes, '<C-b>', function()
+          neoscroll.ctrl_b { duration = 120 }
+        end, { desc = 'Scroll-Up Page with Neoscroll' })
+        vim.keymap.set(modes, '<C-f>', function()
+          neoscroll.ctrl_f { duration = 120 }
+        end, { desc = 'Scroll-Down Page with Neoscroll' })
       end,
     },
 
@@ -968,6 +970,7 @@ require('lazy').setup {
             'prompt',
             'dropbar_menu',
             'alpha',
+            'NvimTree',
           },
         }
       end,
@@ -994,6 +997,22 @@ require('lazy').setup {
             end,
             set_state = function(new_value)
               vim.lsp.inlay_hint.enable(new_value, {})
+            end,
+          }),
+          { buffer = bufnr }
+        )
+
+        local symbol_usage = true
+        toggle.register(
+          's',
+          toggle.option.NotifyOnSetOption(toggle.option.OnOffOption {
+            name = 'Symbol usage',
+            get_state = function()
+              return symbol_usage
+            end,
+            set_state = function(new_value)
+              symbol_usage = new_value
+              require('symbol-usage').toggle()
             end,
           }),
           { buffer = bufnr }
@@ -1034,12 +1053,11 @@ require('lazy').setup {
           'DiffviewFiles',
           'lazy',
           'mason',
-          'gitgraph',
         },
       },
     },
 
-    -- 行コマンド移動
+    -- 行数コマンド移動
     {
       'nacro90/numb.nvim',
       event = 'VeryLazy',
@@ -1136,6 +1154,7 @@ require('lazy').setup {
           mode = { 'n', 'o', 'x' },
           '<C-/>',
           "<cmd>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>'), paths = vim.fn.expand('%') } })<CR>",
+          desc = 'grug-far',
         },
       },
       config = function()
@@ -1190,10 +1209,10 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
-        vim.keymap.set('n', 'ff', ':HopWordCurrentLine<CR>', keymap_opts)
-        vim.keymap.set('n', 'fw', ':HopWord<CR>', keymap_opts)
-        vim.keymap.set('n', 'fp', ':HopPattern<CR>', keymap_opts)
-        vim.keymap.set('n', 'fl', ':HopLine<CR>', keymap_opts)
+        vim.keymap.set('n', 'ff', ':HopWordCurrentLine<CR>', keymap_opts())
+        vim.keymap.set('n', 'fw', ':HopWord<CR>', keymap_opts())
+        vim.keymap.set('n', 'fp', ':HopPattern<CR>', keymap_opts())
+        vim.keymap.set('n', 'fl', ':HopLine<CR>', keymap_opts())
         vim.api.nvim_set_hl(0, 'HopNextKey', { fg = '#fbc114' })
         vim.api.nvim_set_hl(0, 'HopNextKey1', { fg = '#fbc114' })
         vim.api.nvim_set_hl(0, 'HopNextKey2', { fg = '#fbc114' })
@@ -1258,7 +1277,7 @@ require('lazy').setup {
       event = 'VeryLazy',
       config = function()
         require('yankbank').setup()
-        vim.keymap.set('n', '<C-p>', '<cmd>YankBank<CR>', keymap_opts)
+        vim.keymap.set('n', '<C-p>', '<cmd>YankBank<CR>', keymap_opts())
       end,
     },
 
@@ -1430,6 +1449,7 @@ require('lazy').setup {
           callback = function()
             vim.cmd 'highlight LogNormal guibg=#282828 ctermbg=darkgray'
             vim.cmd 'setlocal winhighlight=Normal:LogNormal'
+            vim.cmd 'set norelativenumber'
           end,
         })
       end,
@@ -1488,8 +1508,8 @@ require('lazy').setup {
           vim.keymap.set('n', '-', api.tree.change_root_to_parent, opts 'Dir Up')
           vim.keymap.set('n', 'l', api.node.open.edit, opts 'Edit')
           vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts 'Close Node')
-          vim.keymap.set('n', 's', '', opts '')
-          vim.keymap.set('n', 'sl', '<c-w>l', opts '')
+          vim.keymap.set('n', 's', '', opts 'Nop')
+          vim.keymap.set('n', 'sl', '<c-w>l', opts 'Nop')
           vim.keymap.set('n', 'P', preview.watch, opts 'Preview (Watch)')
           vim.keymap.set('n', '<Esc>', preview.unwatch, opts 'Close Preview/Unwatch')
           vim.keymap.set('n', '<Tab>', function()
@@ -1570,7 +1590,7 @@ require('lazy').setup {
             ignore = false,
           },
         }
-        vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', keymap_opts)
+        vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', keymap_opts())
       end,
     },
 
@@ -1659,7 +1679,7 @@ require('lazy').setup {
           },
           signs_staged_enable = true,
           signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-          numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
+          numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
           linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
           word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
           watch_gitdir = {
@@ -1853,8 +1873,6 @@ require('lazy').setup {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
-        'nvim-telescope/telescope-ui-select.nvim',
-        'nvim-telescope/telescope-media-files.nvim',
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
         'debugloop/telescope-undo.nvim',
@@ -1872,7 +1890,7 @@ require('lazy').setup {
               return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
             end,
           }
-        end, keymap_opts)
+        end, keymap_opts 'Telescope find_files')
         vim.keymap.set('n', '<C-S-O>', function()
           require('telescope.builtin').oldfiles {
             only_cwd = true,
@@ -1882,11 +1900,11 @@ require('lazy').setup {
               return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
             end,
           }
-        end, keymap_opts)
-        vim.keymap.set('n', '<C-g>', '<cmd>Telescope egrepify<CR>', keymap_opts)
-        vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts)
-        vim.keymap.set('n', '<C-;>', ':Telescope cmdline<CR>', keymap_opts)
-        vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts)
+        end, keymap_opts 'Telesope oldfiles')
+        vim.keymap.set('n', '<C-g>', '<cmd>Telescope egrepify<CR>', keymap_opts())
+        vim.keymap.set('n', '<C-x>', '<cmd>Telescope simulators run<CR>', keymap_opts())
+        vim.keymap.set('n', '<C-;>', ':Telescope cmdline<CR>', keymap_opts())
+        vim.keymap.set('n', '?', ':Telescope current_buffer_fuzzy_find<CR>', keymap_opts())
         vim.keymap.set('n', '<Leader>r', function()
           require('telescope.builtin').lsp_references(require('telescope.themes').get_cursor {
             hide_preview = false,
@@ -1900,7 +1918,7 @@ require('lazy').setup {
               height = 40,
             },
           })
-        end, keymap_opts)
+        end, keymap_opts 'Telescope lsp_references')
 
         local telescope = require 'telescope'
         -- local builtin_schemes = require("telescope._extensions.themes").builtin_schemes
@@ -1992,10 +2010,6 @@ require('lazy').setup {
                 },
               },
               undo = {},
-              media_files = {
-                filetypes = { 'png', 'jpg', 'jpeg', 'gif', 'ico', 'webp' },
-                find_cmd = 'rg',
-              },
               egrepify = {
                 AND = true, -- default
                 permutations = false, -- opt-in to imply AND & match all permutations of prompt tokens
@@ -2045,8 +2059,6 @@ require('lazy').setup {
           },
         }
         telescope.load_extension 'fzf'
-        telescope.load_extension 'ui-select'
-        telescope.load_extension 'media_files'
         telescope.load_extension 'cmdline'
         telescope.load_extension 'undo'
         telescope.load_extension 'treesitter_info'
@@ -2063,7 +2075,7 @@ require('lazy').setup {
       'aznhe21/actions-preview.nvim',
       event = 'LspAttach',
       config = function()
-        vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions)
+        vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions, keymap_opts 'Code Acttions')
         require('actions-preview').setup {
           diff = {
             ctxlen = 5, -- 差分の前後に表示するコンテキスト行数
@@ -2152,6 +2164,7 @@ require('lazy').setup {
           function()
             require('conform').format { async = true }
           end,
+          desc = 'Format using Conform',
         },
       },
       config = function()
@@ -2211,25 +2224,54 @@ require('lazy').setup {
       config = function()
         local lint = require 'lint'
         lint.linters_by_ft = {
-          javascript = { 'eslint_d', 'typos' },
-          typescript = { 'eslint_d', 'typos' },
-          javascriptreact = { 'eslint_d', 'typos' },
-          typescriptreact = { 'eslint_d', 'typos' },
-          css = { 'stylelint', 'typos' },
-          sh = { 'shellcheck', 'typos' },
-          lua = { 'selene', 'typos' },
-          -- markdown = { 'markdownlint', 'typos' }, -- stop vale
-          json = { 'jsonlint', 'typos' },
-          yaml = { 'yamllint', 'actionlint', 'typos' },
-          terraform = { 'tflint', 'typos' },
-          go = { 'golangcilint', 'typos' },
-          swift = { 'swiftlint', 'typos' },
-          kotlin = { 'ktlint', 'typos' },
-          dart = { 'typos' },
+          javascript = { 'eslint_d' },
+          typescript = { 'eslint_d' },
+          javascriptreact = { 'eslint_d' },
+          typescriptreact = { 'eslint_d' },
+          css = { 'stylelint' },
+          sh = { 'shellcheck' },
+          lua = { 'selene' },
+          -- markdown = { 'markdownlint' }, -- stop vale
+          json = { 'jsonlint' },
+          yaml = { 'yamllint', 'actionlint' },
+          terraform = { 'tflint' },
+          go = { 'golangcilint' },
+          swift = { 'swiftlint' },
+          kotlin = { 'ktlint' },
+          dart = {},
         }
-        -- for ft, _ in pairs(lint.linters_by_ft) do
-        --   table.insert(lint.linters_by_ft[ft], 'typos')
-        -- end
+        -- Add typos to all linters
+        for ft, _ in pairs(lint.linters_by_ft) do
+          table.insert(lint.linters_by_ft[ft], 'typos')
+        end
+
+        -- actionlint
+        ---@diagnostic disable-next-line: undefined-field, inject-field
+        lint.linters.actionlint.condition = function(ctx)
+          return ctx.filename:find '.github'
+        end
+
+        -- eslint
+        ---@diagnostic disable-next-line: inject-field
+        lint.linters.eslint_d.condition = function(ctx)
+          return vim.fs.find({ '.eslintrc.js', '.eslintrc.json', '.eslintrc' }, { path = ctx.filename, upward = true })[1]
+        end
+
+        -- selene
+        lint.linters.selene.args = {
+          '--config',
+          function() -- find selene.toml file
+            local conf =
+              vim.fs.find({ 'selene.toml' }, { type = 'file', upward = true, path = vim.api.nvim_buf_get_name(0) })[1]
+            if conf == nil then
+              conf = vim.fn.expand('~/.config/selene.toml')[1]
+            end
+            return conf
+          end,
+          '--display-style',
+          'json',
+          '-',
+        }
 
         vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost', 'InsertLeave' }, {
           -- https://github.com/syphar/dotfiles/blob/a60a9b6337499ab9b48398374ddda49331b3ecd6/.config/nvim/lua/dc/plugins/lint.lua#L32
@@ -2261,28 +2303,6 @@ require('lazy').setup {
             end
           end,
         })
-
-        -- actionlint
-        ---@diagnostic disable-next-line: undefined-field, inject-field
-        lint.linters.actionlint.condition = function(ctx)
-          return ctx.filename:find '.github'
-        end
-
-        -- selene
-        lint.linters.selene.args = {
-          '--config',
-          function() -- find selene.toml file
-            local conf =
-              vim.fs.find({ 'selene.toml' }, { type = 'file', upward = true, path = vim.api.nvim_buf_get_name(0) })[1]
-            if conf == nil then
-              conf = vim.fn.expand('~/.config/selene.toml')[1]
-            end
-            return conf
-          end,
-          '--display-style',
-          'json',
-          '-',
-        }
       end,
     },
 
@@ -2306,7 +2326,7 @@ require('lazy').setup {
       },
     },
 
-    -- バッファ操作
+    -- バッファ操作(マネージャー)
     {
       'j-morano/buffer_manager.nvim',
       dependencies = {
@@ -2325,8 +2345,11 @@ require('lazy').setup {
             require('buffer_manager.ui').toggle_quick_menu()
           end,
         },
+        desc = 'Buffer Manager',
       },
     },
+
+    -- バッファ操作(タブ)
     {
       'willothy/nvim-cokeline',
       dependencies = {
@@ -2551,7 +2574,7 @@ require('lazy').setup {
         overseer.setup {
           strategy = 'toggleterm',
         }
-        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts)
+        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts())
       end,
     },
 
@@ -2580,7 +2603,7 @@ require('lazy').setup {
       end,
     },
 
-    -- ヘルプ
+    -- ヘルプをポップアップで表示
     {
       'Tyler-Barham/floating-help.nvim',
       event = 'VeryLazy',
@@ -2699,6 +2722,14 @@ require('lazy').setup {
           return
         end
         url_open.setup {
+          highlight_url = {
+            cursor_move = {
+              enabled = true,
+              fg = '#F9C859',
+              bg = nil,
+              underline = true,
+            },
+          },
           extra_patterns = {
             -- go.mod go.sum
             {
@@ -3075,10 +3106,24 @@ require('lazy').setup {
               client.server_capabilities.inlayHintProvider = true
               vim.lsp.inlay_hint.enable(true)
 
-              local opts = { noremap = true, silent = true, buffer = bufnr }
-              vim.keymap.set('n', '<Leader>n', '<cmd>FlutterRename<CR>', opts)
-              vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', opts)
-              vim.keymap.set('n', '<Leader>m', "<cmd>lua require('telescope').extensions.flutter.commands()<CR>", opts)
+              local function opts(desc)
+                return {
+                  desc = 'flutter-tools: ' .. desc,
+                  buffer = bufnr,
+                  noremap = true,
+                  silent = true,
+                  nowait = true,
+                }
+              end
+
+              vim.keymap.set('n', '<Leader>n', '<cmd>FlutterRename<CR>', opts 'Rename')
+              vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', opts 'Toggle Outline UI')
+              vim.keymap.set(
+                'n',
+                '<Leader>m',
+                "<cmd>lua require('telescope').extensions.flutter.commands()<CR>",
+                opts 'Flutter Commands'
+              )
             end,
             capabilities = require('cmp_nvim_lsp').default_capabilities {},
             settings = {
@@ -3118,11 +3163,12 @@ require('lazy').setup {
         require('symbol-usage').setup {
           -- available kinds: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#symbolKind
           kinds = {
-            vim.lsp.protocol.SymbolKind.Function,
-            vim.lsp.protocol.SymbolKind.Method,
             vim.lsp.protocol.SymbolKind.Class,
             vim.lsp.protocol.SymbolKind.Interface,
-            vim.lsp.protocol.SymbolKind.Constructor,
+            vim.lsp.protocol.SymbolKind.Function,
+            vim.lsp.protocol.SymbolKind.Method,
+            vim.lsp.protocol.SymbolKind.Variable,
+            vim.lsp.protocol.SymbolKind.Field,
           },
           kinds_filter = {},
           vt_position = 'signcolumn',
@@ -3203,7 +3249,7 @@ require('lazy').setup {
           hide_unstable_versions = false,
           package_manager = 'npm',
         }
-        vim.keymap.set('n', '<Leader>p', require('package-info').change_version, keymap_opts)
+        vim.keymap.set('n', '<Leader>p', require('package-info').change_version, keymap_opts())
       end,
     },
 
@@ -3222,7 +3268,7 @@ require('lazy').setup {
       event = 'BufEnter pubspec.yaml',
       config = function()
         require('pubspec-assist').setup {}
-        vim.keymap.set('n', '<Leader>p', '<cmd>PubspecAssistPickVersion<CR>', keymap_opts)
+        vim.keymap.set('n', '<Leader>p', '<cmd>PubspecAssistPickVersion<CR>', keymap_opts())
       end,
     },
 
@@ -3255,16 +3301,20 @@ require('lazy').setup {
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
 
-        'saadparwaiz1/cmp_luasnip',
         {
           'L3MON4D3/LuaSnip',
           build = 'make install_jsregexp',
-          dependencies = 'rafamadriz/friendly-snippets',
+          dependencies = {
+            'rafamadriz/friendly-snippets',
+            'saadparwaiz1/cmp_luasnip',
+          },
           config = function()
             local vscode = require 'luasnip.loaders.from_vscode'
             vscode.lazy_load()
-            vscode.lazy_load { paths = { '~/.config/snippets' } }
+            vscode.lazy_load { paths = { '~/.config/nvim/snippets' } }
             local luasnip = require 'luasnip'
+            -- luasnip.log.set_loglevel 'debug'
+            luasnip.filetype_extend('all', { '_' })
             luasnip.filetype_extend('c', { 'cdoc' })
             luasnip.filetype_extend('cpp', { 'cppdoc' })
             luasnip.filetype_extend('cs', { 'csharpdoc' })
@@ -3281,6 +3331,12 @@ require('lazy').setup {
             luasnip.filetype_extend('rust', { 'rustdoc' })
             luasnip.filetype_extend('sh', { 'shelldoc' })
             luasnip.filetype_extend('dart', { 'flutter' })
+
+            luasnip.setup {
+              enable_autosnippets = true,
+              snippet_source = true,
+              store_selection_keys = '<Tab>',
+            }
           end,
         },
 
@@ -3384,10 +3440,13 @@ require('lazy').setup {
               types.cmp.TriggerEvent.InsertEnter,
               types.cmp.TriggerEvent.TextChanged,
             },
-            completeopt = 'longest,menu,menuone,noselect,noinsert,preview',
+            completion = {
+              completeopt = 'menu,menuone,noinsert,noselect',
+            },
             keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]],
             keyword_length = 1,
           },
+          preselect = cmp.PreselectMode.Item,
           window = {
             completion = cmp.config.window.bordered {
               border = 'rounded',
@@ -3404,7 +3463,7 @@ require('lazy').setup {
             format = function(entry, vim_item)
               local kind = lspkind.cmp_format {
                 ellipsis_char = '…',
-                maxwidth = 50,
+                maxwidth = 100,
                 mode = 'symbol_text',
                 with_text = true,
               }(entry, vim_item)
@@ -3425,8 +3484,8 @@ require('lazy').setup {
             ['<CR>'] = cmp.mapping.confirm { select = false },
           },
           sources = cmp.config.sources({
-            { name = 'copilot', group_index = 2 },
-            { name = 'cmp_tabnine', group_index = 2 },
+            { name = 'copilot', group_index = 1 },
+            { name = 'cmp_tabnine', group_index = 1 },
             { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
@@ -3440,7 +3499,6 @@ require('lazy').setup {
             max_view_entries = 50,
           },
           experimental = {
-            native_menu = false,
             ghost_text = true,
           },
         }
@@ -3492,32 +3550,37 @@ require('lazy').setup {
           'n',
           '<Leader>b',
           "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<CR>",
-          keymap_opts
+          keymap_opts 'Toggle Breakpoint'
         )
         vim.keymap.set(
           'n',
           '<Leader>B',
           "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<CR>",
-          keymap_opts
+          keymap_opts 'Clear All Breakpoints'
         )
         vim.keymap.set(
           'n',
           '<Leader>bb',
           "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<CR>",
-          keymap_opts
+          keymap_opts 'Set Conditional Breakpoint'
         )
         vim.keymap.set(
           'n',
           '<Leader>bl',
           "<cmd>lua require('persistent-breakpoints.api').set_log_point()<CR>",
-          keymap_opts
+          keymap_opts 'Set Log Point'
         )
-        vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bw', "<cmd>lua require('dapui').elements.watches.add()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>bc', "<cmd>lua require('dap').continue()<CR>", keymap_opts 'Dap Continue')
+        vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts 'Dap Step Into')
+        vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts 'Dap Step Out')
+        vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts 'Dap Step Over')
+        vim.keymap.set(
+          'n',
+          '<Leader>bw',
+          "<cmd>lua require('dapui').elements.watches.add()<CR>",
+          keymap_opts 'Dap Add Watch'
+        )
+        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts 'Dap Toggle UI')
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
@@ -3623,17 +3686,6 @@ require('lazy').setup {
           vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
         end
 
-        dap.configurations.lua = {
-          {
-            type = 'nlua',
-            request = 'attach',
-            name = 'Attach to running Neovim instance',
-          },
-        }
-        dap.adapters.nlua = function(callback, config)
-          callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
-        end
-
         require('telescope').load_extension 'dap'
       end,
     },
@@ -3665,11 +3717,31 @@ require('lazy').setup {
           },
           consumers = { require('neotest').diagnostic, require('neotest').status },
         }
-        vim.keymap.set('n', '<Leader>t', "<cmd>lua require('neotest').run.run()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>ta', "<cmd>lua require('neotest').run.run(vim.fn.expand '%')<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>td', "<cmd>lua require('neotest').run.run({strategy = 'dap'})<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>tu', "<cmd>lua require('neotest').output_panel.toggle()<CR>", keymap_opts)
-        vim.keymap.set('n', '<Leader>ts', "<cmd>lua require('neotest').summary.toggle()<CR>", keymap_opts)
+        vim.keymap.set('n', '<Leader>t', "<cmd>lua require('neotest').run.run()<CR>", keymap_opts 'Run Neotest')
+        vim.keymap.set(
+          'n',
+          '<Leader>ta',
+          "<cmd>lua require('neotest').run.run(vim.fn.expand '%')<CR>",
+          keymap_opts 'Run Neotest File'
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>td',
+          "<cmd>lua require('neotest').run.run({strategy = 'dap'})<CR>",
+          keymap_opts 'Run Neotest Debug'
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>tu',
+          "<cmd>lua require('neotest').output_panel.toggle()<CR>",
+          keymap_opts 'Toggle Neotest UI'
+        )
+        vim.keymap.set(
+          'n',
+          '<Leader>ts',
+          "<cmd>lua require('neotest').summary.toggle()<CR>",
+          keymap_opts 'Toggle Neotest Summary UI'
+        )
       end,
     },
 
@@ -3731,21 +3803,30 @@ require('lazy').setup {
         }
 
         -- LSP Popup
-        vim.keymap.set('n', '<Leader>d', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", keymap_opts)
+        vim.keymap.set(
+          'n',
+          '<Leader>d',
+          "<cmd>lua require('goto-preview').goto_preview_definition()<CR>",
+          keymap_opts 'Goto Preview Definition'
+        )
         vim.keymap.set(
           'n',
           '<Leader>i',
           "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>",
-          keymap_opts
+          keymap_opts 'Goto Preview Implementation'
         )
-        -- vim.keymap.set('n', '<Leader>t', "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", bufopts)
+        -- vim.keymap.set(
+        --   'n',
+        --   '<Leader>t',
+        --   "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>",
+        --   keymap_opts 'Goto Preview Type Definition'
+        -- )
       end,
     },
 
     -- init.lua の開発サポート
     {
       'folke/lazydev.nvim',
-      -- ft = { "lua" },
       event = 'BufRead init.lua',
       opts = {
         library = {
@@ -3755,12 +3836,27 @@ require('lazy').setup {
     },
 
     -- init.lua のデバッグ
-    {
-      'jbyuki/one-small-step-for-vimkind',
-      event = 'LspAttach',
-      dependencies = {
-        'mfussenegger/nvim-dap',
-      },
-    },
+    -- {
+    --   'jbyuki/one-small-step-for-vimkind',
+    --   event = 'LspAttach',
+    --   dependencies = {
+    --     'mfussenegger/nvim-dap',
+    --   },
+    --   config = function()
+    --     local dap = require 'dap'
+    --     dap.configurations.lua = {
+    --       {
+    --         type = 'nlua',
+    --         request = 'attach',
+    --         name = 'Attach to running Neovim instance',
+    --       },
+    --     }
+    --     dap.adapters.nlua = function(callback, config)
+    --       callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
+    --     end
+    --
+    --     -- vim.api.nvim_set_keymap('n', '<F5>', [[:lua require"osv".launch({port = 8086})<CR>]], { noremap = true })
+    --   end,
+    -- },
   },
 }
