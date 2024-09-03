@@ -208,22 +208,22 @@ vim.keymap.set('n', 'sp', 'gT', keymap_opts())
 vim.keymap.set('n', 's=', '<C-w>=', keymap_opts())
 vim.keymap.set('n', 'sw', '<C-w>w', keymap_opts())
 -- バッファの最小化
-vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts())
+vim.keymap.set('n', 'so', '<C-w>_<C-w>|', keymap_opts 'Minimize Window')
 -- バッファの最小化を戻す
-vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts())
--- 前のバッファ
-vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts())
+vim.keymap.set('n', 'sO', '<C-w>=', keymap_opts 'Maximize Window')
 -- 次のバッファ
-vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts())
+vim.keymap.set('n', 'sN', ':<C-u>bn<CR>', keymap_opts 'Next Buffer')
+-- 前のバッファ
+vim.keymap.set('n', 'sP', ':<C-u>bp<CR>', keymap_opts 'Previous Buffer')
 -- 新規タブ
-vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts())
+vim.keymap.set('n', 'st', ':<C-u>tabnew<CR>', keymap_opts 'New Tab')
 -- 横分割
-vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts())
+vim.keymap.set('n', 'ss', ':<C-u>sp<CR>', keymap_opts 'Split Horizontal Window')
 -- 縦分割
-vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts())
+vim.keymap.set('n', 'sv', ':<C-u>vs<CR>', keymap_opts 'Split Vertical Window')
 -- 閉じる
-vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts())
-vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts())
+vim.keymap.set('n', 'sq', ':<C-u>q<CR>', keymap_opts 'Close Window')
+vim.keymap.set('n', 'sQ', ':<C-u>bd<CR>', keymap_opts 'Close Buffer')
 
 -- ノーマルモードではセミコロンをコロンに
 vim.keymap.set('n', ';', ':', keymap_opts 'Change ; to :')
@@ -248,7 +248,7 @@ vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts 'Quit')
 vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts 'Quit All')
 
 -- w!!でsudoを忘れても保存
-vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts())
+vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts 'Save with sudo')
 
 -- <C-a> で全選択
 vim.keymap.set({ 'n', 'v' }, '<C-a>', '<ESC>ggVG<CR>', keymap_opts 'Select All Text')
@@ -277,18 +277,18 @@ vim.keymap.set('c', '<C-n>', 'wildmenumode() ? "\\<c-n>" : "\\<down>"', { expr =
 vim.keymap.set('c', '<C-p>', 'wildmenumode() ? "\\<c-p>" : "\\<up>"', { expr = true })
 
 -- LSP
-vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, keymap_opts 'vim.lsp.buf.hover')
--- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, keymap_opts 'vim.lsp.buf.formatting')-- use conform
-vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts 'vim.lsp.buf.references')
-vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts 'vim.lsp.buf.definition')
--- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts 'vim.lsp.buf.declaration')
-vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts 'vim.lsp.buf.implementation')
--- vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts 'vim.lsp.buf.type_definition')
-vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts 'vim.lsp.buf.rename')
-vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts 'vim.lsp.buf.code_action')
-vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts 'vim.diagnostic.open_float')
-vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts 'vim.diagnostic.goto_next')
-vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts 'vim.diagnostic.goto_prev')
+vim.keymap.set('n', '<Leader>K', vim.lsp.buf.hover, keymap_opts 'LSP: vim.lsp.buf.hover')
+-- vim.keymap.set('n', '<Leader>f', vim.lsp.buf.formatting, keymap_opts 'LSP: vim.lsp.buf.formatting')-- use conform
+vim.keymap.set('n', '<Leader>R', vim.lsp.buf.references, keymap_opts 'LSP: vim.lsp.buf.references')
+vim.keymap.set('n', '<Leader>D', vim.lsp.buf.definition, keymap_opts 'LSP: vim.lsp.buf.definition')
+-- vim.keymap.set("n", "<Leader>D", vim.lsp.buf.declaration, keymap_opts 'LSP: vim.lsp.buf.declaration')
+vim.keymap.set('n', '<Leader>I', vim.lsp.buf.implementation, keymap_opts 'LSP: vim.lsp.buf.implementation')
+-- vim.keymap.set('n', '<Leader>T', vim.lsp.buf.type_definition, keymap_opts 'LSP: vim.lsp.buf.type_definition')
+vim.keymap.set('n', '<Leader>n', vim.lsp.buf.rename, keymap_opts 'LSP: vim.lsp.buf.rename')
+vim.keymap.set('n', '<Leader>A', vim.lsp.buf.code_action, keymap_opts 'LSP: vim.lsp.buf.code_action')
+vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts 'LSP: vim.diagnostic.open_float')
+vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts 'LSP: vim.diagnostic.goto_next')
+vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts 'LSP: vim.diagnostic.goto_prev')
 
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
@@ -1386,7 +1386,7 @@ require('lazy').setup {
         {
           mode = { 'n', 'o', 'x' },
           '<Leader>l',
-          '<cmd>tabnew | lua MiniNotify.show_history()<CR>',
+          '<cmd>botright 30split | lua MiniNotify.show_history()<CR>',
         },
       },
       config = function()
@@ -3497,6 +3497,15 @@ require('lazy').setup {
           }),
           performance = {
             max_view_entries = 50,
+            debounce = 0, -- default is 60ms
+            throttle = 0, -- default is 30ms
+          },
+          matching = {
+            disallow_fuzzy_matching = true,
+            disallow_fullfuzzy_matching = true,
+            disallow_partial_fuzzy_matching = true,
+            disallow_partial_matching = false,
+            disallow_prefix_unmatching = true,
           },
           experimental = {
             ghost_text = true,

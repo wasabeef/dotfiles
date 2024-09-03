@@ -90,6 +90,7 @@ alias ci='zi && pwd'
 alias cdi='zi'
 alias man='tldr'
 alias ps='procs'
+alias cast='scrcpy'
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then
