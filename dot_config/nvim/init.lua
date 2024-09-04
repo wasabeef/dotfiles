@@ -3036,7 +3036,8 @@ require('lazy').setup {
     -- Flutter
     {
       'akinsho/flutter-tools.nvim',
-      tag = 'v1.10.0',
+      -- tag = 'v1.10.0',
+      tag = 'v1.14.0',
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
@@ -3065,6 +3066,7 @@ require('lazy').setup {
             enabled = true,
             run_via_dap = true,
             exception_breakpoints = {},
+            evaluate_to_string_in_debug_views = true,
             register_configurations = function(paths)
               local dap = require 'dap'
               dap.adapters.dart = {
@@ -3083,11 +3085,18 @@ require('lazy').setup {
             enabled = true,
             highlight = 'Comment',
             prefix = '  ',
+            priority = 0,
           },
           dev_log = {
             enabled = true,
             notify_errors = false,
             open_cmd = 'botright 15split',
+            filter = function(log_line)
+              if log_line:find('ImpellerValidationBreak') then
+                return false
+              end
+              return true
+            end,
           },
           dev_tools = {
             autostart = false,
