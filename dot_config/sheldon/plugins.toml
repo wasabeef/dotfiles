@@ -41,6 +41,14 @@ export EZA_COLORS="reset:$LS_COLORS"
 github = "junegunn/fzf"
 apply = ['defer']
 
+[plugins.path]
+inline = '''
+function _path() {
+  export PATH=/usr/local/bin:$PATH
+}
+zsh-defer _path
+'''
+
 [plugins.fzf-settings]
 inline = '''
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
@@ -98,20 +106,23 @@ function _nvim() {
 zsh-defer _nvim
 '''
 
-[plugins.asdf]
-github = "asdf-vm/asdf"
-use = ["asdf.sh"]
-apply = ['defer']
+# [plugins.asdf]
+# github = "asdf-vm/asdf"
+# use = ["asdf.sh"]
+# apply = ['defer']
 
-[plugins.java]
-inline = '''
-export JAVA_HOME=`/usr/libexec/java_home`
-'''
+[plugins.mise]
+inline = 'zsh-defer eval "$(mise activate zsh)"'
+
+# [plugins.java]
+# inline = '''
+# export JAVA_HOME=`/usr/libexec/java_home`
+# '''
 
 [plugins.go]
 inline = '''
 function _go() {
-  export ASDF_GOLANG_MOD_VERSION_ENABLED=true
+  # export ASDF_GOLANG_MOD_VERSION_ENABLED=true
   export GOPATH=$HOME/.go
   export GOROOT=$(go env GOROOT)
   export GOBIN=$GOROOT/bin
@@ -137,7 +148,7 @@ zsh-defer _android
 [plugins.flutter]
 inline = '''
 function _flutter() {
-  export FLUTTER_ROOT="$(asdf where flutter)"
+  export FLUTTER_ROOT="$(mise where flutter)"
   export PATH="$PATH":"$HOME/.pub-cache/bin"
 }
 zsh-defer _flutter
@@ -166,6 +177,17 @@ function _rust() {
   export PATH=$HOME/.cargo/bin:$PATH
 }
 zsh-defer _rust
+'''
+
+[plugins.ccache]
+inline = '''
+function _ccache() {
+  export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+  export CCACHE_FILECLONE=true
+  export CCACHE_DEPEND=true
+  export CCACHE_INODECACHE=true
+}
+zsh-defer _ccache
 '''
 
 [plugins.maestro]

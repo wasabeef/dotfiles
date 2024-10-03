@@ -1,5 +1,2 @@
 java_macos_integration_enable = yes
 legacy_version_file = yes
-
-# pre_asdf_install_ruby = asdf plugin remove bundler && asdf plugin remove cocoapods
-# pos_asdf_install_ruby = asdf plugin add bundler && asdf plugin add cocoapod

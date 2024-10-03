@@ -882,6 +882,7 @@ require('lazy').setup {
     -- ウィンドウサイズ変更
     {
       'mrjones2014/smart-splits.nvim',
+      tag = 'v1.4.0',
       event = 'WinNew',
       config = function()
         require('smart-splits').setup {
@@ -1544,7 +1545,7 @@ require('lazy').setup {
               enable = true,
               open_win_config = {
                 height = 65,
-                width = 45,
+                width = 80,
               },
             },
           },
@@ -2131,13 +2132,13 @@ require('lazy').setup {
           end,
           gap_size = 1,
           scope = 'cursor',
-          padding_top = 0,
+          padding_top = 15,
           padding_right = 5,
           text_align = 'right',
           placement = 'top',
           inline_padding_left = 0,
           update_event = { 'DiagnosticChanged', 'BufReadPost' },
-          toggle_event = {},
+          toggle_event = { 'InsertEnter', 'InsertLeave' },
           show_sign = false,
           render_event = { 'DiagnosticChanged', 'CursorMoved' },
           border_chars = {
@@ -2256,6 +2257,25 @@ require('lazy').setup {
         lint.linters.eslint_d.condition = function(ctx)
           return vim.fs.find({ '.eslintrc.js', '.eslintrc.json', '.eslintrc' }, { path = ctx.filename, upward = true })[1]
         end
+
+        -- yamllint
+        ---@diagnostic disable-next-line: inject-field
+        lint.linters.yamllint.args = {
+          '--config-file',
+          function()
+            local conf = vim.fs.find(
+              { '.yamllint', '.yamllint.yaml', '.yamllint.yml' },
+              { type = 'file', upward = true, path = vim.api.nvim_buf_get_name(0) }
+            )[1]
+            if conf == nil then
+              conf = vim.fn.expand('~/.config/.yamllint.yaml')[1]
+            end
+            return conf
+          end,
+          '--format',
+          'parsable',
+          '-',
+        }
 
         -- selene
         lint.linters.selene.args = {
@@ -2928,7 +2948,7 @@ require('lazy').setup {
           includeInlayFunctionLikeReturnTypeHints = true,
           includeInlayEnumMemberValueHints = true,
         }
-        lspconfig.tsserver.setup {
+        lspconfig.ts_ls.setup {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -3036,8 +3056,7 @@ require('lazy').setup {
     -- Flutter
     {
       'akinsho/flutter-tools.nvim',
-      -- tag = 'v1.10.0',
-      tag = 'v1.14.0',
+      -- tag = 'v1.14.0',
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
@@ -3048,7 +3067,7 @@ require('lazy').setup {
       config = function()
         require('flutter-tools').setup {
           flutter_path = nil,
-          flutter_lookup_cmd = 'asdf where flutter',
+          flutter_lookup_cmd = 'mise where flutter',
           fvm = false,
           root_patterns = { '.git', 'pubspec.yaml' },
           ui = {
@@ -3092,10 +3111,7 @@ require('lazy').setup {
             notify_errors = false,
             open_cmd = 'botright 15split',
             filter = function(log_line)
-              if log_line:find('ImpellerValidationBreak') then
-                return false
-              end
-              return true
+              return not log_line:find 'ImpellerValidationBreak'
             end,
           },
           dev_tools = {
@@ -3112,8 +3128,8 @@ require('lazy').setup {
             },
             on_attach = function(client, bufnr)
               -- inlay hints
-              client.server_capabilities.inlayHintProvider = true
-              vim.lsp.inlay_hint.enable(true)
+              -- client.server_capabilities.inlayHintProvider = true
+              -- vim.lsp.inlay_hint.enable(true)
 
               local function opts(desc)
                 return {
@@ -3133,6 +3149,58 @@ require('lazy').setup {
                 "<cmd>lua require('telescope').extensions.flutter.commands()<CR>",
                 opts 'Flutter Commands'
               )
+
+              local dev_log = '__FLUTTER_DEV_LOG__$'
+
+              local get_win = function(buf)
+                for _, win in ipairs(vim.api.nvim_list_wins()) do
+                  if vim.api.nvim_win_get_buf(win) == buf then
+                    return win
+                  end
+                end
+                return nil
+              end
+
+              local find_dev_log = function()
+                for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                  local bufname = vim.api.nvim_buf_get_name(buf)
+                  if string.match(bufname, dev_log) then
+                    local win = get_win(buf)
+                    return buf, win
+                  end
+                end
+                return nil
+              end
+
+              vim.keymap.set({ 'n' }, '<Leader>bl', function()
+                local log = require 'flutter-tools.log'
+                local buf, win = find_dev_log()
+
+                if not buf then
+                  vim.notify('Flutter Dev Log not found', 'warn')
+                  return
+                end
+
+                if win then
+                  vim.api.nvim_set_current_win(win)
+                else
+                  vim.api.nvim_command 'botright 15split'
+                  vim.api.nvim_set_current_buf(buf)
+                  win = vim.api.nvim_get_current_win()
+
+                  -- Reset module state
+                  log.win = win
+                  log.buf = buf
+
+                  -- Move to the end of the buffer
+                  local line_count = vim.api.nvim_buf_line_count(buf)
+                  if line_count > 0 then
+                    vim.api.nvim_win_set_cursor(0, { line_count, 0 })
+                  else
+                    vim.api.nvim_win_set_cursor(0, { 1, 0 })
+                  end
+                end
+              end, keymap_opts 'FLUTTER DEV LOG')
             end,
             capabilities = require('cmp_nvim_lsp').default_capabilities {},
             settings = {
@@ -3140,8 +3208,10 @@ require('lazy').setup {
               completeFunctionCalls = true,
               analysisExcludedFolders = {
                 vim.fn.expand '$HOME/.pub-cache',
-                vim.fn.expand '$HOME/.asdf/installs/flutter',
-                vim.fn.expand '$HOME/.asdf/installs/dart',
+                -- vim.fn.expand '$HOME/.asdf/installs/flutter',
+                -- vim.fn.expand '$HOME/.asdf/installs/dart',
+                vim.fn.expand '$HOME/.local/share/mise/installs/flutter',
+                vim.fn.expand '$HOME/.local/share/mise/installs/dart',
               },
               renameFilesWithClasses = 'prompt',
               enableSnippets = false,
@@ -3376,7 +3446,7 @@ require('lazy').setup {
                 cvs = false,
                 ['.'] = false,
               },
-              copilot_node_command = vim.env.HOME .. '/.asdf/shims/node',
+              copilot_node_command = vim.env.HOME .. '/.local/share/mise/shims/node',
               server_opts_overrides = {},
             }
             require('copilot.api').register_status_notification_handler(function(data)
@@ -3494,7 +3564,7 @@ require('lazy').setup {
           },
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 1 },
-            { name = 'cmp_tabnine', group_index = 1 },
+            -- { name = 'cmp_tabnine', group_index = 1 },
             { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
@@ -3697,11 +3767,11 @@ require('lazy').setup {
         local dap = require 'dap'
         dap.listeners.after.event_initialized['dapui_config'] = function()
           -- Inlay hints を非表示にする
-          vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
+          -- vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
         end
         dap.listeners.after.event_terminated['dapui_config'] = function()
           -- Inlay hints を表示にする
-          vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
+          -- vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
         end
 
         require('telescope').load_extension 'dap'
