@@ -3150,8 +3150,8 @@ require('lazy').setup {
                 opts 'Flutter Commands'
               )
 
+              -- Restore dev log buffer
               local dev_log = '__FLUTTER_DEV_LOG__$'
-
               local get_win = function(buf)
                 for _, win in ipairs(vim.api.nvim_list_wins()) do
                   if vim.api.nvim_win_get_buf(win) == buf then
@@ -3202,6 +3202,7 @@ require('lazy').setup {
                 end
               end, keymap_opts 'FLUTTER DEV LOG')
             end,
+
             capabilities = require('cmp_nvim_lsp').default_capabilities {},
             settings = {
               showTodos = true,
