@@ -517,16 +517,16 @@ require('lazy').setup {
         dashboard.section.buttons.val = {
           -- dashboard.button("e", "   New file",       ":ene <BAR> startinsert <CR>"),
           dashboard.button('f', '   Find file', ':Telescope find_files<CR>'),
-          dashboard.button(
-            'o',
-            '󰏫   Obsidian Find file',
-            ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianQuickSwitch<CR>'
-          ),
-          dashboard.button(
-            'O',
-            '󰏫   Obsidian new file',
-            ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianNew<CR>'
-          ),
+          -- dashboard.button(
+          --   'o',
+          --   '󰏫   Obsidian Find file',
+          --   ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianQuickSwitch<CR>'
+          -- ),
+          -- dashboard.button(
+          --   'O',
+          --   '󰏫   Obsidian new file',
+          --   ':lua vim.cmd([[cd ~/Google Drive/My Drive/Memo]])<CR>:ObsidianNew<CR>'
+          -- ),
           dashboard.button('i', '   Edit init.lua', ':e $MYVIMRC <CR>'),
           dashboard.button('z', '   Edit .zshrc', ':e ~/.zshrc <CR>'),
           dashboard.button('w', '   Edit .wezterm.lua', ':e ~/.wezterm.lua <CR>'),
@@ -847,7 +847,7 @@ require('lazy').setup {
             lualine_b = {},
             lualine_c = {
               {
-                '%{%v:lua.dropbar.get_dropbar_str()%}',
+                '%{%v:lua.dropbar()%}',
               },
             },
             lualine_x = {
@@ -863,7 +863,7 @@ require('lazy').setup {
           inactive_winbar = {
             lualine_c = {
               {
-                '%{%v:lua.dropbar.get_dropbar_str()%}',
+                '%{%v:lua.dropbar()%}',
               },
             },
             lualine_x = {
@@ -882,7 +882,6 @@ require('lazy').setup {
     -- ウィンドウサイズ変更
     {
       'mrjones2014/smart-splits.nvim',
-      tag = 'v1.4.0',
       event = 'WinNew',
       config = function()
         require('smart-splits').setup {
@@ -918,6 +917,12 @@ require('lazy').setup {
           smooth = false,
         }
       end,
+    },
+
+    -- カーソルアニメーション
+    {
+      'sphamba/smear-cursor.nvim',
+      opts = {},
     },
 
     -- スムーススクロール
@@ -1410,7 +1415,7 @@ require('lazy').setup {
       'NvChad/nvim-colorizer.lua',
       event = 'VeryLazy',
       opts = {
-        filetypes = { '*' },
+        filetypes = { 'dart', 'typescript', 'javascript', 'html', 'css', 'lua', 'json' },
         user_default_options = {
           RGB = true, -- #RGB hex codes
           RRGGBB = true, -- #RRGGBB hex codes
@@ -2165,6 +2170,7 @@ require('lazy').setup {
           function()
             require('conform').format { async = true }
           end,
+          mode = '',
           desc = 'Format using Conform',
         },
       },
@@ -2188,16 +2194,19 @@ require('lazy').setup {
             vue = { 'prettierd' },
             svelte = { 'prettierd' },
             astro = { 'prettierd' },
-            javascript = { 'eslint_d', 'prettierd' },
-            javascriptreact = { 'eslint_d', 'prettierd' },
-            typescript = { 'eslint_d', 'prettierd' },
-            typescriptreact = { 'eslint_d', 'prettierd' },
+            javascript = { 'eslint_d', 'prettier' },
+            javascriptreact = { 'eslint_d', 'prettier' },
+            typescript = { 'eslint_d', 'prettier' },
+            typescriptreact = { 'eslint_d', 'prettier' },
             java = { 'google-java-format' },
             kotlin = { 'ktlint' },
             dart = { 'dart_format' },
             go = { 'gofmt', 'goimports' },
             graphql = { 'prettierd' },
             swift = { 'swiftformat' },
+          },
+          default_format_opts = {
+            lsp_format = 'fallback',
           },
           formatters = {
             dprint = {
@@ -2239,7 +2248,7 @@ require('lazy').setup {
           go = { 'golangcilint' },
           swift = { 'swiftlint' },
           kotlin = { 'ktlint' },
-          dart = {},
+          dart = { },
         }
         -- Add typos to all linters
         for ft, _ in pairs(lint.linters_by_ft) do
@@ -2594,7 +2603,7 @@ require('lazy').setup {
         overseer.setup {
           strategy = 'toggleterm',
         }
-        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts())
+        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts 'Tasks with Overseer')
       end,
     },
 
@@ -2678,27 +2687,27 @@ require('lazy').setup {
     },
 
     -- Obsidian メモ
-    {
-      'epwalsh/obsidian.nvim',
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-      },
-      event = 'VeryLazy',
-      opts = {
-        ui = {
-          enable = false,
-        },
-        workspaces = {
-          {
-            name = 'Memo',
-            path = '~/Google Drive/My Drive/Memo',
-          },
-        },
-        note_id_func = function(title)
-          return title
-        end,
-      },
-    },
+    -- {
+    --   'epwalsh/obsidian.nvim',
+    --   dependencies = {
+    --     'nvim-lua/plenary.nvim',
+    --   },
+    --   event = 'VeryLazy',
+    --   opts = {
+    --     ui = {
+    --       enable = false,
+    --     },
+    --     workspaces = {
+    --       {
+    --         name = 'Memo',
+    --         path = '~/Google Drive/My Drive/Memo',
+    --       },
+    --     },
+    --     note_id_func = function(title)
+    --       return title
+    --     end,
+    --   },
+    -- },
 
     -- Google 翻訳
     {
@@ -2819,7 +2828,7 @@ require('lazy').setup {
     {
       'neovim/nvim-lspconfig',
       dependencies = {
-        'williamboman/mason.nvim',
+        { 'williamboman/mason.nvim', dependencies = { 'Zeioth/mason-extra-cmds', opts = {} } },
         'williamboman/mason-lspconfig.nvim',
         'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -3055,7 +3064,7 @@ require('lazy').setup {
 
     -- Flutter
     {
-      'akinsho/flutter-tools.nvim',
+      'nvim-flutter/flutter-tools.nvim',
       -- tag = 'v1.14.0',
       dependencies = {
         'nvim-lua/plenary.nvim',
@@ -3063,8 +3072,16 @@ require('lazy').setup {
         'hrsh7th/cmp-nvim-lsp',
       },
       ft = { 'dart' },
-      -- event = 'BufRead',
       config = function()
+        vim.keymap.set('n', '<Leader>n', '<cmd>FlutterRename<CR>', keymap_opts 'Rename')
+        vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', keymap_opts 'Toggle Outline UI')
+        vim.keymap.set(
+          'n',
+          '<Leader>m',
+          "<cmd>lua require('telescope').extensions.flutter.commands()<CR>",
+          keymap_opts 'Flutter Commands'
+        )
+
         require('flutter-tools').setup {
           flutter_path = nil,
           flutter_lookup_cmd = 'mise where flutter',
@@ -3140,15 +3157,6 @@ require('lazy').setup {
                   nowait = true,
                 }
               end
-
-              vim.keymap.set('n', '<Leader>n', '<cmd>FlutterRename<CR>', opts 'Rename')
-              vim.keymap.set('n', '<Leader>o', '<cmd>FlutterOutlineToggle<CR>', opts 'Toggle Outline UI')
-              vim.keymap.set(
-                'n',
-                '<Leader>m',
-                "<cmd>lua require('telescope').extensions.flutter.commands()<CR>",
-                opts 'Flutter Commands'
-              )
 
               -- Restore dev log buffer
               local dev_log = '__FLUTTER_DEV_LOG__$'
@@ -3627,6 +3635,7 @@ require('lazy').setup {
         'nvim-neotest/nvim-nio',
         'theHamsta/nvim-dap-virtual-text',
         'rcarriga/nvim-dap-ui',
+        -- { 'igorlfs/nvim-dap-view', opts = {} },
         'nvim-telescope/telescope-dap.nvim',
         'Weissle/persistent-breakpoints.nvim',
       },
@@ -3856,16 +3865,16 @@ require('lazy').setup {
           },
           preview_window = false,
           title = true,
-          mouse_providers = {
-            'LSP',
-          },
-          mouse_delay = 1000,
+          -- mouse_providers = {
+          --   'LSP',
+          -- },
+          -- mouse_delay = 1000,
         }
         vim.keymap.set('n', 'K', require('hover').hover, { desc = 'hover.nvim' })
         vim.keymap.set('n', '<Leader>k', require('hover').hover, { desc = 'hover.nvim' })
 
         -- Mouse support
-        vim.keymap.set('n', '<MouseMove>', require('hover').hover_mouse, { desc = 'hover.nvim (mouse)' })
+        -- vim.keymap.set('n', '<MouseMove>', require('hover').hover_mouse, { desc = 'hover.nvim (mouse)' })
       end,
     },
 

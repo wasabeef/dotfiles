@@ -36,6 +36,7 @@
   pu = push
   pf = push -f
   pl = pull
+  l = log --oneline --reverse
   pr = "!pr() { \
          git fetch origin pull/$1/head:$2; \
        }; pr"

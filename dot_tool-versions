@@ -9,3 +9,4 @@ golang 1.23.1
 rust 1.79.0
 ruby 3.3.5
 cocoapods 1.15.2
+shorebird 1.6.30

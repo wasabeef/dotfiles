@@ -190,6 +190,14 @@ function _ccache() {
 zsh-defer _ccache
 '''
 
+# [plugins.shorebird]
+# inline = '''
+# function _shorebird() {
+#   export PATH="$HOME/.config/shorebird/bin:$PATH"
+# }
+# zsh-defer _shorebird
+# '''
+
 [plugins.maestro]
 inline = '''
 function _maestro() {
