@@ -631,6 +631,7 @@ require('lazy').setup {
         'nvim-telescope/telescope-fzf-native.nvim',
         {
           'Bekaboo/dropbar.nvim',
+          tag = 'v12.0.2',
           config = function()
             require('dropbar').setup {}
           end,
