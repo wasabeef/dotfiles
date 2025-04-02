@@ -611,6 +611,33 @@ require('lazy').setup {
       end,
     },
 
+    -- 入力切り替え（Normal になるど英字入力にする）
+    {
+      'amekusa/auto-input-switch.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('auto-input-switch').setup {
+          restore = { enable = false },
+          popup = {
+            enable = false,
+          },
+          match = {
+            languages = {
+              Ja = { enable = true },
+            },
+          },
+          os_settings = {
+            macos = {
+              enable = true,
+              lang_inputs = {
+                Ja = 'com.apple.inputmethod.Kotoeri.Japanese',
+              },
+            },
+          },
+        }
+      end,
+    },
+
     -- スクリーンセーバー
     {
       'folke/drop.nvim',
@@ -687,6 +714,9 @@ require('lazy').setup {
                 'mason',
                 'dap-view',
                 'dap-repl',
+                'Avante',
+                'AvanteSelectedFiles',
+                'AvanteInput',
               },
             },
             theme = bubbles_theme,
@@ -2698,12 +2728,12 @@ require('lazy').setup {
     -- Markdown プレビュー
     {
       'OXY2DEV/markview.nvim',
+      event = 'VeryLazy',
       dependencies = {
         'nvim-treesitter/nvim-treesitter',
         'echasnovski/mini.icons',
       },
-      ft = 'markdown',
-      -- event = "VeryLazy",
+      ft = { 'markdown' },
     },
 
     -- Markdown テーブル整形
@@ -3835,6 +3865,88 @@ require('lazy').setup {
 
         require('telescope').load_extension 'dap'
       end,
+    },
+
+    -- Avante の設定
+    {
+      'yetone/avante.nvim',
+      event = 'VeryLazy',
+      tag = 'v0.0.23',
+      build = 'make',
+      opts = {
+        provider = 'copilot',
+        auto_suggestions_provider = 'copilot',
+        file_selector = {
+          provider = 'telescope',
+          provider_opts = {
+            hidden = false,
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
+            end,
+          },
+        },
+        behaviour = {
+          auto_suggestions = true,
+          auto_set_highlight_group = true,
+          auto_set_keymaps = true,
+          auto_apply_diff_after_generation = true,
+          support_paste_from_clipboard = true,
+          enable_cursor_planning_mode = true,
+        },
+        windows = {
+          input = {
+            prefix = ' ',
+            style = 'float',
+          },
+          ask = {
+            start_insert = false,
+          },
+          edit = {
+            start_insert = false,
+          },
+        },
+        mappings = {
+          ask = '<Leader>ca',
+          edit = '<Leader>ce',
+          refresh = '<Leader>cr',
+          focus = '<Leader>cf',
+          toggle = {
+            default = '<Leader>ct',
+            debug = '<Leader>cd',
+            hint = '<Leader>ch',
+            suggestion = '<Leader>cs',
+            repomap = '<Leader>cR',
+          },
+        },
+        copilot = {
+          endpoint = 'https://api.githubcopilot.com',
+          model = 'claude-3.7-sonnet',
+          proxy = nil,
+          allow_insecure = false,
+          timeout = 30000,
+          max_tokens = 20480,
+          disable_tools = true,
+        },
+      },
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter',
+        'stevearc/dressing.nvim',
+        'nvim-lua/plenary.nvim',
+        'MunifTanjim/nui.nvim',
+        'nvim-telescope/telescope.nvim',
+        'hrsh7th/nvim-cmp',
+        'echasnovski/mini.icons',
+        'zbirenbaum/copilot.lua',
+        {
+          'MeanderingProgrammer/render-markdown.nvim',
+          opts = {
+            file_types = { 'Avante' },
+          },
+          ft = { 'Avante' },
+        },
+      },
     },
 
     -- テストフレームワーク
