@@ -685,6 +685,8 @@ require('lazy').setup {
                 'DiffviewFiles',
                 'lazy',
                 'mason',
+                'dap-view',
+                'dap-repl',
               },
             },
             theme = bubbles_theme,
@@ -1209,6 +1211,23 @@ require('lazy').setup {
       end,
     },
 
+    -- 構文から行数移動
+    {
+      'aaronik/treewalker.nvim',
+      event = 'VeryLazy',
+      keys = {
+        { '<S-k>', '<cmd>Treewalker Up<CR>', mode = { 'n', 'v' }, keymap_opts 'Treewalker Up' },
+        { '<S-j>', '<cmd>Treewalker Down<CR>', mode = { 'n', 'v' }, keymap_opts 'Treewalker Down' },
+        { '<S-h>', '<cmd>Treewalker Left<CR>', mode = { 'n', 'v' }, keymap_opts 'Treewalker Left' },
+        { '<S-l>', '<cmd>Treewalker Right<cr>', mode = { 'n', 'v' }, keymap_opts 'Treewalker Right' },
+      },
+      opts = {
+        highlight = true,
+        highlight_duration = 250,
+        highlight_group = 'CursorLine',
+      },
+    },
+
     -- カーソルジャンプ
     {
       'phaazon/hop.nvim',
@@ -1629,6 +1648,7 @@ require('lazy').setup {
       },
       keys = {
         { '<Leader>gl', '<cmd>LazyGit<CR>', desc = 'LazyGit' },
+        -- Command + s で特定のファイルを開くことができる
       },
     },
 
@@ -1879,6 +1899,12 @@ require('lazy').setup {
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
+        {
+          'prochri/telescope-all-recent.nvim',
+          dependencies = {
+            'kkharji/sqlite.lua',
+          },
+        },
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
@@ -2070,6 +2096,7 @@ require('lazy').setup {
         telescope.load_extension 'undo'
         telescope.load_extension 'treesitter_info'
         telescope.load_extension 'egrepify'
+        require('telescope-all-recent').setup {}
         require('simulators').setup {
           android_emulator = true,
           apple_simulator = true,
@@ -2118,9 +2145,11 @@ require('lazy').setup {
     },
 
     -- Inline Diagnostics
+    -- 右上に表示
     {
       'dgagn/diagflow.nvim',
       event = 'LspAttach',
+      enabled = false,
       opts = {},
       config = function()
         require('diagflow').setup {
@@ -2249,7 +2278,7 @@ require('lazy').setup {
           go = { 'golangcilint' },
           swift = { 'swiftlint' },
           kotlin = { 'ktlint' },
-          dart = { },
+          dart = {},
         }
         -- Add typos to all linters
         for ft, _ in pairs(lint.linters_by_ft) do
@@ -2845,11 +2874,16 @@ require('lazy').setup {
         end
 
         vim.diagnostic.config {
-          -- virtual_text は非表示
-          -- virtual_text = {
-          --   severity = vim.diagnostic.severity.ERROR,
-          -- },
-          virtual_text = false,
+          virtual_text = {
+            severity = {
+              max = vim.diagnostic.severity.WARN,
+            },
+          },
+          virtual_lines = {
+            severity = {
+              min = vim.diagnostic.severity.ERROR,
+            },
+          },
           -- signcolumn のアイコンを変える
           signs = {
             text = {
@@ -3146,18 +3180,19 @@ require('lazy').setup {
             },
             on_attach = function(client, bufnr)
               -- inlay hints
+              -- 有効にすると lsp が効かなくなる
               -- client.server_capabilities.inlayHintProvider = true
               -- vim.lsp.inlay_hint.enable(true)
 
-              local function opts(desc)
-                return {
-                  desc = 'flutter-tools: ' .. desc,
-                  buffer = bufnr,
-                  noremap = true,
-                  silent = true,
-                  nowait = true,
-                }
-              end
+              -- local function opts(desc)
+              --   return {
+              --     desc = 'flutter-tools: ' .. desc,
+              --     buffer = bufnr,
+              --     noremap = true,
+              --     silent = true,
+              --     nowait = true,
+              --   }
+              -- end
 
               -- Restore dev log buffer
               local dev_log = '__FLUTTER_DEV_LOG__$'
@@ -3601,7 +3636,7 @@ require('lazy').setup {
           },
         }
 
-        cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
+        cmp.setup.filetype({ 'dap-repl' }, {
           enabled = true,
           sources = cmp.config.sources {
             { name = 'dap' },
@@ -3635,8 +3670,18 @@ require('lazy').setup {
       dependencies = {
         'nvim-neotest/nvim-nio',
         'theHamsta/nvim-dap-virtual-text',
-        'rcarriga/nvim-dap-ui',
-        -- { 'igorlfs/nvim-dap-view', opts = {} },
+        -- 'rcarriga/nvim-dap-ui',
+        {
+          'igorlfs/nvim-dap-view',
+          opts = {
+            windows = {
+              terminal = {
+                hide = { 'dart' },
+                start_hidden = true,
+              },
+            },
+          },
+        },
         'nvim-telescope/telescope-dap.nvim',
         'Weissle/persistent-breakpoints.nvim',
       },
@@ -3673,13 +3718,14 @@ require('lazy').setup {
         vim.keymap.set('n', '<Leader>bi', "<cmd>lua require('dap').step_into()<CR>", keymap_opts 'Dap Step Into')
         vim.keymap.set('n', '<Leader>bo', "<cmd>lua require('dap').step_out()<CR>", keymap_opts 'Dap Step Out')
         vim.keymap.set('n', '<Leader>bn', "<cmd>lua require('dap').step_over()<CR>", keymap_opts 'Dap Step Over')
-        vim.keymap.set(
-          'n',
-          '<Leader>bw',
-          "<cmd>lua require('dapui').elements.watches.add()<CR>",
-          keymap_opts 'Dap Add Watch'
-        )
-        vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts 'Dap Toggle UI')
+        -- vim.keymap.set(
+        --   'n',
+        --   '<Leader>bw',
+        --   "<cmd>lua require('dapui').elements.watches.add()<CR>",
+        --   keymap_opts 'Dap Add Watch'
+        -- )
+        -- vim.keymap.set('n', '<Leader>bu', "<cmd>lua require('dapui').toggle()<CR>", keymap_opts 'Dap Toggle UI')
+        vim.keymap.set('n', '<Leader>bu', '<cmd>DapViewToggle<CR>', keymap_opts 'Dap Toggle UI')
 
         local repl = require 'dap.repl'
         repl.commands = vim.tbl_extend('force', repl.commands, {
@@ -3736,53 +3782,55 @@ require('lazy').setup {
         require('nvim-dap-virtual-text').setup {
           virt_text_pos = 'eol',
         }
-        require('dapui').setup {
-          icons = { collapsed = '', current_frame = '', expanded = '' },
-          floating = { border = 'rounded', mappings = { close = { 'q', '<Esc>' } } },
-          controls = {
-            element = 'repl',
-            enabled = true,
-            icons = {
-              disconnect = '',
-              pause = '',
-              play = '',
-              run_last = '',
-              step_back = '',
-              step_into = '',
-              step_out = '',
-              step_over = '',
-              terminate = '',
-            },
-          },
-          layouts = {
-            {
-              elements = {
-                { id = 'watches', size = 0.25 },
-                { id = 'scopes', size = 0.25 },
-                { id = 'breakpoints', size = 0.25 },
-                { id = 'stacks', size = 0.25 },
-              },
-              size = 15,
-              position = 'bottom',
-            },
-            {
-              elements = {
-                'repl',
-              },
-              size = 50,
-              position = 'right',
-            },
-          },
-        }
+        -- require('dapui').setup {
+        --   icons = { collapsed = '', current_frame = '', expanded = '' },
+        --   floating = { border = 'rounded', mappings = { close = { 'q', '<Esc>' } } },
+        --   controls = {
+        --     element = 'repl',
+        --     enabled = true,
+        --     icons = {
+        --       disconnect = '',
+        --       pause = '',
+        --       play = '',
+        --       run_last = '',
+        --       step_back = '',
+        --       step_into = '',
+        --       step_out = '',
+        --       step_over = '',
+        --       terminate = '',
+        --     },
+        --   },
+        --   layouts = {
+        --     {
+        --       elements = {
+        --         { id = 'watches', size = 0.25 },
+        --         { id = 'scopes', size = 0.25 },
+        --         { id = 'breakpoints', size = 0.25 },
+        --         { id = 'stacks', size = 0.25 },
+        --       },
+        --       size = 15,
+        --       position = 'bottom',
+        --     },
+        --     {
+        --       elements = {
+        --         'repl',
+        --       },
+        --       size = 50,
+        --       position = 'right',
+        --     },
+        --   },
+        -- }
 
-        local dap = require 'dap'
-        dap.listeners.after.event_initialized['dapui_config'] = function()
+        local dap, dv = require 'dap', require 'dap-view'
+        dap.listeners.after.event_initialized['dap-view-config'] = function()
           -- Inlay hints を非表示にする
           -- vim.cmd 'lua vim.lsp.inlay_hint.enable(false)'
+          -- dv.open()
         end
-        dap.listeners.after.event_terminated['dapui_config'] = function()
+        dap.listeners.after.event_terminated['dap-view-config'] = function()
           -- Inlay hints を表示にする
           -- vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
+          -- dv.close()
         end
 
         require('telescope').load_extension 'dap'
