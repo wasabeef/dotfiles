@@ -62,6 +62,8 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 -- カーソル行をハイライト
 vim.opt.cursorline = true
+-- カーソル列をハイライト
+vim.opt.cursorcolumn = true
 -- CursorLineNr の色を設定する
 local function set_cursorline_nr_color(mode)
   local colors = {
@@ -534,6 +536,7 @@ require('lazy').setup {
           dashboard.button('r', '󱌣   Restore Session', "<cmd>lua require('persistence').load()<CR>"),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
+          dashboard.button('c', '󰒲   MCP', ':e ~/.config/mcp/servers.json <CR>'),
           dashboard.button('q', '   Quit NVIM', ':qa<CR>'),
         }
 
@@ -553,6 +556,31 @@ require('lazy').setup {
             pcall(vim.cmd.AlphaRedraw)
           end,
         })
+      end,
+    },
+
+    -- 中央寄せ
+    {
+      'folke/zen-mode.nvim',
+      event = 'VimEnter',
+      config = function()
+        local zen = require 'zen-mode'
+        zen.setup {
+          window = {
+            backdrop = 0.95,
+            width = 0.6, -- width will be 85% of the editor width
+          },
+          plugins = {
+            options = {
+              enabled = true,
+              laststatus = 3, -- turn off the statusline in zen mode
+            },
+            wezterm = {
+              enabled = true,
+            },
+          },
+        }
+        vim.keymap.set('n', '<Leader>z', '<cmd>ZenMode<CR>', keymap_opts 'ZenMode Toggle')
       end,
     },
 
@@ -608,6 +636,33 @@ require('lazy').setup {
           end,
         })
         require('persistence').setup()
+      end,
+    },
+
+    -- 入力切り替え（Normal になるど英字入力にする）
+    {
+      'amekusa/auto-input-switch.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('auto-input-switch').setup {
+          restore = { enable = false },
+          popup = {
+            enable = false,
+          },
+          match = {
+            languages = {
+              Ja = { enable = true },
+            },
+          },
+          os_settings = {
+            macos = {
+              enable = true,
+              lang_inputs = {
+                Ja = 'com.apple.inputmethod.Kotoeri.Japanese',
+              },
+            },
+          },
+        }
       end,
     },
 
@@ -687,6 +742,9 @@ require('lazy').setup {
                 'mason',
                 'dap-view',
                 'dap-repl',
+                'Avante',
+                'AvanteSelectedFiles',
+                'AvanteInput',
               },
             },
             theme = bubbles_theme,
@@ -1176,13 +1234,13 @@ require('lazy').setup {
     -- w, e, b 移動の最適化
     {
       'chrisgrieser/nvim-spider',
-      dependencies = {
-        'theHamsta/nvim_rocks',
-        build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
-        config = function()
-          require('nvim_rocks').ensure_installed 'luautf8'
-        end,
-      },
+      -- dependencies = {
+      --   'theHamsta/nvim_rocks',
+      --   build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
+      --   config = function()
+      --     require('nvim_rocks').ensure_installed 'luautf8'
+      --   end,
+      -- },
       event = 'VeryLazy',
       keys = {
         {
@@ -1230,15 +1288,14 @@ require('lazy').setup {
 
     -- カーソルジャンプ
     {
-      'phaazon/hop.nvim',
-      branch = 'v2',
+      'yehuohan/hop.nvim',
+      -- branch = 'v2',
       event = 'VeryLazy',
       config = function()
-        require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
-        vim.keymap.set('n', 'ff', ':HopWordCurrentLine<CR>', keymap_opts())
+        require('hop').setup { keys = 'asdghklqwertyuiopzxcvbnmfj' }
         vim.keymap.set('n', 'fw', ':HopWord<CR>', keymap_opts())
-        vim.keymap.set('n', 'fp', ':HopPattern<CR>', keymap_opts())
-        vim.keymap.set('n', 'fl', ':HopLine<CR>', keymap_opts())
+        vim.keymap.set('n', 'ff', ':HopWordCL<CR>', keymap_opts())
+        vim.keymap.set('n', 'fl', ':HopLineStart<CR>', keymap_opts())
         vim.api.nvim_set_hl(0, 'HopNextKey', { fg = '#fbc114' })
         vim.api.nvim_set_hl(0, 'HopNextKey1', { fg = '#fbc114' })
         vim.api.nvim_set_hl(0, 'HopNextKey2', { fg = '#fbc114' })
@@ -1905,6 +1962,7 @@ require('lazy').setup {
             'kkharji/sqlite.lua',
           },
         },
+        -- エラー出るなら ~/.local/share/nvim/lazy/telescope-fzf-native.nvim/ で make する
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
@@ -2698,12 +2756,12 @@ require('lazy').setup {
     -- Markdown プレビュー
     {
       'OXY2DEV/markview.nvim',
+      event = 'VeryLazy',
       dependencies = {
         'nvim-treesitter/nvim-treesitter',
         'echasnovski/mini.icons',
       },
-      ft = 'markdown',
-      -- event = "VeryLazy",
+      ft = { 'markdown' },
     },
 
     -- Markdown テーブル整形
@@ -3071,6 +3129,7 @@ require('lazy').setup {
         }
 
         -- SourceKit-LSP
+        -- PC セットアップ時は xcode からシミュレータをインストールすること
         local function execute(cmd)
           local file = assert(io.popen(cmd, 'r'))
           local output = file:read '*a'
@@ -3420,7 +3479,6 @@ require('lazy').setup {
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
         'rcarriga/cmp-dap',
-        { 'tzachar/cmp-tabnine', build = './install.sh' },
 
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
@@ -3480,6 +3538,7 @@ require('lazy').setup {
               suggestion = {
                 enabled = false,
               },
+              copilot_model = 'gpt-4o',
               filetypes = {
                 yaml = true,
                 markdown = false,
@@ -3494,17 +3553,18 @@ require('lazy').setup {
               copilot_node_command = vim.env.HOME .. '/.local/share/mise/shims/node',
               server_opts_overrides = {},
             }
-            require('copilot.api').register_status_notification_handler(function(data)
-              local ns = vim.api.nvim_create_namespace 'user.copilot'
-              vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-              if vim.fn.mode() == 'i' and data.status == 'InProgress' then
-                vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line '.' - 1, 0, {
-                  virt_text = { { '  Thinking...', 'Comment' } },
-                  virt_text_pos = 'eol',
-                  hl_mode = 'combine',
-                })
-              end
-            end)
+            -- register_status_notification_handler が利用できない
+            -- require('copilot.api').register_status_notification_handler(function(data)
+            --   local ns = vim.api.nvim_create_namespace 'user.copilot'
+            --   vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+            --   if vim.fn.mode() == 'i' and data.status == 'InProgress' then
+            --     vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line '.' - 1, 0, {
+            --       virt_text = { { '  Thinking...', 'Comment' } },
+            --       virt_text_pos = 'eol',
+            --       hl_mode = 'combine',
+            --     })
+            --   end
+            -- end)
             require('copilot_cmp').setup {
               method = 'getCompletionsCycling',
             }
@@ -3521,7 +3581,6 @@ require('lazy').setup {
           mode = 'symbol_text',
           symbol_map = {
             Copilot = '',
-            TabNine = '󰚩',
             Text = '󰉿',
             Method = '󰆧',
             Function = '󰊕',
@@ -3609,7 +3668,6 @@ require('lazy').setup {
           },
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 1 },
-            -- { name = 'cmp_tabnine', group_index = 1 },
             { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
@@ -3835,6 +3893,144 @@ require('lazy').setup {
 
         require('telescope').load_extension 'dap'
       end,
+    },
+
+    -- MCP Servers
+    {
+      'ravitemer/mcphub.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim', -- Required for Job and HTTP requests
+      },
+      -- comment the following line to ensure hub will be ready at the earliest
+      cmd = 'MCPHub', -- lazy load by default
+      build = 'npm install -g mcp-hub@latest', -- Installs required mcp-hub npm module
+      -- uncomment this if you don't want mcp-hub to be available globally or can't use -g
+      -- build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
+      config = function()
+        require('mcphub').setup {
+          auto_approve = true,
+          config = vim.fn.expand("~/.config/mcp/servers.json"),
+        }
+      end,
+    },
+
+    -- Avante の設定
+    {
+      'yetone/avante.nvim',
+      event = 'VeryLazy',
+      version = false,
+      build = 'make',
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter',
+        'stevearc/dressing.nvim',
+        'nvim-lua/plenary.nvim',
+        'MunifTanjim/nui.nvim',
+        'nvim-telescope/telescope.nvim',
+        'hrsh7th/nvim-cmp',
+        'echasnovski/mini.icons',
+        'zbirenbaum/copilot.lua',
+        'ravitemer/mcphub.nvim',
+        {
+          'MeanderingProgrammer/render-markdown.nvim',
+          opts = {
+            file_types = { 'Avante' },
+          },
+          ft = { 'Avante' },
+        },
+        {
+          'CopilotC-Nvim/CopilotChat.nvim',
+          event = { 'VeryLazy' },
+          branch = 'main',
+          dependencies = {
+            { 'zbirenbaum/copilot.lua' },
+            { 'nvim-lua/plenary.nvim' },
+          },
+          opts = {
+            model = 'claude-3.7-sonnet-thought',
+            -- model = 'gemini-2.5-pro',
+            debug = false,
+          },
+        },
+      },
+      opts = {
+        provider = 'copilot',
+        auto_suggestions_provider = 'copilot',
+        file_selector = {
+          provider = 'telescope',
+          provider_opts = {
+            hidden = false,
+            path_display = function(_, path)
+              local tail = require('telescope.utils').path_tail(path)
+              local relative_path = vim.fn.fnamemodify(path, ':.')
+              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
+            end,
+          },
+        },
+        behaviour = {
+          auto_suggestions = true,
+          auto_set_highlight_group = true,
+          auto_set_keymaps = true,
+          auto_apply_diff_after_generation = true,
+          support_paste_from_clipboard = true,
+          enable_cursor_planning_mode = true,
+        },
+        windows = {
+          input = {
+            prefix = ' ',
+            style = 'float',
+          },
+          ask = {
+            start_insert = false,
+          },
+          edit = {
+            start_insert = false,
+          },
+        },
+        mappings = {
+          ask = '<Leader>ca',
+          edit = '<Leader>ce',
+          refresh = '<Leader>cr',
+          focus = '<Leader>cf',
+          sidebar = {
+            apply_all = 'A',
+            close = { '<Nop>' },
+          },
+        },
+        copilot = {
+          endpoint = 'https://api.githubcopilot.com',
+          model = 'claude-3.7-sonnet-thought',
+          -- model = 'gemini-2.5-pro',
+          -- max_tokens = 120000,
+          -- proxy = nil,
+          -- allow_insecure = false,
+          -- timeout = 30000,
+          -- disable_tools = true,
+        },
+        disabled_tools = {
+          'list_files', -- Built-in file operations
+          'search_files',
+          'read_file',
+          'create_file',
+          'rename_file',
+          'delete_file',
+          'create_dir',
+          'rename_dir',
+          'delete_dir',
+          'bash', -- Built-in terminal access
+        },
+        -- system_prompt as function ensures LLM always has latest MCP server state
+        -- This is evaluated for every message, even in existing chats
+        system_prompt = function()
+          local hub = require('mcphub').get_hub_instance()
+          return hub:get_active_servers_prompt()
+        end,
+        -- Using function prevents requiring mcphub before it's loaded
+        custom_tools = function()
+          return {
+            require('mcphub.extensions.avante').mcp_tool(),
+          }
+        end,
+      },
     },
 
     -- テストフレームワーク

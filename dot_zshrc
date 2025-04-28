@@ -44,6 +44,11 @@ darwin*)
 *) ;;
 esac
 
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/a12622/.config/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
 # Exports
 export EDITOR='nvim'
 export VISUAL='nvim'
@@ -96,3 +101,4 @@ alias cast='scrcpy'
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
+
