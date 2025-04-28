@@ -95,7 +95,7 @@ config.font = wezterm.font_with_fallback {
 
 -- macOS and Linux settings
 if os == 'macOS' or os == 'linux' then
-  config.font_size = 7.5
+  config.font_size = 8
   config.initial_cols = 480
   config.initial_rows = 240
 

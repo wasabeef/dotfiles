@@ -536,7 +536,7 @@ require('lazy').setup {
           dashboard.button('r', '󱌣   Restore Session', "<cmd>lua require('persistence').load()<CR>"),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
-          dashboard.button('c', '󰒲   MCP', ':e ~/.config/mcphub/servers.json <CR>'),
+          dashboard.button('c', '󰒲   MCP', ':e ~/.config/mcp/servers.json <CR>'),
           dashboard.button('q', '   Quit NVIM', ':qa<CR>'),
         }
 
@@ -1234,13 +1234,13 @@ require('lazy').setup {
     -- w, e, b 移動の最適化
     {
       'chrisgrieser/nvim-spider',
-      dependencies = {
-        'theHamsta/nvim_rocks',
-        build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
-        config = function()
-          require('nvim_rocks').ensure_installed 'luautf8'
-        end,
-      },
+      -- dependencies = {
+      --   'theHamsta/nvim_rocks',
+      --   build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
+      --   config = function()
+      --     require('nvim_rocks').ensure_installed 'luautf8'
+      --   end,
+      -- },
       event = 'VeryLazy',
       keys = {
         {
@@ -1962,6 +1962,7 @@ require('lazy').setup {
             'kkharji/sqlite.lua',
           },
         },
+        -- エラー出るなら ~/.local/share/nvim/lazy/telescope-fzf-native.nvim/ で make する
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
         'jonarrien/telescope-cmdline.nvim',
         'dimaportenko/telescope-simulators.nvim',
@@ -3128,6 +3129,7 @@ require('lazy').setup {
         }
 
         -- SourceKit-LSP
+        -- PC セットアップ時は xcode からシミュレータをインストールすること
         local function execute(cmd)
           local file = assert(io.popen(cmd, 'r'))
           local output = file:read '*a'
@@ -3477,7 +3479,6 @@ require('lazy').setup {
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
         'rcarriga/cmp-dap',
-        { 'tzachar/cmp-tabnine', build = './install.sh' },
 
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lsp-document-symbol',
@@ -3580,7 +3581,6 @@ require('lazy').setup {
           mode = 'symbol_text',
           symbol_map = {
             Copilot = '',
-            TabNine = '󰚩',
             Text = '󰉿',
             Method = '󰆧',
             Function = '󰊕',
@@ -3668,7 +3668,6 @@ require('lazy').setup {
           },
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 1 },
-            -- { name = 'cmp_tabnine', group_index = 1 },
             { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
@@ -3910,6 +3909,7 @@ require('lazy').setup {
       config = function()
         require('mcphub').setup {
           auto_approve = true,
+          config = vim.fn.expand("~/.config/mcp/servers.json"),
         }
       end,
     },
