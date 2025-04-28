@@ -3130,7 +3130,7 @@ require('lazy').setup {
 
         -- SourceKit-LSP
         -- PC セットアップ時は xcode からシミュレータをインストールすること
-        -- sudo xcode-select --switch /Applications/Xcode-xx.x.x.app
+        -- $ sudo xcode-select --switch /Applications/Xcode-xx.x.x.app
         local function execute(cmd)
           local file = assert(io.popen(cmd, 'r'))
           local output = file:read '*a'
