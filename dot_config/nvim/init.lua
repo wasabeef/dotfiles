@@ -3,7 +3,7 @@
 -- 基本設定
 -- ---------------------------------------------------------
 -- Highlight
-vim.opt.syntax = 'on'
+vim.cmd 'syntax on'
 -- <Leader>を`<Space>`に設定
 vim.g.mapleader = ' '
 vim.keymap.set('n', ' ', '<Leader>', {})
