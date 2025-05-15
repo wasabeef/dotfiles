@@ -98,6 +98,14 @@ apply = ["defer"]
 github = "zsh-users/zsh-completions"
 apply = ['defer']
 
+[plugins.zsh-npm-scripts-autocomplet]
+github = "grigorii-zander/zsh-npm-scripts-autocomplete"
+apply = ['defer']
+
+[plugins.zsh-melos-autocomplet]
+local = "~/git/zsh-melos-autocomplete"
+apply = ['defer']
+
 [plugins.nvim]
 inline = '''
 function _nvim() {

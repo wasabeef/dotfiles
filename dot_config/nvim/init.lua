@@ -3,7 +3,7 @@
 -- 基本設定
 -- ---------------------------------------------------------
 -- Highlight
-vim.cmd 'syntax on'
+vim.opt.syntax = 'on'
 -- <Leader>を`<Space>`に設定
 vim.g.mapleader = ' '
 vim.keymap.set('n', ' ', '<Leader>', {})
@@ -350,6 +350,7 @@ require('lazy').setup {
     -- テーマ
     {
       'uloco/bluloco.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VimEnter',
       dependencies = { 'rktjmp/lush.nvim' },
       config = function()
@@ -439,6 +440,7 @@ require('lazy').setup {
     -- アイコン
     {
       'echasnovski/mini.icons',
+      enabled = vim.g.vscode == nil,
       event = 'VimEnter',
       opts = {
         file = {
@@ -460,6 +462,7 @@ require('lazy').setup {
     -- スタート画面
     {
       'goolord/alpha-nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VimEnter',
       config = function()
         -- ステータスラインを非表示
@@ -562,6 +565,7 @@ require('lazy').setup {
     -- 中央寄せ
     {
       'folke/zen-mode.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VimEnter',
       config = function()
         local zen = require 'zen-mode'
@@ -587,6 +591,7 @@ require('lazy').setup {
     -- キーマップ
     {
       'folke/which-key.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {
         preset = 'modern',
@@ -622,6 +627,7 @@ require('lazy').setup {
     -- セッションの復元
     {
       'folke/persistence.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'BufReadPre',
       config = function()
         -- 前回開いたファイルのカーソル位置を復旧する
@@ -642,6 +648,7 @@ require('lazy').setup {
     -- 入力切り替え（Normal になるど英字入力にする）
     {
       'amekusa/auto-input-switch.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('auto-input-switch').setup {
@@ -669,6 +676,7 @@ require('lazy').setup {
     -- スクリーンセーバー
     {
       'folke/drop.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {
         theme = 'auto',
@@ -680,6 +688,7 @@ require('lazy').setup {
     -- ステータスバー
     {
       'nvim-lualine/lualine.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'linrongbin16/lsp-progress.nvim',
         'AndreM222/copilot-lualine',
@@ -705,14 +714,15 @@ require('lazy').setup {
           violet = '#d183e8',
           grey = '#303030',
           caloriemate = '#fbc114',
+          transparent = '#282c34',
         }
 
         local bubbles_theme = {
           normal = {
             a = { fg = theme_colors.white, bg = theme_colors.grey },
             b = { fg = theme_colors.white, bg = theme_colors.blue, gui = 'bold' },
-            c = { fg = theme_colors.white },
-            x = { fg = theme_colors.white },
+            c = { fg = theme_colors.white, bg = theme_colors.transparent },
+            x = { fg = theme_colors.white, bg = theme_colors.transparent },
             y = { fg = theme_colors.black, bg = theme_colors.caloriemate },
             z = { fg = theme_colors.white, bg = theme_colors.grey, gui = 'bold' },
           },
@@ -943,6 +953,8 @@ require('lazy').setup {
     -- ウィンドウサイズ変更
     {
       'mrjones2014/smart-splits.nvim',
+      enabled = vim.g.vscode == nil,
+      tag = 'v1.9.1',
       event = 'WinNew',
       config = function()
         require('smart-splits').setup {
@@ -968,6 +980,7 @@ require('lazy').setup {
     -- ウィンドウセパレータカラー
     {
       'nvim-zh/colorful-winsep.nvim',
+      enabled = vim.g.vscode == nil,
       event = { 'WinNew' },
       config = function()
         require('colorful-winsep').setup {
@@ -983,12 +996,14 @@ require('lazy').setup {
     -- カーソルアニメーション
     {
       'sphamba/smear-cursor.nvim',
+      enabled = vim.g.vscode == nil,
       opts = {},
     },
 
     -- スムーススクロール
     {
       'karb94/neoscroll.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         local neoscroll = require 'neoscroll'
@@ -1023,6 +1038,7 @@ require('lazy').setup {
     -- スクロールバー
     {
       'petertriho/nvim-scrollbar',
+      enabled = vim.g.vscode == nil,
       event = 'BufReadPost',
       config = function()
         require('scrollbar').setup {
@@ -1046,6 +1062,7 @@ require('lazy').setup {
     -- 設定の切り替え
     {
       'gregorias/toggle.nvim',
+      enabled = vim.g.vscode == nil,
       version = '2.0',
       event = { 'VeryLazy' },
       dependencies = {
@@ -1110,6 +1127,7 @@ require('lazy').setup {
     -- vim.opt.colorcolumn = "80"
     {
       'm4xshen/smartcolumn.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {
         disabled_filetypes = {
@@ -1127,6 +1145,7 @@ require('lazy').setup {
     -- 行数コマンド移動
     {
       'nacro90/numb.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('numb').setup {
@@ -1206,6 +1225,7 @@ require('lazy').setup {
     -- Incremental Search
     {
       'kevinhwang91/nvim-hlslens',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('hlslens').setup()
@@ -1215,6 +1235,7 @@ require('lazy').setup {
     -- 置換
     {
       'MagicDuck/grug-far.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         {
@@ -1232,46 +1253,47 @@ require('lazy').setup {
     },
 
     -- w, e, b 移動の最適化
-    {
-      'chrisgrieser/nvim-spider',
-      -- dependencies = {
-      --   'theHamsta/nvim_rocks',
-      --   build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
-      --   config = function()
-      --     require('nvim_rocks').ensure_installed 'luautf8'
-      --   end,
-      -- },
-      event = 'VeryLazy',
-      keys = {
-        {
-          mode = { 'n', 'o', 'x' },
-          'w',
-          "<cmd>lua require('spider').motion('w')<CR>",
-        },
-        {
-          mode = { 'n', 'o', 'x' },
-          'e',
-          "<cmd>lua require('spider').motion('e')<CR>",
-        },
-        {
-          mode = { 'n', 'o', 'x' },
-          'b',
-          "<cmd>lua require('spider').motion('b')<CR>",
-        },
-      },
-      config = function()
-        require('spider').setup {
-          skipInsignificantPunctuation = true,
-          consistentOperatorPending = false,
-          subwordMovement = false, -- ignore camelCase, snake_case
-          customPatterns = {},
-        }
-      end,
-    },
+    -- {
+    --   'chrisgrieser/nvim-spider',
+    --   event = 'VeryLazy',
+    --   dependencies = {
+    --     'theHamsta/nvim_rocks',
+    --     build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
+    --     config = function()
+    --       require('nvim_rocks').ensure_installed 'luautf8'
+    --     end,
+    --   },
+    --   keys = {
+    --     {
+    --       mode = { 'n', 'o', 'x' },
+    --       'w',
+    --       "<cmd>lua require('spider').motion('w')<CR>",
+    --     },
+    --     {
+    --       mode = { 'n', 'o', 'x' },
+    --       'e',
+    --       "<cmd>lua require('spider').motion('e')<CR>",
+    --     },
+    --     {
+    --       mode = { 'n', 'o', 'x' },
+    --       'b',
+    --       "<cmd>lua require('spider').motion('b')<CR>",
+    --     },
+    --   },
+    --   config = function()
+    --     require('spider').setup {
+    --       skipInsignificantPunctuation = true,
+    --       consistentOperatorPending = false,
+    --       subwordMovement = false, -- ignore camelCase, snake_case
+    --       customPatterns = {},
+    --     }
+    --   end,
+    -- },
 
     -- 構文から行数移動
     {
       'aaronik/treewalker.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         { '<S-k>', '<cmd>Treewalker Up<CR>', mode = { 'n', 'v' }, keymap_opts 'Treewalker Up' },
@@ -1289,6 +1311,7 @@ require('lazy').setup {
     -- カーソルジャンプ
     {
       'yehuohan/hop.nvim',
+      enabled = vim.g.vscode == nil,
       -- branch = 'v2',
       event = 'VeryLazy',
       config = function()
@@ -1306,6 +1329,7 @@ require('lazy').setup {
     -- 括弧位置ハイライト
     {
       'utilyre/sentiment.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('sentiment').setup {}
@@ -1316,6 +1340,7 @@ require('lazy').setup {
     -- カーソル位置ハイライト
     {
       'RRethy/vim-illuminate',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('illuminate').configure {
@@ -1357,6 +1382,7 @@ require('lazy').setup {
     -- クリップボード履歴
     {
       'ptdewey/yankbank-nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('yankbank').setup()
@@ -1388,6 +1414,7 @@ require('lazy').setup {
     -- 選択したテキストの移動
     {
       'echasnovski/mini.move',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {
         mappings = {
@@ -1426,6 +1453,7 @@ require('lazy').setup {
     -- インデント表示、Textobjects
     {
       'echasnovski/mini.indentscope',
+      enabled = vim.g.vscode == nil,
       event = { 'BufRead', 'BufNewFile' },
       config = function()
         require('mini.indentscope').setup {
@@ -1464,6 +1492,7 @@ require('lazy').setup {
     -- 通知
     {
       'echasnovski/mini.notify',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         {
@@ -1490,6 +1519,7 @@ require('lazy').setup {
     -- カラーハイライト
     {
       'NvChad/nvim-colorizer.lua',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {
         filetypes = { 'dart', 'typescript', 'javascript', 'html', 'css', 'lua', 'json' },
@@ -1523,6 +1553,7 @@ require('lazy').setup {
     -- ログに色付け
     {
       'fei6409/log-highlight.nvim',
+      enabled = vim.g.vscode == nil,
       ft = { 'log' },
       -- event = 'VeryLazy',
       config = function()
@@ -1541,6 +1572,7 @@ require('lazy').setup {
     -- ファイルツリー
     {
       'nvim-tree/nvim-tree.lua',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
         'b0o/nvim-tree-preview.lua',
@@ -1680,6 +1712,7 @@ require('lazy').setup {
     -- nvim-tree でファイル名変更した場合などに自動で更新
     {
       'antosha417/nvim-lsp-file-operations',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
         'nvim-tree/nvim-tree.lua',
@@ -1693,6 +1726,7 @@ require('lazy').setup {
     -- Git
     {
       'kdheepak/lazygit.nvim',
+      enabled = vim.g.vscode == nil,
       cmd = {
         'LazyGit',
         'LazyGitConfig',
@@ -1712,6 +1746,7 @@ require('lazy').setup {
     -- Git 差分表示
     {
       'sindrets/diffview.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         {
@@ -1735,6 +1770,7 @@ require('lazy').setup {
     -- Git Blame
     {
       'lewis6991/gitsigns.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         {
@@ -1801,6 +1837,7 @@ require('lazy').setup {
     -- コマンドのデザイン
     {
       'Sam-programs/cmdline-hl.nvim',
+      enabled = vim.g.vscode == nil,
       event = { 'BufReadPre', 'BufNewFile' }, -- 画面がちらつく
       config = function()
         require('cmdline-hl').setup {
@@ -1833,6 +1870,7 @@ require('lazy').setup {
     -- コードハイライト
     {
       'nvim-treesitter/nvim-treesitter',
+      enabled = vim.g.vscode == nil,
       build = ':TSUpdate',
       event = 'VeryLazy',
       init = function(plugin)
@@ -1915,6 +1953,7 @@ require('lazy').setup {
     -- クラス構造
     {
       'SmiteshP/nvim-navbuddy',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'neovim/nvim-lspconfig',
         'SmiteshP/nvim-navic',
@@ -1953,6 +1992,7 @@ require('lazy').setup {
     -- ファイル・コマンド検索
     {
       'nvim-telescope/telescope.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
@@ -2165,6 +2205,7 @@ require('lazy').setup {
     -- コードアクション、差分修正
     {
       'aznhe21/actions-preview.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'LspAttach',
       config = function()
         vim.keymap.set({ 'v', 'n' }, '<Leader>a', require('actions-preview').code_actions, keymap_opts 'Code Acttions')
@@ -2191,6 +2232,7 @@ require('lazy').setup {
     -- Diagnostics
     {
       'folke/trouble.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       opts = {},
       keys = {
@@ -2206,8 +2248,8 @@ require('lazy').setup {
     -- 右上に表示
     {
       'dgagn/diagflow.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'LspAttach',
-      enabled = false,
       opts = {},
       config = function()
         require('diagflow').setup {
@@ -2250,6 +2292,7 @@ require('lazy').setup {
     -- Formatter
     {
       'stevearc/conform.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       cmd = { 'ConformInfo' },
       keys = {
@@ -2272,20 +2315,20 @@ require('lazy').setup {
             bash = { 'shfmt' },
             zsh = { 'shfmt' },
             lua = { 'stylua' },
-            markdown = { 'prettierd' },
-            json = { 'prettierd' },
-            yaml = { 'prettierd' },
+            markdown = { 'prettier' },
+            json = { 'prettier' },
+            yaml = { 'prettier' },
             toml = { 'dprint' },
-            html = { 'prettierd' },
-            css = { 'prettierd' },
+            html = { 'prettier' },
+            css = { 'prettier' },
             xml = { 'xmlformat' },
-            vue = { 'prettierd' },
-            svelte = { 'prettierd' },
-            astro = { 'prettierd' },
-            javascript = { 'eslint_d', 'prettier' },
-            javascriptreact = { 'eslint_d', 'prettier' },
-            typescript = { 'eslint_d', 'prettier' },
-            typescriptreact = { 'eslint_d', 'prettier' },
+            vue = { 'prettier' },
+            svelte = { 'prettier' },
+            astro = { 'prettier' },
+            javascript = { 'eslint', 'prettier' },
+            javascriptreact = { 'eslint', 'prettier' },
+            typescript = { 'eslint', 'prettier' },
+            typescriptreact = { 'eslint', 'prettier' },
             java = { 'google-java-format' },
             kotlin = { 'ktlint' },
             dart = { 'dart_format' },
@@ -2318,6 +2361,7 @@ require('lazy').setup {
     -- Linter
     {
       'mfussenegger/nvim-lint',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         local lint = require 'lint'
@@ -2426,6 +2470,7 @@ require('lazy').setup {
     -- インラインターミナル
     {
       'akinsho/toggleterm.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         { '<C-t>t', '<Cmd>ToggleTerm direction=float<CR>' },
@@ -2446,6 +2491,7 @@ require('lazy').setup {
     -- バッファ操作(マネージャー)
     {
       'j-morano/buffer_manager.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
       },
@@ -2469,6 +2515,7 @@ require('lazy').setup {
     -- バッファ操作(タブ)
     {
       'willothy/nvim-cokeline',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
       },
@@ -2649,6 +2696,7 @@ require('lazy').setup {
     -- タスクショートカット
     {
       'stevearc/overseer.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
@@ -2698,6 +2746,8 @@ require('lazy').setup {
     -- キー入力
     {
       'NStefan002/screenkey.nvim',
+      enabled = vim.g.vscode == nil,
+      version = '*',
       event = 'VeryLazy',
       config = function()
         require('screenkey').setup {
@@ -2723,6 +2773,7 @@ require('lazy').setup {
     -- ヘルプをポップアップで表示
     {
       'Tyler-Barham/floating-help.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         local fh = require 'floating-help'
@@ -2756,6 +2807,7 @@ require('lazy').setup {
     -- Markdown プレビュー
     {
       'OXY2DEV/markview.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       dependencies = {
         'nvim-treesitter/nvim-treesitter',
@@ -2767,6 +2819,7 @@ require('lazy').setup {
     -- Markdown テーブル整形
     {
       'Kicamon/markdown-table-mode.nvim',
+      enabled = vim.g.vscode == nil,
       ft = 'markdown',
       -- event = "VeryLazy",
       config = function()
@@ -2800,6 +2853,7 @@ require('lazy').setup {
     -- Google 翻訳
     {
       'potamides/pantran.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         local pantran = require 'pantran'
@@ -2825,6 +2879,7 @@ require('lazy').setup {
     -- URL 開く
     {
       'sontungexpt/url-open',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       cmd = 'URLOpenUnderCursor',
       keys = {
@@ -2882,9 +2937,22 @@ require('lazy').setup {
       end,
     },
 
+    -- WindSurf
+    {
+      'Exafunction/windsurf.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        'hrsh7th/nvim-cmp',
+      },
+      config = function()
+        require('codeium').setup {}
+      end,
+    },
+
     -- ブラウザ検索
     {
       'voldikss/vim-browser-search',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
         {
@@ -2915,6 +2983,7 @@ require('lazy').setup {
     -- LSP Management
     {
       'neovim/nvim-lspconfig',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         { 'williamboman/mason.nvim', dependencies = { 'Zeioth/mason-extra-cmds', opts = {} } },
         'williamboman/mason-lspconfig.nvim',
@@ -3160,6 +3229,7 @@ require('lazy').setup {
     -- Flutter
     {
       'nvim-flutter/flutter-tools.nvim',
+      enabled = vim.g.vscode == nil,
       -- tag = 'v1.14.0',
       dependencies = {
         'nvim-lua/plenary.nvim',
@@ -3342,6 +3412,7 @@ require('lazy').setup {
     -- シンボルの使用状況
     {
       'Wansmer/symbol-usage.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'LspAttach',
       config = function()
         require('symbol-usage').setup {
@@ -3383,6 +3454,7 @@ require('lazy').setup {
     -- Inlay hints
     {
       'chrisgrieser/nvim-lsp-endhints',
+      enabled = vim.g.vscode == nil,
       -- ft = {
       --   'typescript',
       --   'typescriptreact',
@@ -3414,6 +3486,7 @@ require('lazy').setup {
     -- package.json のヘルパー
     {
       'vuki656/package-info.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'MunifTanjim/nui.nvim',
       },
@@ -3440,6 +3513,7 @@ require('lazy').setup {
     -- pubspec.yaml のヘルパー
     {
       'akinsho/pubspec-assist.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-lua/plenary.nvim',
       },
@@ -3459,6 +3533,7 @@ require('lazy').setup {
     -- LSP のガベージコレクション
     {
       'zeioth/garbage-day.nvim',
+      enabled = vim.g.vscode == nil,
       dependencies = 'neovim/nvim-lspconfig',
       event = 'VeryLazy',
       opts = {
@@ -3473,6 +3548,7 @@ require('lazy').setup {
     -- LSP cmp
     {
       'hrsh7th/nvim-cmp',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'onsails/lspkind-nvim',
         'neovim/nvim-lspconfig',
@@ -3582,6 +3658,7 @@ require('lazy').setup {
           mode = 'symbol_text',
           symbol_map = {
             Copilot = '',
+            Codeium = "",
             Text = '󰉿',
             Method = '󰆧',
             Function = '󰊕',
@@ -3669,6 +3746,7 @@ require('lazy').setup {
           },
           sources = cmp.config.sources({
             { name = 'copilot', group_index = 1 },
+            { name = 'codeium', group_index = 1 },
             { name = 'luasnip', keyword_length = 2 },
             { name = 'nvim_lsp', group_index = 2 },
             { name = 'lazydev', group_index = 2 },
@@ -3726,6 +3804,7 @@ require('lazy').setup {
     -- デバッグ
     {
       'mfussenegger/nvim-dap',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-neotest/nvim-nio',
         'theHamsta/nvim-dap-virtual-text',
@@ -3896,147 +3975,10 @@ require('lazy').setup {
       end,
     },
 
-    -- MCP Servers
-    {
-      'ravitemer/mcphub.nvim',
-      dependencies = {
-        'nvim-lua/plenary.nvim', -- Required for Job and HTTP requests
-      },
-      -- comment the following line to ensure hub will be ready at the earliest
-      cmd = 'MCPHub', -- lazy load by default
-      build = 'npm install -g mcp-hub@latest', -- Installs required mcp-hub npm module
-      -- uncomment this if you don't want mcp-hub to be available globally or can't use -g
-      -- build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
-      config = function()
-        require('mcphub').setup {
-          auto_approve = true,
-          config = vim.fn.expand("~/.config/mcp/servers.json"),
-        }
-      end,
-    },
-
-    -- Avante の設定
-    {
-      'yetone/avante.nvim',
-      event = 'VeryLazy',
-      version = false,
-      build = 'make',
-      dependencies = {
-        'nvim-treesitter/nvim-treesitter',
-        'stevearc/dressing.nvim',
-        'nvim-lua/plenary.nvim',
-        'MunifTanjim/nui.nvim',
-        'nvim-telescope/telescope.nvim',
-        'hrsh7th/nvim-cmp',
-        'echasnovski/mini.icons',
-        'zbirenbaum/copilot.lua',
-        'ravitemer/mcphub.nvim',
-        {
-          'MeanderingProgrammer/render-markdown.nvim',
-          opts = {
-            file_types = { 'Avante' },
-          },
-          ft = { 'Avante' },
-        },
-        {
-          'CopilotC-Nvim/CopilotChat.nvim',
-          event = { 'VeryLazy' },
-          branch = 'main',
-          dependencies = {
-            { 'zbirenbaum/copilot.lua' },
-            { 'nvim-lua/plenary.nvim' },
-          },
-          opts = {
-            model = 'claude-3.7-sonnet-thought',
-            -- model = 'gemini-2.5-pro',
-            debug = false,
-          },
-        },
-      },
-      opts = {
-        provider = 'copilot',
-        auto_suggestions_provider = 'copilot',
-        file_selector = {
-          provider = 'telescope',
-          provider_opts = {
-            hidden = false,
-            path_display = function(_, path)
-              local tail = require('telescope.utils').path_tail(path)
-              local relative_path = vim.fn.fnamemodify(path, ':.')
-              return string.format('%s (%s)', tail, relative_path), { { { 1, #tail }, 'keyword' } }
-            end,
-          },
-        },
-        behaviour = {
-          auto_suggestions = true,
-          auto_set_highlight_group = true,
-          auto_set_keymaps = true,
-          auto_apply_diff_after_generation = true,
-          support_paste_from_clipboard = true,
-          enable_cursor_planning_mode = true,
-        },
-        windows = {
-          input = {
-            prefix = ' ',
-            style = 'float',
-          },
-          ask = {
-            start_insert = false,
-          },
-          edit = {
-            start_insert = false,
-          },
-        },
-        mappings = {
-          ask = '<Leader>ca',
-          edit = '<Leader>ce',
-          refresh = '<Leader>cr',
-          focus = '<Leader>cf',
-          sidebar = {
-            apply_all = 'A',
-            close = { '<Nop>' },
-          },
-        },
-        copilot = {
-          endpoint = 'https://api.githubcopilot.com',
-          model = 'claude-3.7-sonnet-thought',
-          -- model = 'gemini-2.5-pro',
-          -- max_tokens = 120000,
-          -- proxy = nil,
-          -- allow_insecure = false,
-          -- timeout = 30000,
-          -- disable_tools = true,
-        },
-        disabled_tools = {
-          'list_files', -- Built-in file operations
-          'search_files',
-          'read_file',
-          'create_file',
-          'rename_file',
-          'delete_file',
-          'create_dir',
-          'rename_dir',
-          'delete_dir',
-          'bash', -- Built-in terminal access
-        },
-        -- system_prompt as function ensures LLM always has latest MCP server state
-        -- This is evaluated for every message, even in existing chats
-        system_prompt = function()
-          local hub = require('mcphub').get_hub_instance()
-          return hub:get_active_servers_prompt()
-        end,
-        -- Using function prevents requiring mcphub before it's loaded
-        custom_tools = function()
-          return {
-            require('mcphub.extensions.avante').mcp_tool(),
-          }
-        end,
-      },
-    },
-
     -- テストフレームワーク
     {
       'nvim-neotest/neotest',
+      enabled = vim.g.vscode == nil,
       dependencies = {
         'nvim-neotest/nvim-nio',
         'nvim-lua/plenary.nvim',
@@ -4092,6 +4034,7 @@ require('lazy').setup {
     -- LSP Hover
     {
       'lewis6991/hover.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('hover').setup {
@@ -4127,6 +4070,7 @@ require('lazy').setup {
     -- LSP ポップアップ
     {
       'rmagatti/goto-preview',
+      enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
         require('goto-preview').setup {
@@ -4171,6 +4115,7 @@ require('lazy').setup {
     -- init.lua の開発サポート
     {
       'folke/lazydev.nvim',
+      enabled = vim.g.vscode == nil,
       event = 'BufRead init.lua',
       opts = {
         library = {
