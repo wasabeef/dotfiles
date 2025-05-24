@@ -25,7 +25,7 @@
         }; bd"
   bm = branch -m
   ch = checkout
-  c = commit
+	c = !gcop commit
   ca = commit --amend
   cl = clean
   clf = clean -f
@@ -34,12 +34,22 @@
   stu = stash -u
   stp = stash pop
   pu = push
-  pf = push -f
+	pf = push --force
   pl = pull
   l = log --oneline --reverse
   pr = "!pr() { \
          git fetch origin pull/$1/head:$2; \
        }; pr"
+	p = push
+	undo = reset --soft HEAD^
+	gcommit = !gcop commit
+	ac = !git add . && gcop commit
+	acp = !git add . && gcop commit && git push
+	cp = !gcop commit && git push
+	info = !gcop info
+	gconfig = !gcop config
+	ghelp = !gcop help
+	amend = commit --amend
 [diff "lockb"]
 	textconv = bun
 	binary = true

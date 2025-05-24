@@ -292,6 +292,14 @@ vim.keymap.set('n', '<Leader>E', vim.diagnostic.open_float, keymap_opts 'LSP: vi
 vim.keymap.set('n', '<Leader>]', vim.diagnostic.goto_next, keymap_opts 'LSP: vim.diagnostic.goto_next')
 vim.keymap.set('n', '<Leader>[', vim.diagnostic.goto_prev, keymap_opts 'LSP: vim.diagnostic.goto_prev')
 
+-- コピーハイライト
+vim.api.nvim_create_autocmd('TextYankPost', {
+  pattern = '*',
+  callback = function()
+    vim.highlight.on_yank { higroup = 'IncSearch', timeout = 300 }
+  end,
+})
+
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
@@ -1253,42 +1261,42 @@ require('lazy').setup {
     },
 
     -- w, e, b 移動の最適化
-    -- {
-    --   'chrisgrieser/nvim-spider',
-    --   event = 'VeryLazy',
-    --   dependencies = {
-    --     'theHamsta/nvim_rocks',
-    --     build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
-    --     config = function()
-    --       require('nvim_rocks').ensure_installed 'luautf8'
-    --     end,
-    --   },
-    --   keys = {
-    --     {
-    --       mode = { 'n', 'o', 'x' },
-    --       'w',
-    --       "<cmd>lua require('spider').motion('w')<CR>",
-    --     },
-    --     {
-    --       mode = { 'n', 'o', 'x' },
-    --       'e',
-    --       "<cmd>lua require('spider').motion('e')<CR>",
-    --     },
-    --     {
-    --       mode = { 'n', 'o', 'x' },
-    --       'b',
-    --       "<cmd>lua require('spider').motion('b')<CR>",
-    --     },
-    --   },
-    --   config = function()
-    --     require('spider').setup {
-    --       skipInsignificantPunctuation = true,
-    --       consistentOperatorPending = false,
-    --       subwordMovement = false, -- ignore camelCase, snake_case
-    --       customPatterns = {},
-    --     }
-    --   end,
-    -- },
+    {
+      'chrisgrieser/nvim-spider',
+      event = 'VeryLazy',
+      dependencies = {
+        'theHamsta/nvim_rocks',
+        build = 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua',
+        config = function()
+          require('nvim_rocks').ensure_installed 'luautf8'
+        end,
+      },
+      keys = {
+        {
+          mode = { 'n', 'o', 'x' },
+          'w',
+          "<cmd>lua require('spider').motion('w')<CR>",
+        },
+        {
+          mode = { 'n', 'o', 'x' },
+          'e',
+          "<cmd>lua require('spider').motion('e')<CR>",
+        },
+        {
+          mode = { 'n', 'o', 'x' },
+          'b',
+          "<cmd>lua require('spider').motion('b')<CR>",
+        },
+      },
+      config = function()
+        require('spider').setup {
+          skipInsignificantPunctuation = true,
+          consistentOperatorPending = false,
+          subwordMovement = false, -- ignore camelCase, snake_case
+          customPatterns = {},
+        }
+      end,
+    },
 
     -- 構文から行数移動
     {
@@ -1371,12 +1379,6 @@ require('lazy').setup {
           case_insensitive_regex = false,
         }
       end,
-    },
-
-    -- コピーハイライト
-    {
-      'machakann/vim-highlightedyank',
-      event = 'VeryLazy',
     },
 
     -- クリップボード履歴
@@ -2806,14 +2808,13 @@ require('lazy').setup {
 
     -- Markdown プレビュー
     {
-      'OXY2DEV/markview.nvim',
+      'MeanderingProgrammer/render-markdown.nvim',
       enabled = vim.g.vscode == nil,
-      event = 'VeryLazy',
-      dependencies = {
-        'nvim-treesitter/nvim-treesitter',
-        'echasnovski/mini.icons',
-      },
-      ft = { 'markdown' },
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+      ---@module 'render-markdown'
+      ---@type render.md.UserConfig
+      opts = { filetypes = { 'markdown', 'mdc' }, },
+      ft = { 'markdown', 'mdc'},
     },
 
     -- Markdown テーブル整形
@@ -2826,29 +2827,6 @@ require('lazy').setup {
         require('markdown-table-mode').setup()
       end,
     },
-
-    -- Obsidian メモ
-    -- {
-    --   'epwalsh/obsidian.nvim',
-    --   dependencies = {
-    --     'nvim-lua/plenary.nvim',
-    --   },
-    --   event = 'VeryLazy',
-    --   opts = {
-    --     ui = {
-    --       enable = false,
-    --     },
-    --     workspaces = {
-    --       {
-    --         name = 'Memo',
-    --         path = '~/Google Drive/My Drive/Memo',
-    --       },
-    --     },
-    --     note_id_func = function(title)
-    --       return title
-    --     end,
-    --   },
-    -- },
 
     -- Google 翻訳
     {
@@ -2937,9 +2915,11 @@ require('lazy').setup {
       end,
     },
 
-    -- WindSurf
+    -- Windsurf
     {
       'Exafunction/windsurf.nvim',
+      enabled = vim.g.vscode == nil,
+      event = 'VeryLazy',
       dependencies = {
         'nvim-lua/plenary.nvim',
         'hrsh7th/nvim-cmp',
@@ -3658,7 +3638,7 @@ require('lazy').setup {
           mode = 'symbol_text',
           symbol_map = {
             Copilot = '',
-            Codeium = "",
+            Codeium = '',
             Text = '󰉿',
             Method = '󰆧',
             Function = '󰊕',
