@@ -760,9 +760,6 @@ require('lazy').setup {
                 'mason',
                 'dap-view',
                 'dap-repl',
-                'Avante',
-                'AvanteSelectedFiles',
-                'AvanteInput',
               },
             },
             theme = bubbles_theme,
@@ -2337,6 +2334,7 @@ require('lazy').setup {
             go = { 'gofmt', 'goimports' },
             graphql = { 'prettierd' },
             swift = { 'swiftformat' },
+            rust = { 'rustfmt' },
           },
           default_format_opts = {
             lsp_format = 'fallback',
@@ -2490,29 +2488,42 @@ require('lazy').setup {
       },
     },
 
-    -- バッファ操作(マネージャー)
     {
-      'j-morano/buffer_manager.nvim',
-      enabled = vim.g.vscode == nil,
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-      },
-      event = { 'BufReadPre', 'BufNewFile' },
-      opts = {
-        -- order_buffers = "lastused",
-        width = 0.4,
-        height = 0.3,
-      },
-      keys = {
-        {
-          '[]',
-          function()
-            require('buffer_manager.ui').toggle_quick_menu()
-          end,
-        },
-        desc = 'Buffer Manager',
-      },
+      -- 'wasabeef/bufferin.nvim',
+      dir = '~/git/bufferin.nvim',
+      cmd = { 'Bufferin', 'BufferinToggle' },
+      config = function()
+        require('bufferin').setup {
+          show_window_layout = true,
+        }
+      end,
+      -- Optional: for file icons
+      dependencies = { 'echasnovski/mini.icons' },
     },
+
+    -- バッファ操作(マネージャー)
+    -- {
+    --   'j-morano/buffer_manager.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   dependencies = {
+    --     'nvim-lua/plenary.nvim',
+    --   },
+    --   event = { 'BufReadPre', 'BufNewFile' },
+    --   opts = {
+    --     -- order_buffers = "lastused",
+    --     width = 0.4,
+    --     height = 0.3,
+    --   },
+    --   keys = {
+    --     {
+    --       '[]',
+    --       function()
+    --         require('buffer_manager.ui').toggle_quick_menu()
+    --       end,
+    --     },
+    --     desc = 'Buffer Manager',
+    --   },
+    -- },
 
     -- バッファ操作(タブ)
     {
@@ -2697,53 +2708,67 @@ require('lazy').setup {
 
     -- タスクショートカット
     {
-      'stevearc/overseer.nvim',
-      enabled = vim.g.vscode == nil,
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-        'stevearc/dressing.nvim',
-        'nvim-telescope/telescope.nvim',
-      },
-      event = 'VeryLazy',
+      dir = '~/git/melos.nvim',
+      -- 'wasabeef/melos.nvim',
+      dependencies = { 'nvim-telescope/telescope.nvim' },
       config = function()
-        local overseer = require 'overseer'
-
-        -- Git
-        overseer.register_template {
-          name = 'tig status',
-          builder = function()
-            return {
-              cmd = 'tig',
-              args = { 'status' },
-            }
-          end,
+        require('melos').setup {
+          -- 実行時のフローティングターミナルのサイズを設定 (オプション)
+          terminal_width = 200, -- 文字幅
+          terminal_height = 60, -- 行数
         }
-
-        overseer.register_template {
-          name = 'git pull origin main',
-          builder = function()
-            return {
-              cmd = 'git',
-              args = { 'pull', 'origin', 'main' },
-            }
-          end,
-        }
-        overseer.register_template {
-          name = 'chezmoi re-add',
-          builder = function()
-            return {
-              cmd = 'chezmoi',
-              args = { 're-add' },
-            }
-          end,
-        }
-
-        overseer.setup {
-          strategy = 'toggleterm',
-        }
-        vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts 'Tasks with Overseer')
+        vim.keymap.set('n', '<C-.>', '<Cmd>MelosRun<CR>', { desc = 'Run Melos script' })
       end,
     },
+
+    -- {
+    --   'stevearc/overseer.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   dependencies = {
+    --     'nvim-lua/plenary.nvim',
+    --     'stevearc/dressing.nvim',
+    --     'nvim-telescope/telescope.nvim',
+    --   },
+    --   event = 'VeryLazy',
+    --   config = function()
+    --     local overseer = require 'overseer'
+    --
+    --     -- Git
+    --     overseer.register_template {
+    --       name = 'tig status',
+    --       builder = function()
+    --         return {
+    --           cmd = 'tig',
+    --           args = { 'status' },
+    --         }
+    --       end,
+    --     }
+    --
+    --     overseer.register_template {
+    --       name = 'git pull origin main',
+    --       builder = function()
+    --         return {
+    --           cmd = 'git',
+    --           args = { 'pull', 'origin', 'main' },
+    --         }
+    --       end,
+    --     }
+    --     overseer.register_template {
+    --       name = 'chezmoi re-add',
+    --       builder = function()
+    --         return {
+    --           cmd = 'chezmoi',
+    --           args = { 're-add' },
+    --         }
+    --       end,
+    --     }
+    --
+    --     overseer.setup {
+    --       strategy = 'toggleterm',
+    --     }
+    --     vim.keymap.set('n', '<C-.>', '<cmd>OverseerRun<CR>', keymap_opts 'Tasks with Overseer')
+    --   end,
+    -- },
 
     -- キー入力
     {
@@ -2813,8 +2838,8 @@ require('lazy').setup {
       dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
       ---@module 'render-markdown'
       ---@type render.md.UserConfig
-      opts = { filetypes = { 'markdown', 'mdc' }, },
-      ft = { 'markdown', 'mdc'},
+      opts = { filetypes = { 'markdown', 'mdc' } },
+      ft = { 'markdown', 'mdc' },
     },
 
     -- Markdown テーブル整形
@@ -2915,6 +2940,17 @@ require('lazy').setup {
       end,
     },
 
+    {
+      'greggh/claude-code.nvim',
+      event = 'VeryLazy',
+      dependencies = {
+        'nvim-lua/plenary.nvim', -- Required for git operations
+      },
+      config = function()
+        require('claude-code').setup()
+      end,
+    },
+
     -- Windsurf
     {
       'Exafunction/windsurf.nvim',
@@ -2980,27 +3016,27 @@ require('lazy').setup {
           vim.lsp.inlay_hint.enable(true)
         end
 
-        vim.diagnostic.config {
-          virtual_text = {
-            severity = {
-              max = vim.diagnostic.severity.WARN,
-            },
-          },
-          virtual_lines = {
-            severity = {
-              min = vim.diagnostic.severity.ERROR,
-            },
-          },
-          -- signcolumn のアイコンを変える
-          signs = {
-            text = {
-              [vim.diagnostic.severity.ERROR] = ' ',
-              [vim.diagnostic.severity.WARN] = ' ',
-              [vim.diagnostic.severity.HINT] = ' ',
-              [vim.diagnostic.severity.INFO] = ' ',
-            },
-          },
-        }
+        -- vim.diagnostic.config {
+        --   virtual_text = {
+        --     severity = {
+        --       max = vim.diagnostic.severity.WARN,
+        --     },
+        --   },
+        --   virtual_lines = {
+        --     severity = {
+        --       min = vim.diagnostic.severity.ERROR,
+        --     },
+        --   },
+        --   -- signcolumn のアイコンを変える
+        --   signs = {
+        --     text = {
+        --       [vim.diagnostic.severity.ERROR] = ' ',
+        --       [vim.diagnostic.severity.WARN] = ' ',
+        --       [vim.diagnostic.severity.HINT] = ' ',
+        --       [vim.diagnostic.severity.INFO] = ' ',
+        --     },
+        --   },
+        -- }
 
         local lspconfig = require 'lspconfig'
         require('mason').setup()
@@ -3950,7 +3986,6 @@ require('lazy').setup {
           -- vim.cmd 'lua vim.lsp.inlay_hint.enable(true)'
           -- dv.close()
         end
-
         require('telescope').load_extension 'dap'
       end,
     },

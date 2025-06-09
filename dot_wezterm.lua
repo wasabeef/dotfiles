@@ -139,7 +139,8 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
   elseif title == 'mcfly' then
     title = ''
   else
-    title = ''
+    -- title = ''
+    title = title
   end
 
   return {
@@ -154,6 +155,34 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     { Foreground = { Color = edge_foreground } },
     { Text = '' },
   }
+end)
+
+-- ベルイベントをキャッチして通知を出す
+-- wezterm.on('trigger-bell', function(window, pane)
+wezterm.on('bell', function(window, pane)
+  -- ベルを発生させたプロセスの名前を取得
+  local process_name = pane:get_foreground_process_name() or 'unknown'
+  -- 'claude' からの通知でなければ、この時点で処理を終了します。
+  if not string.find(process_name, 'claude') then
+    return
+  end
+
+  -- 無効にしないと二つ音が鳴る
+  config.audible_bell = 'Disabled'
+  local sound_file = wezterm.home_dir .. '/.claude/perfect.mp3'
+  local title = 'タスク完了'
+  local message = pane:get_foreground_process_name() .. ' が完了しました'
+  if wezterm.target_triple:find 'darwin' then
+    wezterm.background_child_process { 'afplay', sound_file }
+    wezterm.background_child_process {
+      'osascript',
+      '-e',
+      string.format('display notification "%s" with title "%s"', message, title),
+    }
+  else
+    wezterm.background_child_process { 'fplay', sound_file }
+  end
+  window:toast_notification(title, message, nil, 3000)
 end)
 
 config.leader = { key = 'Space', mods = 'SHIFT|CTRL' }
