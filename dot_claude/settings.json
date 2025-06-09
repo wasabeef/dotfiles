@@ -1,0 +1,25 @@
+{
+  "env": {},
+  "allowedTools": [
+    "Bash",
+    "Create",
+    "Edit",
+    "Read",
+    "GlobTool",
+    "GrepTool",
+    "WebFetch",
+    "WebSearch",
+    "Write"
+  ],
+  "permissions": {
+    "allow": [
+      "List(*)",
+      "Bash(ls:*)",
+      "Bash(git:*)",
+      "Read(**)",
+      "Edit(~/git/**)",
+      "WebFetch(domain:*)"
+    ]
+  },
+  "cleanupPeriodDays": 60
+}
