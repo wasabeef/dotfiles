@@ -1,25 +1,61 @@
 {
-  "env": {},
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": 600000,
+    "BASH_MAX_TIMEOUT_MS": 600000,
+    "SHELL": "/opt/homebrew/bin/zsh"
+  },
   "allowedTools": [
-    "Bash",
     "Create",
     "Edit",
     "Read",
+    "Search",
+    "Write",
+    "Update",
     "GlobTool",
     "GrepTool",
     "WebFetch",
     "WebSearch",
-    "Write"
+    "Bash"
   ],
   "permissions": {
     "allow": [
-      "List(*)",
-      "Bash(ls:*)",
-      "Bash(git:*)",
+      "Create(**)",
+      "Edit(**)",
       "Read(**)",
-      "Edit(~/git/**)",
-      "WebFetch(domain:*)"
+      "Search(**)",
+      "Write(**)",
+      "Update(**)",
+      "GlobTool(**)",
+      "GrepTool(**)",
+      "WebFetch(**)",
+      "WebSearch(domain:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(grep:*)",
+      "Bash(node:*)",
+      "Bash(bun:*)",
+      "Bash(make:*)",
+      "Bash(melos:*)",
+      "Bash(mise:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo run:*)"
+    ],
+    "deny": [
+      "Bash(mv:)",
+      "Bash(rm:)",
+      "Bash(git config:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rebase:*)",
+      "Bash(git tag:*)",
+      "Bash(brew install:*)"
     ]
   },
-  "cleanupPeriodDays": 60
+  "cleanupPeriodDays": 30
 }

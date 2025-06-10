@@ -157,32 +157,37 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
   }
 end)
 
--- ベルイベントをキャッチして通知を出す
--- wezterm.on('trigger-bell', function(window, pane)
+-- ベルイベントを捕捉する
+config.audible_bell = 'Disabled'
 wezterm.on('bell', function(window, pane)
-  -- ベルを発生させたプロセスの名前を取得
-  local process_name = pane:get_foreground_process_name() or 'unknown'
-  -- 'claude' からの通知でなければ、この時点で処理を終了します。
-  if not string.find(process_name, 'claude') then
+  local proc_info = pane:get_foreground_process_info()
+  if not proc_info or not proc_info.argv then
     return
   end
+  local cmdline = table.concat(proc_info.argv, ' ')
 
-  -- 無効にしないと二つ音が鳴る
-  config.audible_bell = 'Disabled'
-  local sound_file = wezterm.home_dir .. '/.claude/perfect.mp3'
-  local title = 'タスク完了'
-  local message = pane:get_foreground_process_name() .. ' が完了しました'
-  if wezterm.target_triple:find 'darwin' then
-    wezterm.background_child_process { 'afplay', sound_file }
-    wezterm.background_child_process {
-      'osascript',
-      '-e',
-      string.format('display notification "%s" with title "%s"', message, title),
-    }
+  if string.find(cmdline, 'claude') then
+    -- Claude タスクが完了したときの処理
+    local sound_file = wezterm.home_dir .. '/.claude/perfect.mp3'
+    if os == 'macOS' then
+      wezterm.background_child_process { 'afplay', sound_file }
+    elseif os == 'linux' then
+      wezterm.background_child_process { 'aplay', sound_file }
+    end
+    -- ウィンドウに通知を表示
+    local process_name = proc_info.name or 'プロセス'
+    window:toast_notification('Claude タスク完了', process_name .. ' が完了しました', nil, 3000)
   else
-    wezterm.background_child_process { 'fplay', sound_file }
+    -- その他のプロセスのベルイベント
+    -- config.audible_bell = 'Disabled' にしているので、ここで音を鳴らす
+    if os == 'macOS' then
+      -- macOS の場合、デフォルトのサウンドを鳴らす
+      wezterm.background_child_process { 'afplay', '/System/Library/Sounds/Tink.aiff' }
+    elseif os == 'linux' then
+      wezterm.background_child_process { 'aplay', '/usr/share/sounds/freedesktop/stereo/bell.oga' }
+    end
+    return
   end
-  window:toast_notification(title, message, nil, 3000)
 end)
 
 config.leader = { key = 'Space', mods = 'SHIFT|CTRL' }
