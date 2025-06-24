@@ -299,7 +299,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank { higroup = 'IncSearch', timeout = 300 }
   end,
 })
-
+--
 -- ---------------------------------------------------------
 -- Lazy.nvim セットアップ
 -- ---------------------------------------------------------
@@ -957,28 +957,14 @@ require('lazy').setup {
 
     -- ウィンドウサイズ変更
     {
-      'mrjones2014/smart-splits.nvim',
-      enabled = vim.g.vscode == nil,
-      tag = 'v1.9.1',
-      event = 'WinNew',
+      'simeji/winresizer',
+      lazy = true,
+      keys = {
+        { '<C-e>', '<cmd>WinResizerStartResize<CR>', desc = 'Start Window Resize Mode' },
+      },
       config = function()
-        require('smart-splits').setup {
-          ignored_filetypes = {
-            'alpha',
-            'dropbar_menu',
-            'NvimTree',
-            'DiffviewFileHistory',
-            'DiffviewFiles',
-            'lazy',
-            'mason',
-            'toggleterm',
-          },
-          resize_mode = {
-            quit_key = '<CR>',
-            silent = true,
-          },
-        }
-        vim.keymap.set('n', '<C-e>', require('smart-splits').start_resize_mode, keymap_opts 'Start Window Resize Mode')
+        vim.g.winresizer_vert_resize = 5
+        vim.g.winresizer_horiz_resize = 5
       end,
     },
 
@@ -1376,6 +1362,53 @@ require('lazy').setup {
           case_insensitive_regex = false,
         }
       end,
+    },
+
+    -- Claude Code 用のヤンク
+    {
+      dir = '~/git/yank-for-claude.nvim',
+      enabled = vim.g.vscode == nil,
+      event = 'VeryLazy',
+      config = function()
+        require('yank-for-claude').setup()
+      end,
+      keys = {
+        -- Reference only
+        {
+          '<leader>y',
+          function()
+            require('yank-for-claude').yank_visual()
+          end,
+          mode = 'v',
+          desc = 'Yank for Claude',
+        },
+        {
+          '<leader>y',
+          function()
+            require('yank-for-claude').yank_line()
+          end,
+          mode = 'n',
+          desc = 'Yank line for Claude',
+        },
+
+        -- Reference + Code
+        {
+          '<leader>Y',
+          function()
+            require('yank-for-claude').yank_visual_with_content()
+          end,
+          mode = 'v',
+          desc = 'Yank with content',
+        },
+        {
+          '<leader>Y',
+          function()
+            require('yank-for-claude').yank_line_with_content()
+          end,
+          mode = 'n',
+          desc = 'Yank line with content',
+        },
+      },
     },
 
     -- クリップボード履歴
@@ -2474,13 +2507,27 @@ require('lazy').setup {
       event = 'VeryLazy',
       keys = {
         { '<C-t>t', '<Cmd>ToggleTerm direction=float<CR>' },
-        { '<C-t>f', '<Cmd>ToggleTerm direction=float<CR>' },
         { '<C-t>v', '<Cmd>ToggleTerm direction=vertical<CR>' },
         { '<C-t>h', '<Cmd>ToggleTerm direction=horizontal<CR>' },
       },
       opts = {
+        on_open = function(term)
+          vim.cmd 'wincmd H'
+          vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { buffer = term.bufnr })
+        end,
+        on_create = function(term) -- 例 : Esc でノーマルに戻す
+          vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { buffer = term.bufnr })
+        end,
         open_mapping = '<C-t>',
-        direction = 'float',
+        direction = 'vertical',
+        -- サイズ設定（画面の半分）
+        size = function(term)
+          if term.direction == 'horizontal' then
+            return vim.o.lines * 0.5 -- 画面の高さの50%
+          elseif term.direction == 'vertical' then
+            return vim.o.columns * 0.5 -- 画面の幅の50%
+          end
+        end,
         float_opts = {
           winblend = 10,
           border = 'curved',
@@ -2492,6 +2539,8 @@ require('lazy').setup {
       -- 'wasabeef/bufferin.nvim',
       dir = '~/git/bufferin.nvim',
       cmd = { 'Bufferin', 'BufferinToggle' },
+      enabled = vim.g.vscode == nil,
+      event = 'VeryLazy',
       config = function()
         require('bufferin').setup {
           show_window_layout = true,
@@ -2710,6 +2759,8 @@ require('lazy').setup {
     {
       dir = '~/git/melos.nvim',
       -- 'wasabeef/melos.nvim',
+      enabled = vim.g.vscode == nil,
+      event = 'VeryLazy',
       dependencies = { 'nvim-telescope/telescope.nvim' },
       config = function()
         require('melos').setup {
@@ -3045,12 +3096,13 @@ require('lazy').setup {
           ensure_installed = {
             -- LSP
             'gopls',
-            'lua-language-server', -- lua_ls
+            'lua-language-server',
             'typescript-language-server',
             'graphql-language-service-cli',
             'jdtls',
             'yaml-language-server',
             'json-lsp',
+            'rust_analyzer',
 
             -- Formatter/Linter
             'typos',
@@ -3148,29 +3200,72 @@ require('lazy').setup {
           },
         }
 
-        -- lua_ls
-        lspconfig.lua_ls.setup {
-          on_attach = on_attach,
-          capabilities = capabilities,
-          settings = {
-            runtime = {
-              version = 'LuaJIT',
-            },
-            Lua = {
-              diagnostics = {
-                globals = { 'vim' },
-              },
-              -- inlay hints
-              hint = { enable = true },
-            },
-          },
-        }
+        -- lspconfig.lua_ls.setup {
+        --   on_attach = on_attach,
+        --   capabilities = capabilities,
+        --   root_dir = function(fname)
+        --     -- プロジェクトマーカーが見つからない場合はnilを返してLSPを起動しない
+        --     local root = lspconfig.util.root_pattern('.git', '.luarc.json', 'init.lua')(fname)
+        --     if root and root ~= vim.env.HOME then
+        --       return root
+        --     end
+        --     -- ホームディレクトリではLSPを起動しない
+        --     return nil
+        --   end,
+        --   single_file_support = false, -- 単一ファイルサポートを無効化
+        --   settings = {
+        --     runtime = {
+        --       version = 'LuaJIT',
+        --     },
+        --     Lua = {
+        --       diagnostics = {
+        --         globals = { 'vim' },
+        --       },
+        --       -- inlay hints
+        --       hint = { enable = true },
+        --       workspace = {
+        --         -- ホームディレクトリ全体のスキャンを無効化
+        --         checkThirdParty = false,
+        --         ignoreDir = {
+        --           '~/.*',
+        --           '~/*',
+        --         },
+        --         library = {},
+        --         -- ワークスペースのスキャンを無効化
+        --         maxPreload = 100,
+        --         preloadFileSize = 50,
+        --       },
+        --       telemetry = {
+        --         enable = false,
+        --       },
+        --     },
+        --   },
+        -- }
 
         -- graphql
         lspconfig.graphql.setup {
           on_attach = on_attach,
           capabilities = capabilities,
         }
+
+        -- rust_analyzer
+        -- lspconfig.rust_analyzer.setup {
+        --   on_attach = on_attach,
+        --   capabilities = capabilities,
+        --   settings = {
+        --     rust_analyzer = {
+        --       hints = {
+        --         rangeVariableTypes = true,
+        --         parameterNames = true,
+        --         constantValues = true,
+        --         assignVariableTypes = true,
+        --         compositeLiteralFields = true,
+        --         compositeLiteralTypes = true,
+        --         functionTypeParameters = true,
+        --       },
+        --     },
+        --   },
+        -- }
 
         -- gopls
         lspconfig.gopls.setup {
@@ -4099,6 +4194,20 @@ require('lazy').setup {
           focus_on_open = true,
           dismiss_on_move = false,
           force_close = true,
+          -- 複数LSPクライアントがある場合、最初の1つのみ使用
+          post_open_hook = function(bufnr, winnr)
+            -- 既存のプレビューウィンドウを閉じて単一表示に制限
+            local preview_wins = {}
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_get_config(win).relative ~= '' then
+                table.insert(preview_wins, win)
+              end
+            end
+            -- 最初以外のプレビューウィンドウを閉じる
+            for i = 2, #preview_wins do
+              pcall(vim.api.nvim_win_close, preview_wins[i], true)
+            end
+          end,
           bufhidden = 'wipe',
           stack_floating_preview_windows = true,
           preview_window_title = { enable = true, position = 'left' },

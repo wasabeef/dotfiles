@@ -21,14 +21,14 @@ apply = ["defer"]
 [plugins.prompt]
 ## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/
 inline = '''
-autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-setopt prompt_subst
-zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
-zstyle ':vcs_info:*' enable git
+# autoload -Uz vcs_info
+# precmd_vcs_info() { vcs_info }
+# precmd_functions+=( precmd_vcs_info )
+# setopt prompt_subst
+# zstyle ':vcs_info:git:*' formats '%F{240}%b%f'
+# zstyle ':vcs_info:*' enable git
 PROMPT='%(?.%F{blue} .%F{red}󰈸 )%f '
-RPROMPT=\$vcs_info_msg_0_
+# RPROMPT=\$vcs_info_msg_0_
 
 zstyle ':completion:*:default' menu select=2
 eval "$($(brew --prefix coreutils)/libexec/gnubin/dircolors -b)"
@@ -186,6 +186,14 @@ function _rust() {
   export PATH=$HOME/.cargo/bin:$PATH
 }
 zsh-defer _rust
+'''
+
+[plugins.gw]
+inline = '''
+# Git Workers shell integration
+if [[ -f /opt/homebrew/opt/gw/share/gw/shell/gw.sh ]]; then
+  source /opt/homebrew/opt/gw/share/gw/shell/gw.sh
+fi
 '''
 
 [plugins.ccache]

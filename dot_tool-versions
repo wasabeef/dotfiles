@@ -1,7 +1,7 @@
 java temurin-17.0.11+9
 kotlin 1.9.25
 gradle 8.9
-nodejs 22.3.0
+nodejs 24.2.0
 flutter 3.32.1
 dart 3.8.1
 python 3.12.4
@@ -10,3 +10,4 @@ rust stable
 ruby 3.3.5
 cocoapods 1.16.2
 shorebird 1.6.30
+bun 1.2.15

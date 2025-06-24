@@ -10,30 +10,6 @@ local os = (function()
   end
 end)()
 
--- zen mode
--- wezterm.on('user-var-changed', function(window, pane, name, value)
---   local overrides = window:get_config_overrides() or {}
---   if name == 'ZEN_MODE' then
---     local incremental = value:find '+'
---     local number_value = tonumber(value)
---     if incremental ~= nil then
---       while number_value > 0 do
---         window:perform_action(wezterm.action.IncreaseFontSize, pane)
---         number_value = number_value - 1
---       end
---       overrides.enable_tab_bar = false
---     elseif number_value < 0 then
---       window:perform_action(wezterm.action.ResetFontSize, pane)
---       overrides.font_size = nil
---       overrides.enable_tab_bar = true
---     else
---       overrides.font_size = number_value
---       overrides.enable_tab_bar = false
---     end
---   end
---   window:set_config_overrides(overrides)
--- end)
-
 -- Common settings
 local config = wezterm.config_builder()
 
@@ -52,7 +28,7 @@ config.window_padding = {
   left = '0.5cell',
   right = '0.5cell',
   top = '0.5cell',
-  bottom = '0.5cell',
+  bottom = '0cell',
 }
 config.window_frame = {
   active_titlebar_bg = '#0F2536',
@@ -112,6 +88,7 @@ config.tab_bar_at_bottom = true
 config.tab_max_width = 32
 config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
+
 wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width)
   local background = '#282c34'
   local foreground = '#dcd7ba'
@@ -138,6 +115,8 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = ''
   elseif title == 'mcfly' then
     title = ''
+  elseif title == 'emu' then
+    title = '🦤'
   else
     -- title = ''
     title = title
@@ -155,6 +134,129 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     { Foreground = { Color = edge_foreground } },
     { Text = '' },
   }
+end)
+
+-- 右下に Git ブランチを表示する
+config.status_update_interval = 1000
+
+-- Git コマンドを安全に実行するヘルパー関数
+local function safe_git_command(cwd, ...)
+  local success, stdout = wezterm.run_child_process {
+    'git',
+    '-C',
+    cwd,
+    ...,
+  }
+  if success then
+    return stdout:gsub('\n', '')
+  end
+  return nil
+end
+
+-- Git URL からリポジトリ名を抽出
+local function extract_repo_name_from_url(url)
+  if not url then
+    return nil
+  end
+
+  -- パターンマッチング
+  -- https://github.com/JUMPTOON/app.git → app
+  -- git@github.com:JUMPTOON/app.git → app
+  local repo_name = url:match '([^/]+)%.git$' or url:match '([^/]+)$'
+
+  return repo_name
+end
+
+wezterm.on('update-right-status', function(window, pane)
+  local elements = {}
+
+  local cwd = pane:get_current_working_dir()
+  if not cwd then
+    window:set_right_status ''
+    return
+  end
+
+  local cwd_path = cwd.file_path
+
+  -- Git リポジトリかチェック
+  if not safe_git_command(cwd_path, 'rev-parse', '--git-dir') then
+    window:set_right_status ''
+    return
+  end
+
+  -- リポジトリ名を取得（優先順位）
+  local repo_name = nil
+
+  -- 方法1: remote origin の URL から取得
+  local remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.origin.url')
+  if remote_url then
+    repo_name = extract_repo_name_from_url(remote_url)
+  end
+
+  -- 方法2: 他の remote から取得
+  if not repo_name then
+    local remotes = safe_git_command(cwd_path, 'remote')
+    if remotes and remotes ~= '' then
+      -- 最初の remote を使用
+      local first_remote = remotes:match '([^\n]+)'
+      if first_remote then
+        remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.' .. first_remote .. '.url')
+        if remote_url then
+          repo_name = extract_repo_name_from_url(remote_url)
+        end
+      end
+    end
+  end
+
+  -- 方法3: toplevel のディレクトリ名（通常のリポジトリ）
+  if not repo_name then
+    local toplevel = safe_git_command(cwd_path, 'rev-parse', '--show-toplevel')
+    if toplevel then
+      -- worktree の場合、.bare や .git を含む親ディレクトリを探す
+      if toplevel:match '%.bare/' or toplevel:match '%.git/' then
+        -- パスから bareリポジトリ名を抽出
+        repo_name = toplevel:match '([^/]+)%.bare' or toplevel:match '([^/]+)%.git'
+      else
+        -- 通常のリポジトリ
+        repo_name = toplevel:match '([^/]+)$'
+      end
+    end
+  end
+
+  -- 方法4: 現在のディレクトリ名（最終手段）
+  if not repo_name then
+    local dir_name = cwd_path:match '([^/]+)$'
+    -- .git 拡張子を削除
+    repo_name = dir_name:gsub('%.git$', '')
+  end
+
+  -- ブランチ名を取得
+  local branch = safe_git_command(cwd_path, 'branch', '--show-current')
+  if not branch or branch == '' then
+    local ref = safe_git_command(cwd_path, 'symbolic-ref', '--short', 'HEAD')
+    if ref then
+      branch = ref
+    else
+      branch = safe_git_command(cwd_path, 'rev-parse', '--short', 'HEAD')
+    end
+  end
+
+  -- 表示
+  if repo_name then
+    table.insert(elements, { Foreground = { Color = '#569CD6' } })
+    table.insert(elements, { Text = '  ' })
+    table.insert(elements, { Foreground = { Color = '#808080' } })
+    table.insert(elements, { Text = repo_name })
+
+    if branch then
+      table.insert(elements, { Foreground = { Color = '#4EC9B0' } })
+      table.insert(elements, { Text = '   ' })
+      table.insert(elements, { Foreground = { Color = '#909090' } })
+      table.insert(elements, { Text = branch .. ' ' })
+    end
+  end
+
+  window:set_right_status(wezterm.format(elements))
 end)
 
 -- ベルイベントを捕捉する
@@ -190,13 +292,18 @@ wezterm.on('bell', function(window, pane)
   end
 end)
 
-config.leader = { key = 'Space', mods = 'SHIFT|CTRL' }
+config.leader = { key = 'Space', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
   -- Window
   { key = 'n', mods = 'SHIFT|CTRL', action = wezterm.action.ToggleFullScreen },
   { key = 'Enter', mods = 'ALT', action = wezterm.action.DisableDefaultAssignment },
-  { key = 's', mods = 'LEADER', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
-  { key = 'v', mods = 'LEADER', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' } },
+  { key = 's', mods = 'LEADER', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' } },
+  { key = 'v', mods = 'LEADER', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = 'q', mods = 'LEADER', action = wezterm.action.CloseCurrentPane { confirm = true } },
+  { key = 'h', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Left' },
+  { key = 'j', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Down' },
+  { key = 'k', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Up' },
+  { key = 'l', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Right' },
   { key = 'c', mods = 'SHIFT|CTRL', action = wezterm.action { CopyTo = 'Clipboard' } },
   { key = 'u', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(-0.5) },
   { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(0.5) },
