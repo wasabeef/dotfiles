@@ -153,6 +153,168 @@ local function safe_git_command(cwd, ...)
   return nil
 end
 
+-- Claude 関連の定数
+local CLAUDE_CONSTANTS = {
+  -- プロセスフィルタリング
+  EXCLUDE_PATTERNS = { 'npm', 'node', 'claude%-code' },
+  INVALID_TTY = '??',
+  
+  -- 実行判定の閾値
+  CPU_ACTIVE_THRESHOLD = 1.0,     -- CPU使用率がこれ以上なら実行中
+  CPU_CHECK_THRESHOLD = 0.1,      -- FDチェックを行う最小CPU使用率
+  FD_ACTIVE_THRESHOLD = 15,       -- ファイルディスクリプタ数の閾値
+  
+  -- 表示
+  EMOJI_IDLE = '🤖',
+  EMOJI_RUNNING = '🚗',
+  COLOR_ICON = '#FF6B6B',
+  
+  -- システムコマンド
+  PS_PATH = '/bin/ps',
+}
+
+-- Claude ステータスを要素に追加するヘルパー関数
+local function add_claude_status_to_elements(elements, sessions)
+  if #sessions > 0 then
+    table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.COLOR_ICON } })
+    for i, session in ipairs(sessions) do
+      local emoji = session.running and CLAUDE_CONSTANTS.EMOJI_RUNNING or CLAUDE_CONSTANTS.EMOJI_IDLE
+      table.insert(elements, { Text = emoji })
+      if i < #sessions then
+        table.insert(elements, { Text = ' ' })
+      end
+    end
+    table.insert(elements, { Text = ' ' })
+  end
+end
+
+-- Claude プロセス情報を取得するヘルパー関数
+local function get_claude_status()
+  local success, stdout = wezterm.run_child_process {
+    'pgrep',
+    '-fl',
+    'claude',
+  }
+
+  if not success or not stdout or stdout == '' then
+    return { sessions = {} }
+  end
+
+  local pids = {}
+  for line in stdout:gmatch '[^\n]+' do
+    local pid, cmd = line:match '^(%d+)%s+(.+)'
+    if pid and cmd then
+      -- "claude" で始まり、除外パターンを含まないプロセスのみ
+      if cmd:match '^claude' then
+        local should_exclude = false
+        for _, pattern in ipairs(CLAUDE_CONSTANTS.EXCLUDE_PATTERNS) do
+          if cmd:match(pattern) then
+            should_exclude = true
+            break
+          end
+        end
+        if not should_exclude then
+          table.insert(pids, pid)
+        end
+      end
+    end
+  end
+
+  if #pids == 0 then
+    return { sessions = {} }
+  end
+
+  -- TTY ごとにプロセスをグループ化し、実行状態もチェック
+  local tty_groups = {}
+  for _, pid in ipairs(pids) do
+    local ps_success, ps_stdout = wezterm.run_child_process {
+      CLAUDE_CONSTANTS.PS_PATH,
+      '-p',
+      pid,
+      '-o',
+      'tty,stat,pcpu,rss',
+    }
+
+    if ps_success and ps_stdout then
+      local lines = {}
+      for line in ps_stdout:gmatch '[^\n]+' do
+        table.insert(lines, line)
+      end
+
+      if #lines >= 2 then
+        local data_line = lines[2]
+        local tty, stat, pcpu, rss = data_line:match '%s*(%S+)%s+(%S+)%s+(%S+)%s+(%S+)'
+
+        if tty and stat and tty ~= CLAUDE_CONSTANTS.INVALID_TTY then
+          if not tty_groups[tty] then
+            tty_groups[tty] = { pids = {}, running = false }
+          end
+          table.insert(
+            tty_groups[tty].pids,
+            { pid = pid, stat = stat, pcpu = tonumber(pcpu) or 0, rss = tonumber(rss) or 0 }
+          )
+        end
+      end
+    end
+  end
+
+  -- 各TTYグループの実行状態を複合的に判定
+  for tty, group in pairs(tty_groups) do
+    local is_active = false
+
+    for _, proc_info in ipairs(group.pids) do
+      -- 1. プロセス状態による判定
+      if proc_info.stat:match '^[RD]' then
+        is_active = true
+        break
+      end
+
+      -- 2. CPU使用率による判定（S状態でも）
+      if proc_info.stat:match '^S' and proc_info.pcpu >= CLAUDE_CONSTANTS.CPU_ACTIVE_THRESHOLD then
+        is_active = true
+        break
+      end
+
+      -- 3. ファイルディスクリプタ数をチェック（コスト高いので条件付き）
+      if proc_info.pcpu > CLAUDE_CONSTANTS.CPU_CHECK_THRESHOLD then
+        local lsof_success, lsof_stdout = wezterm.run_child_process {
+          'lsof',
+          '-p',
+          proc_info.pid,
+          '-t',
+        }
+        if lsof_success and lsof_stdout then
+          local fd_count = 0
+          for _ in lsof_stdout:gmatch '[^\n]+' do
+            fd_count = fd_count + 1
+          end
+          -- アクティブなFDが多い場合
+          if fd_count > CLAUDE_CONSTANTS.FD_ACTIVE_THRESHOLD then
+            is_active = true
+            break
+          end
+        end
+      end
+    end
+
+    group.running = is_active
+  end
+
+  -- TTY名でソートしてセッション順序を保持
+  local tty_list = {}
+  for tty, _ in pairs(tty_groups) do
+    table.insert(tty_list, tty)
+  end
+  table.sort(tty_list)
+
+  local sessions = {}
+  for _, tty in ipairs(tty_list) do
+    table.insert(sessions, { running = tty_groups[tty].running })
+  end
+
+  return { sessions = sessions }
+end
+
 -- Git URL からリポジトリ名を抽出
 local function extract_repo_name_from_url(url)
   if not url then
@@ -170,9 +332,14 @@ end
 wezterm.on('update-right-status', function(window, pane)
   local elements = {}
 
+  -- Claude ステータスを取得
+  local claude_status = get_claude_status()
+
   local cwd = pane:get_current_working_dir()
   if not cwd then
-    window:set_right_status ''
+    -- Claude ステータスのみ表示
+    add_claude_status_to_elements(elements, claude_status.sessions)
+    window:set_right_status(wezterm.format(elements))
     return
   end
 
@@ -180,7 +347,9 @@ wezterm.on('update-right-status', function(window, pane)
 
   -- Git リポジトリかチェック
   if not safe_git_command(cwd_path, 'rev-parse', '--git-dir') then
-    window:set_right_status ''
+    -- Claude ステータスのみ表示
+    add_claude_status_to_elements(elements, claude_status.sessions)
+    window:set_right_status(wezterm.format(elements))
     return
   end
 
@@ -241,7 +410,7 @@ wezterm.on('update-right-status', function(window, pane)
     end
   end
 
-  -- 表示
+  -- Git 表示
   if repo_name then
     table.insert(elements, { Foreground = { Color = '#569CD6' } })
     table.insert(elements, { Text = '  ' })
@@ -252,9 +421,15 @@ wezterm.on('update-right-status', function(window, pane)
       table.insert(elements, { Foreground = { Color = '#4EC9B0' } })
       table.insert(elements, { Text = '   ' })
       table.insert(elements, { Foreground = { Color = '#909090' } })
-      table.insert(elements, { Text = branch .. ' ' })
+      table.insert(elements, { Text = branch })
     end
   end
+
+  -- Claude ステータス表示（最後に表示）
+  if #claude_status.sessions > 0 then
+    table.insert(elements, { Text = '  ' })
+  end
+  add_claude_status_to_elements(elements, claude_status.sessions)
 
   window:set_right_status(wezterm.format(elements))
 end)
