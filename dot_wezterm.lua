@@ -158,17 +158,17 @@ local CLAUDE_CONSTANTS = {
   -- プロセスフィルタリング
   EXCLUDE_PATTERNS = { 'npm', 'node', 'claude%-code' },
   INVALID_TTY = '??',
-  
+
   -- 実行判定の閾値
-  CPU_ACTIVE_THRESHOLD = 1.0,     -- CPU使用率がこれ以上なら実行中
-  CPU_CHECK_THRESHOLD = 0.1,      -- FDチェックを行う最小CPU使用率
-  FD_ACTIVE_THRESHOLD = 15,       -- ファイルディスクリプタ数の閾値
-  
+  CPU_ACTIVE_THRESHOLD = 1.0, -- CPU使用率がこれ以上なら実行中
+  CPU_CHECK_THRESHOLD = 0.1, -- FDチェックを行う最小CPU使用率
+  FD_ACTIVE_THRESHOLD = 15, -- ファイルディスクリプタ数の閾値
+
   -- 表示
   EMOJI_IDLE = '🤖',
   EMOJI_RUNNING = '🚗',
   COLOR_ICON = '#FF6B6B',
-  
+
   -- システムコマンド
   PS_PATH = '/bin/ps',
 }
@@ -232,7 +232,7 @@ local function get_claude_status()
       '-p',
       pid,
       '-o',
-      'tty,stat,pcpu,rss',
+      'tty,stat,pcpu,rss,ppid',
     }
 
     if ps_success and ps_stdout then
@@ -243,16 +243,19 @@ local function get_claude_status()
 
       if #lines >= 2 then
         local data_line = lines[2]
-        local tty, stat, pcpu, rss = data_line:match '%s*(%S+)%s+(%S+)%s+(%S+)%s+(%S+)'
+        local tty, stat, pcpu, rss, ppid = data_line:match '%s*(%S+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)'
 
         if tty and stat and tty ~= CLAUDE_CONSTANTS.INVALID_TTY then
-          if not tty_groups[tty] then
-            tty_groups[tty] = { pids = {}, running = false }
+          -- 孤児プロセス（ppid=1）は除外
+          if ppid and ppid ~= '1' then
+            if not tty_groups[tty] then
+              tty_groups[tty] = { pids = {}, running = false }
+            end
+            table.insert(
+              tty_groups[tty].pids,
+              { pid = pid, stat = stat, pcpu = tonumber(pcpu) or 0, rss = tonumber(rss) or 0 }
+            )
           end
-          table.insert(
-            tty_groups[tty].pids,
-            { pid = pid, stat = stat, pcpu = tonumber(pcpu) or 0, rss = tonumber(rss) or 0 }
-          )
         end
       end
     end
