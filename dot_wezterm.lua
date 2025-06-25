@@ -137,7 +137,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
 end)
 
 -- 右下に Git ブランチを表示する
-config.status_update_interval = 1000
+config.status_update_interval = 1000 -- 1秒ごとに更新
 
 -- Git コマンドを安全に実行するヘルパー関数
 local function safe_git_command(cwd, ...)
@@ -166,8 +166,19 @@ local CLAUDE_CONSTANTS = {
 
   -- 表示
   EMOJI_IDLE = '🤖',
-  EMOJI_RUNNING = '🚗',
+  EMOJI_RUNNING = '⚡',
   COLOR_ICON = '#FF6B6B',
+
+  -- Git表示色
+  GIT_ICON_COLOR = '#569CD6',
+  GIT_REPO_COLOR = '#808080',
+  GIT_BRANCH_ICON_COLOR = '#4EC9B0',
+  GIT_BRANCH_COLOR = '#909090',
+
+  -- スペーシング
+  SPACING_SMALL = '  ',
+  SPACING_MEDIUM = '   ',
+  SPACING_SINGLE = ' ',
 
   -- システムコマンド
   PS_PATH = '/bin/ps',
@@ -181,11 +192,75 @@ local function add_claude_status_to_elements(elements, sessions)
       local emoji = session.running and CLAUDE_CONSTANTS.EMOJI_RUNNING or CLAUDE_CONSTANTS.EMOJI_IDLE
       table.insert(elements, { Text = emoji })
       if i < #sessions then
-        table.insert(elements, { Text = ' ' })
+        table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
       end
     end
-    table.insert(elements, { Text = ' ' })
+    table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
   end
+end
+
+-- プロセスの実行状態をチェックするヘルパー関数
+local function check_process_running(pid)
+  local ps_success, ps_stdout = wezterm.run_child_process {
+    CLAUDE_CONSTANTS.PS_PATH,
+    '-p',
+    tostring(pid),
+    '-o',
+    'stat,pcpu,rss',
+  }
+
+  if not ps_success or not ps_stdout then
+    return false
+  end
+
+  local lines = {}
+  for line in ps_stdout:gmatch '[^\n]+' do
+    table.insert(lines, line)
+  end
+
+  if #lines < 2 then
+    return false
+  end
+
+  local data_line = lines[2]
+  local stat, pcpu, rss = data_line:match '%s*(%S+)%s+(%S+)%s+(%S+)'
+
+  if not stat then
+    return false
+  end
+
+  -- 1. プロセス状態による判定
+  if stat:match '^[RD]' then
+    return true
+  end
+
+  local cpu_usage = tonumber(pcpu) or 0
+
+  -- 2. CPU使用率による判定
+  if cpu_usage >= CLAUDE_CONSTANTS.CPU_ACTIVE_THRESHOLD then
+    return true
+  end
+
+  -- 3. ファイルディスクリプタ数をチェック（コスト高いので条件付き）
+  if cpu_usage > CLAUDE_CONSTANTS.CPU_CHECK_THRESHOLD then
+    local lsof_success, lsof_stdout = wezterm.run_child_process {
+      'lsof',
+      '-p',
+      tostring(pid),
+      '-t',
+    }
+    if lsof_success and lsof_stdout then
+      local fd_count = 0
+      for _ in lsof_stdout:gmatch '[^\n]+' do
+        fd_count = fd_count + 1
+      end
+      if fd_count > CLAUDE_CONSTANTS.FD_ACTIVE_THRESHOLD then
+        return true
+      end
+    end
+  end
+
+  return false
 end
 
 -- Claude プロセス情報を取得するヘルパー関数
@@ -247,7 +322,7 @@ local function get_claude_status()
 
         if tty and stat and tty ~= CLAUDE_CONSTANTS.INVALID_TTY then
           -- 孤児プロセス（ppid=1）は除外
-          if ppid and ppid ~= '1' then
+          if ppid and tonumber(ppid) ~= 1 then
             if not tty_groups[tty] then
               tty_groups[tty] = { pids = {}, running = false }
             end
@@ -385,12 +460,16 @@ wezterm.on('update-right-status', function(window, pane)
     local toplevel = safe_git_command(cwd_path, 'rev-parse', '--show-toplevel')
     if toplevel then
       -- worktree の場合、.bare や .git を含む親ディレクトリを探す
+      local bare_pattern = '([^/]+)%.bare'
+      local git_pattern = '([^/]+)%.git'
+      local dir_pattern = '([^/]+)$'
+
       if toplevel:match '%.bare/' or toplevel:match '%.git/' then
         -- パスから bareリポジトリ名を抽出
-        repo_name = toplevel:match '([^/]+)%.bare' or toplevel:match '([^/]+)%.git'
+        repo_name = toplevel:match(bare_pattern) or toplevel:match(git_pattern)
       else
         -- 通常のリポジトリ
-        repo_name = toplevel:match '([^/]+)$'
+        repo_name = toplevel:match(dir_pattern)
       end
     end
   end
@@ -415,27 +494,33 @@ wezterm.on('update-right-status', function(window, pane)
 
   -- Git 表示
   if repo_name then
-    table.insert(elements, { Foreground = { Color = '#569CD6' } })
-    table.insert(elements, { Text = '  ' })
-    table.insert(elements, { Foreground = { Color = '#808080' } })
+    table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.GIT_ICON_COLOR } })
+    table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SMALL })
+    table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.GIT_REPO_COLOR } })
     table.insert(elements, { Text = repo_name })
 
     if branch then
-      table.insert(elements, { Foreground = { Color = '#4EC9B0' } })
-      table.insert(elements, { Text = '   ' })
-      table.insert(elements, { Foreground = { Color = '#909090' } })
+      table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.GIT_BRANCH_ICON_COLOR } })
+      table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_MEDIUM })
+      table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.GIT_BRANCH_COLOR } })
       table.insert(elements, { Text = branch })
     end
   end
 
   -- Claude ステータス表示（最後に表示）
   if #claude_status.sessions > 0 then
-    table.insert(elements, { Text = '  ' })
+    table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SMALL })
   end
   add_claude_status_to_elements(elements, claude_status.sessions)
 
   window:set_right_status(wezterm.format(elements))
 end)
+
+-- タブがアクティブになった時にも更新
+wezterm.on('tab-active', function(tab, pane, window)
+  wezterm.emit('update-right-status', window, pane)
+end)
+
 
 -- ベルイベントを捕捉する
 config.audible_bell = 'Disabled'
@@ -511,6 +596,7 @@ config.keys = {
   { key = 'j', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Down' },
   { key = 'k', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Up' },
   { key = 'l', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Right' },
+  { key = 'c', mods = 'LEADER', action = wezterm.action.ActivateCopyMode },
   { key = 'c', mods = 'SHIFT|CTRL', action = wezterm.action { CopyTo = 'Clipboard' } },
   { key = 'u', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(-0.5) },
   { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(0.5) },
