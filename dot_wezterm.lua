@@ -292,6 +292,35 @@ wezterm.on('bell', function(window, pane)
   end
 end)
 
+-- 自動ウィンドウ分割機能
+-- 特定のコマンドを実行した際にウィンドウを自動分割する関数
+local function create_auto_split_layout(window, pane)
+  -- 現在のペインを基準に分割を実行
+  -- まず左右に分割（40:60）
+  local right_pane = pane:split {
+    direction = 'Right',
+    size = 0.6,
+  }
+
+  -- 右側のペインを上下に分割（70:30）
+  wezterm.sleep_ms(100) -- 分割が完了するまで少し待機
+  right_pane:split {
+    direction = 'Bottom',
+    size = 0.3,
+  }
+  -- カスタムコマンド実行時の自動分割
+  -- シェルで以下のようなエイリアスを設定して使用：
+  -- alias mysplit='echo -e "\033]1337;SetUserVar=wezterm_auto_split=MQ==\a"'
+  wezterm.on('user-var-changed', function(window, pane, name, value)
+    if name == 'wezterm_auto_split' and value == 'MQ==' then -- MQ== は base64 エンコードされた "1"
+      create_auto_split_layout(window, pane)
+    end
+  end)
+
+  -- 元のペイン（左側）にフォーカスを戻す
+  pane:activate()
+end
+
 config.leader = { key = 'Space', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
   -- Window
@@ -309,6 +338,13 @@ config.keys = {
   { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollByPage(0.5) },
   { key = 'g', mods = 'SHIFT|CTRL', action = wezterm.action.ScrollToBottom },
   { key = 'Q', mods = 'SHIFT|CTRL', action = wezterm.action.SendString '\x1b[81;6u' },
+
+  -- 自動分割レイアウトを作成するキーバインド
+  {
+    key = 'w',
+    mods = 'LEADER',
+    action = wezterm.action_callback(create_auto_split_layout),
+  },
 
   -- Tab
   { key = '{', mods = 'SHIFT|ALT', action = wezterm.action.MoveTabRelative(-1) },
