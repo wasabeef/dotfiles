@@ -117,8 +117,9 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = ''
   elseif title == 'emu' then
     title = '🦤'
+  elseif title == '' then
+    title = '🤖'
   else
-    -- title = ''
     title = title
   end
 
@@ -129,7 +130,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     { Background = { Color = background } },
     { Foreground = { Color = foreground } },
     { Attribute = { Intensity = tab.is_active and 'Bold' or 'Normal' } },
-    { Text = ' ' .. (tab.tab_index + 1) .. ': ' .. title .. '  ' },
+    { Text = ' ' .. title .. '  ' },
     { Background = { Color = edge_background } },
     { Foreground = { Color = edge_foreground } },
     { Text = '' },
@@ -520,7 +521,6 @@ end)
 wezterm.on('tab-active', function(tab, pane, window)
   wezterm.emit('update-right-status', window, pane)
 end)
-
 
 -- ベルイベントを捕捉する
 config.audible_bell = 'Disabled'

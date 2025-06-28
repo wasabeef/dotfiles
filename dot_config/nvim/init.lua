@@ -3003,18 +3003,18 @@ require('lazy').setup {
     },
 
     -- Windsurf
-    {
-      'Exafunction/windsurf.nvim',
-      enabled = vim.g.vscode == nil,
-      event = 'VeryLazy',
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-        'hrsh7th/nvim-cmp',
-      },
-      config = function()
-        require('codeium').setup {}
-      end,
-    },
+    -- {
+    --   'Exafunction/windsurf.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   event = 'VeryLazy',
+    --   dependencies = {
+    --     'nvim-lua/plenary.nvim',
+    --     'hrsh7th/nvim-cmp',
+    --   },
+    --   config = function()
+    --     require('codeium').setup {}
+    --   end,
+    -- },
 
     -- ブラウザ検索
     {
@@ -3156,25 +3156,25 @@ require('lazy').setup {
         }
 
         -- yamlls
-        lspconfig.yamlls.setup {
-          on_attach = on_attach,
-          capabilities = capabilities,
-          settings = {
-            yaml = {
-              completion = true,
-              validate = true,
-              schemas = require('schemastore').yaml.schemas {
-                extra = {
-                  {
-                    url = 'https://raw.githubusercontent.com/blaugold/melos-code/main/melos.yaml.schema.json',
-                    name = 'Melos',
-                    fileMatch = 'melos.yaml',
-                  },
-                },
-              },
-            },
-          },
-        }
+        -- lspconfig.yamlls.setup {
+        --   on_attach = on_attach,
+        --   capabilities = capabilities,
+        --   settings = {
+        --     yaml = {
+        --       completion = true,
+        --       validate = true,
+        --       schemas = require('schemastore').yaml.schemas {
+        --         extra = {
+        --           {
+        --             url = 'https://raw.githubusercontent.com/blaugold/melos-code/main/melos.yaml.schema.json',
+        --             name = 'Melos',
+        --             fileMatch = 'melos.yaml',
+        --           },
+        --         },
+        --       },
+        --     },
+        --   },
+        -- }
 
         -- tsserver
         local inlayHints = {
