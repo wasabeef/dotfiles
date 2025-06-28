@@ -123,6 +123,9 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = title
   end
 
+  -- Claude ステータス（機能無効化）
+  local claude_emoji = ''
+
   return {
     { Background = { Color = edge_background } },
     { Foreground = { Color = edge_foreground } },
@@ -130,7 +133,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     { Background = { Color = background } },
     { Foreground = { Color = foreground } },
     { Attribute = { Intensity = tab.is_active and 'Bold' or 'Normal' } },
-    { Text = ' ' .. title .. '  ' },
+    { Text = ' ' .. title .. claude_emoji .. '  ' },
     { Background = { Color = edge_background } },
     { Foreground = { Color = edge_foreground } },
     { Text = '' },
@@ -185,20 +188,34 @@ local CLAUDE_CONSTANTS = {
   PS_PATH = '/bin/ps',
 }
 
--- Claude ステータスを要素に追加するヘルパー関数
-local function add_claude_status_to_elements(elements, sessions)
-  if #sessions > 0 then
-    table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.COLOR_ICON } })
-    for i, session in ipairs(sessions) do
-      local emoji = session.running and CLAUDE_CONSTANTS.EMOJI_RUNNING or CLAUDE_CONSTANTS.EMOJI_IDLE
-      table.insert(elements, { Text = emoji })
-      if i < #sessions then
-        table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
-      end
-    end
-    table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
+-- Claude ステータス表示
+local function add_claude_status_to_elements(elements, tab_sessions, window)
+  if not tab_sessions or #tab_sessions == 0 then
+    return
   end
+
+  -- タブ順序に従ってステータスを表示
+  for i, tab_session in ipairs(tab_sessions) do
+    if tab_session.has_claude then
+      -- Claudeタブの場合
+      table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.COLOR_ICON } })
+      local emoji = tab_session.running and CLAUDE_CONSTANTS.EMOJI_RUNNING or CLAUDE_CONSTANTS.EMOJI_IDLE
+      table.insert(elements, { Text = emoji })
+    else
+      -- 非Claudeタブの場合
+      table.insert(elements, { Foreground = { Color = '#8B4513' } })
+      table.insert(elements, { Text = '🧔' })
+    end
+    
+    -- 最後以外はスペースを追加
+    if i < #tab_sessions then
+      table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
+    end
+  end
+  
+  table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
 end
+
 
 -- プロセスの実行状態をチェックするヘルパー関数
 local function check_process_running(pid)
@@ -264,135 +281,87 @@ local function check_process_running(pid)
   return false
 end
 
--- Claude プロセス情報を取得するヘルパー関数
-local function get_claude_status()
-  local success, stdout = wezterm.run_child_process {
-    'pgrep',
-    '-fl',
-    'claude',
-  }
-
-  if not success or not stdout or stdout == '' then
-    return { sessions = {} }
+-- Claude プロセス情報を取得する関数
+local function get_claude_status(window)
+  -- エラーハンドリング
+  if not window then
+    return { tab_sessions = {} }
   end
 
-  local pids = {}
-  for line in stdout:gmatch '[^\n]+' do
-    local pid, cmd = line:match '^(%d+)%s+(.+)'
-    if pid and cmd then
-      -- "claude" で始まり、除外パターンを含まないプロセスのみ
-      if cmd:match '^claude' then
-        local should_exclude = false
-        for _, pattern in ipairs(CLAUDE_CONSTANTS.EXCLUDE_PATTERNS) do
-          if cmd:match(pattern) then
-            should_exclude = true
-            break
-          end
-        end
-        if not should_exclude then
-          table.insert(pids, pid)
-        end
-      end
+  local success, result = pcall(function()
+    local mux_window = window:mux_window()
+    if not mux_window then
+      return { tab_sessions = {} }
     end
-  end
 
-  if #pids == 0 then
-    return { sessions = {} }
-  end
+    local tabs = mux_window:tabs()
+    if not tabs then
+      return { tab_sessions = {} }
+    end
 
-  -- TTY ごとにプロセスをグループ化し、実行状態もチェック
-  local tty_groups = {}
-  for _, pid in ipairs(pids) do
-    local ps_success, ps_stdout = wezterm.run_child_process {
-      CLAUDE_CONSTANTS.PS_PATH,
-      '-p',
-      pid,
-      '-o',
-      'tty,stat,pcpu,rss,ppid',
-    }
+    local tab_sessions = {}
 
-    if ps_success and ps_stdout then
-      local lines = {}
-      for line in ps_stdout:gmatch '[^\n]+' do
-        table.insert(lines, line)
-      end
+    for tab_index, tab in ipairs(tabs) do
+      local has_claude = false
+      local is_running = false
 
-      if #lines >= 2 then
-        local data_line = lines[2]
-        local tty, stat, pcpu, rss, ppid = data_line:match '%s*(%S+)%s+(%S+)%s+(%S+)%s+(%S+)%s+(%S+)'
-
-        if tty and stat and tty ~= CLAUDE_CONSTANTS.INVALID_TTY then
-          -- 孤児プロセス（ppid=1）は除外
-          if ppid and tonumber(ppid) ~= 1 then
-            if not tty_groups[tty] then
-              tty_groups[tty] = { pids = {}, running = false }
+      -- タブ内の全ペインをチェック
+      local tab_success, panes = pcall(function() return tab:panes() end)
+      if tab_success and panes then
+        for _, pane in ipairs(panes) do
+          local proc_success, proc_info = pcall(function() return pane:get_foreground_process_info() end)
+          if proc_success and proc_info then
+            -- Claudeプロセスかチェック（プロセス名またはargvで）
+            local is_claude_process = false
+            if proc_info.name and proc_info.name:match('^claude') then
+              is_claude_process = true
+            elseif proc_info.argv and #proc_info.argv > 0 and proc_info.argv[1]:match('^claude') then
+              is_claude_process = true
             end
-            table.insert(
-              tty_groups[tty].pids,
-              { pid = pid, stat = stat, pcpu = tonumber(pcpu) or 0, rss = tonumber(rss) or 0 }
-            )
+            
+            if is_claude_process then
+              -- 除外パターンをチェック
+              local should_exclude = false
+              local cmdline = table.concat(proc_info.argv or {}, ' ')
+              for _, pattern in ipairs(CLAUDE_CONSTANTS.EXCLUDE_PATTERNS) do
+                if cmdline:match(pattern) then
+                  should_exclude = true
+                  break
+                end
+              end
+
+              if not should_exclude then
+                has_claude = true
+                -- 実行状態をチェック
+                if proc_info.pid then
+                  is_running = check_process_running(proc_info.pid)
+                end
+                break -- タブ内に1つでもClaudeがあれば十分
+              end
+            end
           end
         end
       end
-    end
-  end
 
-  -- 各TTYグループの実行状態を複合的に判定
-  for tty, group in pairs(tty_groups) do
-    local is_active = false
-
-    for _, proc_info in ipairs(group.pids) do
-      -- 1. プロセス状態による判定
-      if proc_info.stat:match '^[RD]' then
-        is_active = true
-        break
-      end
-
-      -- 2. CPU使用率による判定（S状態でも）
-      if proc_info.stat:match '^S' and proc_info.pcpu >= CLAUDE_CONSTANTS.CPU_ACTIVE_THRESHOLD then
-        is_active = true
-        break
-      end
-
-      -- 3. ファイルディスクリプタ数をチェック（コスト高いので条件付き）
-      if proc_info.pcpu > CLAUDE_CONSTANTS.CPU_CHECK_THRESHOLD then
-        local lsof_success, lsof_stdout = wezterm.run_child_process {
-          'lsof',
-          '-p',
-          proc_info.pid,
-          '-t',
-        }
-        if lsof_success and lsof_stdout then
-          local fd_count = 0
-          for _ in lsof_stdout:gmatch '[^\n]+' do
-            fd_count = fd_count + 1
-          end
-          -- アクティブなFDが多い場合
-          if fd_count > CLAUDE_CONSTANTS.FD_ACTIVE_THRESHOLD then
-            is_active = true
-            break
-          end
-        end
-      end
+      -- タブごとのClaude情報を記録
+      table.insert(tab_sessions, {
+        tab_index = tab_index,
+        has_claude = has_claude,
+        running = is_running
+      })
     end
 
-    group.running = is_active
-  end
+    return { tab_sessions = tab_sessions }
+  end)
 
-  -- TTY名でソートしてセッション順序を保持
-  local tty_list = {}
-  for tty, _ in pairs(tty_groups) do
-    table.insert(tty_list, tty)
+  if success then
+    return result
+  else
+    -- エラー時は空のセッションを返す
+    return { tab_sessions = {} }
   end
-  table.sort(tty_list)
-
-  local sessions = {}
-  for _, tty in ipairs(tty_list) do
-    table.insert(sessions, { running = tty_groups[tty].running })
-  end
-
-  return { sessions = sessions }
 end
+
 
 -- Git URL からリポジトリ名を抽出
 local function extract_repo_name_from_url(url)
@@ -412,12 +381,13 @@ wezterm.on('update-right-status', function(window, pane)
   local elements = {}
 
   -- Claude ステータスを取得
-  local claude_status = get_claude_status()
+  local claude_status = get_claude_status(window)
+  
 
   local cwd = pane:get_current_working_dir()
   if not cwd then
     -- Claude ステータスのみ表示
-    add_claude_status_to_elements(elements, claude_status.sessions)
+    add_claude_status_to_elements(elements, claude_status.tab_sessions, window)
     window:set_right_status(wezterm.format(elements))
     return
   end
@@ -427,7 +397,7 @@ wezterm.on('update-right-status', function(window, pane)
   -- Git リポジトリかチェック
   if not safe_git_command(cwd_path, 'rev-parse', '--git-dir') then
     -- Claude ステータスのみ表示
-    add_claude_status_to_elements(elements, claude_status.sessions)
+    add_claude_status_to_elements(elements, claude_status.tab_sessions, window)
     window:set_right_status(wezterm.format(elements))
     return
   end
@@ -509,17 +479,23 @@ wezterm.on('update-right-status', function(window, pane)
   end
 
   -- Claude ステータス表示（最後に表示）
-  if #claude_status.sessions > 0 then
+  if #claude_status.tab_sessions > 0 then
     table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SMALL })
   end
-  add_claude_status_to_elements(elements, claude_status.sessions)
+  add_claude_status_to_elements(elements, claude_status.tab_sessions)
 
   window:set_right_status(wezterm.format(elements))
 end)
 
--- タブがアクティブになった時にも更新
+-- タブがアクティブになった時にも更新（即座更新）
 wezterm.on('tab-active', function(tab, pane, window)
+  -- すぐに更新をトリガー
   wezterm.emit('update-right-status', window, pane)
+  
+  -- 少し遅れてもう一度更新（確実性向上）
+  wezterm.time.call_after(0.1, function()
+    wezterm.emit('update-right-status', window, pane)
+  end)
 end)
 
 -- ベルイベントを捕捉する
