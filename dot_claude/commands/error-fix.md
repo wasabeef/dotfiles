@@ -40,9 +40,7 @@ cat error.log
 
 ```bash
 # エラーとソースコードを一緒に表示
-echo "=== ERROR ==="
 cat error.log
-echo "=== SOURCE ==="
 cat main.rs
 
 # Claude に依頼
