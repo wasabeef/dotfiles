@@ -1,6 +1,6 @@
 ## Git Commit
 
-AI を使って適切なコミットメッセージを生成します。
+Claude Code を使って適切なコミットメッセージを生成します。
 
 ### 使い方
 
@@ -9,12 +9,14 @@ AI を使って適切なコミットメッセージを生成します。
 git status --short
 git diff
 
-# 2. ステージング
-git add .
+# 2. ステージングされた変更を Claude に送る
+git diff --staged
 
-# 3. コミットメッセージを生成してコミット
-git diff --staged | gemini --prompt "Conventional Commits 形式でコミットメッセージを生成: <type>(<scope>): <subject>
-プロジェクトで指定されたプレフィックスがある場合はそれを使用"
+# 3. Claude に依頼
+「この変更から Conventional Commits 形式で1行のコミットメッセージを生成して」
+
+# 4. 生成されたメッセージでコミット
+git commit -m "生成されたメッセージ"
 ```
 
 ### Conventional Commits
@@ -29,14 +31,27 @@ git diff --staged | gemini --prompt "Conventional Commits 形式でコミット�
 
 **注意**: プロジェクトで独自のプレフィックスが指定されている場合は、それに従います。
 
-### ワンライナー
+### 効率的な使い方
 
 ```bash
-# 関数として定義
-gsc() {
-  git add -A && \
-  git commit -m "$(git diff --staged | gemini --prompt 'Conventional Commits 形式でコミットメッセージを 1 行で生成。プロジェクト独自のプレフィックスがあればそれを使用')"
-}
+# 1. 変更をステージング
+git add .
+
+# 2. 差分を確認しながら Claude に依頼
+git diff --staged && echo "この変更から 1 行のコミットメッセージを生成して"
+
+# 3. Claude が生成したメッセージをコピーしてコミット
+git commit -m "feat: add user authentication system"
+```
+
+### 依頼文の例
+
+```
+「この変更から Conventional Commits 形式で 1 行のコミットメッセージを生成して。50文字以内で」
+
+「バグ修正のコミットメッセージを作って」
+
+「この diff から適切なコミットメッセージを1行で」
 ```
 
 **注意**: 自動プッシュはしません。必要に応じて `git push` を実行してください。

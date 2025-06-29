@@ -1,43 +1,49 @@
 ## Code Explain
 
-選択したコードの動作を詳しく解説します。
+Claude Code を使ってコードの動作を詳しく解説します。
 
 ### 使い方
 
 ```bash
-# ファイル全体を解説
-cat <file> | gemini --prompt "このコードの動作を初心者にもわかりやすく解説"
+# 1. ファイル内容を表示
+cat <file>
+
+# 2. Claude に依頼
+「このコードの動作を初心者にもわかりやすく解説して」
 
 # 特定の関数を解説
-grep -A 20 "function_name" <file> | gemini --prompt "この関数の目的と処理フローを説明"
-
-# 複雑なロジックを解説
-sed -n '10,30p' <file> | gemini --prompt "このコードブロックのロジックを step by step で解説"
+grep -A 20 "function_name" <file>
+「この関数の目的と処理フローを説明して」
 ```
 
 ### 活用例
 
 1. **Rust の所有権を理解**
    ```bash
-   cat main.rs | gemini --prompt "Rust の所有権とライフタイムの観点から解説"
+   cat main.rs
+   「Rust の所有権とライフタイムの観点から解説して」
    ```
 
 2. **アルゴリズムの解説**
    ```bash
-   grep -A 50 "quicksort" sort.rs | gemini --prompt "このソートアルゴリズムの仕組みと計算量を解説"
+   grep -A 50 "quicksort" sort.rs
+   「このソートアルゴリズムの仕組みと計算量を解説して」
    ```
 
 3. **デザインパターンの説明**
    ```bash
-   cat factory.rs | gemini --prompt "使用されているデザインパターンとその利点を説明"
+   cat factory.rs
+   「使用されているデザインパターンとその利点を説明して」
    ```
 
-### オプション
+### 依頼文の例
 
-```bash
-# 図解付きで説明
-cat <file> | gemini --prompt "処理の流れを図解（ASCII アート）付きで説明"
+```
+「このコードの処理の流れを図解（ASCII アート）付きで説明して」
 
-# 改善提案付き
-cat <file> | gemini --prompt "コードの動作を解説し、改善点も提案"
+「コードの動作を解説し、改善点も提案して」
+
+「このコードのパフォーマンス上の問題があれば指摘して」
+
+「初心者向けに1行ずつ詳しく解説して」
 ```

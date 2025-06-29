@@ -123,7 +123,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
     title = title
   end
 
-  -- Claude ステータス（機能無効化）
+  -- Claude ステータス（元の無効化状態に戻す）
   local claude_emoji = ''
 
   return {
