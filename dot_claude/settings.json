@@ -24,7 +24,6 @@
     "defaultMode": "acceptAll",
     "allow": [
       "Bash(*)",
-      "Bash(gh:*)",
       "Edit(**)",
       "GlobTool(**)",
       "GrepTool(**)",
