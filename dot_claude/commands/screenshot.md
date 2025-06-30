@@ -1,44 +1,91 @@
 ## Screenshot
 
-スクリーンショットを取得します。
+macOS でスクリーンショットを撮影し、画像を解析します。
 
 ### 使い方
 
 ```bash
-# ウィンドウを選択
-screencapture -W screenshot.png
+# ウィンドウを指定して撮影（デフォルト）
+/screenshot
+/screenshot --window
 
-# 範囲を選択
-screencapture -i screenshot.png
+# 画面全体を撮影
+/screenshot --full
 
-# 全画面
-screencapture -x screenshot.png
+# 範囲を選択して撮影
+/screenshot --crop
 ```
 
-### Claude Code との連携
+### 基本例
 
 ```bash
-# スクリーンショットを撮って Claude に解析依頼
-screencapture -i screenshot.png
-「このスクリーンショットを解析してください」
+# ウィンドウを撮影して解析
+/screenshot --window
+「撮影した画面を解析して」
 
-# エラー画面を撮影して解決策を求める
-screencapture -W error.png
-「このエラーの解決方法を提案してください」
+# 範囲を選択して解析
+/screenshot --crop
+「選択した範囲の内容を説明して」
+
+# 全画面を撮影して解析
+/screenshot --full
+「画面全体の構成を分析して」
 ```
 
-### 便利なオプション
+### Claude との連携
 
 ```bash
-# 5秒後にキャプチャ
-screencapture -T 5 delayed.png
+# 特定の問題なし - 状況解析
+/screenshot --crop
+（Claude が自動的に画面の内容を解析し、要素や構成を説明）
 
-# クリップボードにコピー
-screencapture -c -i
+# UI/UX の問題分析
+/screenshot --window
+「この UI の問題点と改善案を提案して」
 
-# PDF 形式で保存
-screencapture -t pdf document.pdf
+# エラー解析
+/screenshot --window
+「このエラーメッセージの原因と解決方法を教えて」
 
-# 影なしでウィンドウキャプチャ
-screencapture -o -W window.png
+# デザインレビュー
+/screenshot --full
+「このデザインを UX の観点から評価して」
+
+# コード解析
+/screenshot --crop
+「このコードの問題点を指摘して」
+
+# データ可視化の分析
+/screenshot --crop
+「このグラフから読み取れる傾向を分析して」
 ```
+
+### 詳細例
+
+```bash
+# 複数の観点から分析
+/screenshot --window
+「この画面について以下を分析して：
+1. UI の一貫性
+2. アクセシビリティの問題
+3. 改善提案」
+
+# 比較分析用に複数撮影
+/screenshot --window
+# （before の画像を保存）
+# 変更を加える
+/screenshot --window
+# （after の画像を保存）
+「before と after の画像を比較して、変更点と改善効果を分析して」
+
+# 特定要素にフォーカス
+/screenshot --crop
+「選択したボタンのデザインが他の要素と調和しているか評価して」
+```
+
+### 注意事項
+
+- オプションを指定しない場合は `--window` として扱われます
+- `/screenshot` コマンドは自動的にタイムスタンプ付きのファイル名で保存します
+- 特に解析内容を指定しない場合、Claude は画面の内容を認識し、要素や構成を説明します
+- 具体的な問題や観点を指定すると、より焦点を絞った分析が可能です

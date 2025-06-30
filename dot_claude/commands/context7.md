@@ -1,38 +1,50 @@
-## Context7 検索
+## Context7
 
-MCP の context7 を使って関連ドキュメントを検索します。
+技術ドキュメントを MCP の Context7 で検索します。
 
 ### 使い方
 
-Claude Code で context7 を使うには、会話の中で以下のように依頼します：
-
-```
-「context7 で React hooks について検索して」
-「context7 でエラーハンドリングの情報を探して」
+```bash
+# Claude に依頼する形式
+「context7 で [検索キーワード] について検索して」
 ```
 
-### フォールバック
-
-context7 で情報が見つからない場合：
+### 基本例
 
 ```bash
-# Web 検索を使用
-gemini --prompt "WebSearch: <検索クエリ>"
+# React hooks の調査
+「context7 で React hooks について検索して」
+
+# エラー解決方法の検索
+「context7 で TypeScript の型エラーについて調べて」
 ```
 
-### 活用例
+### Claude との連携
 
-1. **技術調査**
-   ```
-   「context7 で Rust の所有権システムについて調べて」
-   ```
+```bash
+# 技術調査の依頼
+「context7 で Rust の所有権システムについて調べて、初心者向けに解説して」
 
-2. **エラー解決**
-   ```
-   「context7 で Rust の borrow checker エラーの解決方法を検索」
-   ```
+# エラー解決の依頼
+「context7 で Python の ImportError の一般的な原因と解決方法を検索して」
 
-3. **ベストプラクティス**
-   ```
-   「context7 で Rust のエラーハンドリングのベストプラクティスを探して」
-   ```
+# ベストプラクティスの確認
+「context7 で React のパフォーマンス最適化のベストプラクティスを探して」
+```
+
+### 詳細例
+
+```bash
+# 複数の観点から調査
+「context7 で GraphQL について以下の観点で調べて：
+1. 基本的な概念と REST API との違い
+2. 実装方法とベストプラクティス
+3. よくある問題と解決方法」
+
+# 特定のバージョンや環境での調査
+「context7 で Next.js 14 の新機能について検索して、App Router の使い方を中心に説明して」
+```
+
+### 注意事項
+
+Context7 で情報が見つからない場合は、Claude が自動的に Web 検索など他の方法を提案します。

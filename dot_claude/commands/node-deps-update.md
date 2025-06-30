@@ -1,98 +1,105 @@
-## Node.js Dependencies Update
+## Node Dependencies Update
 
-package.json の依存関係を安全に最新化し、変更点を分析してコード更新を支援します。
+Node.js プロジェクトの依存関係を安全に更新します。
 
 ### 使い方
 
 ```bash
-# 1. 現在の依存関係を確認
-cat package.json
+# 依存関係の状態を確認して Claude に依頼
 npm outdated
+「package.json の依存関係を最新バージョンに更新して」
+```
 
-# 2. Claude に依頼
-「package.json の依存関係を最新化して。Release Notes や CHANGELOG から破壊的変更を特定し、必要なコード修正も提案して」
+### 基本例
+
+```bash
+# 現在の依存関係を確認
+cat package.json
+「この Node.js プロジェクトの依存関係を分析して更新可能なパッケージを教えて」
+
+# アップデート可能な一覧を確認
+npm outdated
+「これらのパッケージの更新における危険度を分析して」
+```
+
+### Claude との連携
+
+```bash
+# 包括的な依存関係更新
+cat package.json
+「Node.js の依存関係を分析し、以下を実行して：
+1. 各パッケージの最新バージョンを調査
+2. 破壊的変更の有無を確認
+3. 危険度を評価（🟢 安全・🟡 注意・🔴 危険）
+4. 必要なコード変更を提案
+5. 更新版 package.json を生成」
+
+# 安全な段階的更新
+npm outdated
+「メジャーバージョンアップを避けて、安全にアップデート可能なパッケージのみ更新して」
+
+# 特定パッケージの更新影響分析
+「express を最新バージョンに更新した場合の影響と必要な変更を教えて」
+```
+
+### 詳細例
+
+```bash
+# Release Notes を含む詳細分析
+cat package.json && npm outdated
+「依存関係を分析し、各パッケージについて：
+1. 現在 → 最新バージョン
+2. 危険度評価（🟢🟡🔴）
+3. 主な変更点（CHANGELOG から）
+4. 必要なコード修正
+をテーブル形式で提示して」
+
+# TypeScript プロジェクトの型定義考慮
+cat package.json tsconfig.json
+「TypeScript の型定義も含めて依存関係を更新し、型エラーが発生しないように更新計画を立てて」
+```
+
+### 危険度の基準
+
+```
+🟢 安全：
+- パッチバージョンアップ（1.2.3 → 1.2.4）
+- バグ修正のみ
+- 後方互換性保証
+
+🟡 注意：
+- マイナーバージョンアップ（1.2.3 → 1.3.0）
+- 新機能追加
+- 非推奨警告あり
+
+🔴 危険：
+- メジャーバージョンアップ（1.2.3 → 2.0.0）
+- 破壊的変更
+- API の削除・変更
 ```
 
 ### 更新の実行
 
 ```bash
-# バックアップ作成と更新
+# バックアップ作成
 cp package.json package.json.backup
+cp package-lock.json package-lock.json.backup
+
+# 更新実行
 npm update
-npm list --depth=0
 
-# 段階的更新（安全）
-npm update --save
-npm test
-```
-
-### 依頼文の例
-
-```
-「package.json の依存関係を分析し、以下を実行してください：
-
-1. 各パッケージの最新バージョンを調査
-2. Release Notes や CHANGELOG から破壊的変更を特定
-3. 危険度を評価（安全・注意・危険）
-4. 必要なコード変更を具体的に提案
-5. 更新版 package.json を生成
-
-重点確認項目：
-- API の変更
-- 非推奨機能の削除
-- 新しい必須パラメータ
-- TypeScript 型定義の変更」
-```
-
-### 危険度分析の観点
-
-```
-🟢 安全（Green）：
-- パッチバージョンアップ（bug fix のみ）
-- 後方互換性が保証されている
-- Release Notes や CHANGELOG に破壊的変更の記載なし
-
-🟡 注意（Yellow）：
-- マイナーバージョンアップ
-- 新機能追加があるが後方互換
-- 非推奨警告があるが動作する
-
-🔴 危険（Red）：
-- メジャーバージョンアップ
-- 破壊的変更あり
-- API の削除や変更
-- 必須パラメータの追加
-```
-
-### 自動コード修正の例
-
-```javascript
-// 例：axios パッケージの更新
-// 旧バージョン（axios ^0.27.0）
-import axios from 'axios';
-const response = await axios.get('/api/users');
-
-// 新バージョン（axios ^1.0.0）
-import axios from 'axios';
-const response = await axios.get('/api/users', {
-  validateStatus: function (status) {
-    return status < 500; // デフォルト動作が変更されている場合
-  }
-});
-```
-
-### 更新後の確認
-
-```bash
+# 更新後の確認
 npm test
 npm run build
 npm audit
 ```
 
-### 緊急時の復元
+### 注意事項
+
+更新後は必ず動作確認を実施してください。問題が発生した場合は以下で復元：
 
 ```bash
-# 問題が発生した場合
 cp package.json.backup package.json
+cp package-lock.json.backup package-lock.json
 npm install
 ```
