@@ -1,0 +1,10 @@
+# --- delta で diff を表示するカスタムバインド ---
+bind diff   D >sh -c "git show %(commit) | delta --paging always"
+bind diff   S >sh -c "git show %(commit) | delta --paging always --side-by-side"
+
+bind stage  D >sh -c "git diff HEAD -- %(file) | delta --paging always"
+bind stage  S >sh -c "git diff HEAD -- %(file) | delta --paging always --side-by-side"
+
+bind status D >sh -c "git diff HEAD -- %(file) | delta --paging always"
+bind status S >sh -c "git diff HEAD -- %(file) | delta --paging always --side-by-side"
+
