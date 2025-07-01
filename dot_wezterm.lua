@@ -89,6 +89,115 @@ config.tab_max_width = 32
 config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
 
+-- Git コマンドを安全に実行するヘルパー関数
+local function safe_git_command(cwd, ...)
+  local success, stdout = wezterm.run_child_process {
+    'git',
+    '-C',
+    cwd,
+    ...,
+  }
+  if success then
+    return stdout:gsub('\n', '')
+  end
+  return nil
+end
+
+-- Git URL からリポジトリ名を抽出
+local function extract_repo_name_from_url(url)
+  if not url then
+    return nil
+  end
+
+  -- パターンマッチング
+  -- https://github.com/JUMPTOON/app.git → app
+  -- git@github.com:JUMPTOON/app.git → app
+  local repo_name = url:match '([^/]+)%.git$' or url:match '([^/]+)$'
+
+  return repo_name
+end
+
+-- プロセス名をアイコンに変換
+local function process_to_icon(process_name)
+  if process_name == 'nvim' then
+    return ''
+  elseif process_name == 'zsh' then
+    return ''
+  elseif process_name == 'bash' then
+    return '󱆃'
+  elseif process_name == 'sl' then
+    return '󰔬'
+  elseif process_name == 'lazygit' or process_name == 'tig' then
+    return ''
+  elseif process_name == 'wezterm' then
+    return ''
+  elseif process_name == 'mcfly' then
+    return ''
+  elseif process_name == 'emu' then
+    return '🦤'
+  elseif process_name == '' then
+    return '🤖'
+  else
+    return process_name
+  end
+end
+
+-- Git リポジトリ名を取得
+local function get_git_repo_name(cwd_path)
+  -- Git リポジトリかチェック
+  if not safe_git_command(cwd_path, 'rev-parse', '--git-dir') then
+    return nil
+  end
+
+  local repo_name = nil
+
+  -- remote origin から取得
+  local remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.origin.url')
+  if remote_url then
+    repo_name = extract_repo_name_from_url(remote_url)
+  end
+
+  -- 他の remote から取得
+  if not repo_name then
+    local remotes = safe_git_command(cwd_path, 'remote')
+    if remotes and remotes ~= '' then
+      local first_remote = remotes:match '([^\n]+)'
+      if first_remote then
+        remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.' .. first_remote .. '.url')
+        if remote_url then
+          repo_name = extract_repo_name_from_url(remote_url)
+        end
+      end
+    end
+  end
+
+  -- toplevel のディレクトリ名
+  if not repo_name then
+    local toplevel = safe_git_command(cwd_path, 'rev-parse', '--show-toplevel')
+    if toplevel then
+      local bare_pattern = '([^/]+)%.bare'
+      local git_pattern = '([^/]+)%.git'
+      local dir_pattern = '([^/]+)$'
+
+      if toplevel:match '%.bare/' or toplevel:match '%.git/' then
+        repo_name = toplevel:match(bare_pattern) or toplevel:match(git_pattern)
+      else
+        repo_name = toplevel:match(dir_pattern)
+      end
+    end
+  end
+
+  -- 現在のディレクトリ名（最終手段）
+  if not repo_name then
+    local dir_name = cwd_path:match '([^/]+)$'
+    if dir_name then
+      repo_name = dir_name:gsub('%.git$', '')
+    end
+  end
+
+  return repo_name
+end
+
 wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width)
   local background = '#282c34'
   local foreground = '#dcd7ba'
@@ -100,27 +209,15 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
   end
   local edge_foreground = background
 
-  local title = tab.active_pane.title
-  if title == 'nvim' then
-    title = ''
-  elseif title == 'zsh' then
-    title = ''
-  elseif title == 'bash' then
-    title = '󱆃'
-  elseif title == 'sl' then
-    title = '󰔬'
-  elseif title == 'lazygit' or title == 'tig' then
-    title = ''
-  elseif title == 'wezterm' then
-    title = ''
-  elseif title == 'mcfly' then
-    title = ''
-  elseif title == 'emu' then
-    title = '🦤'
-  elseif title == '' then
-    title = '🤖'
+  -- タブタイトルを決定
+  local title = ''
+
+  -- タブのカスタムタイトルをチェック（リポジトリ名が設定されている場合）
+  if tab.tab_title and tab.tab_title ~= '' then
+    title = tab.tab_title
   else
-    title = title
+    -- デフォルトのタイトルを取得してアイコンに変換
+    title = process_to_icon(tab.active_pane.title)
   end
 
   -- Claude ステータス（元の無効化状態に戻す）
@@ -142,20 +239,6 @@ end)
 
 -- 右下に Git ブランチを表示する
 config.status_update_interval = 1000 -- 1秒ごとに更新
-
--- Git コマンドを安全に実行するヘルパー関数
-local function safe_git_command(cwd, ...)
-  local success, stdout = wezterm.run_child_process {
-    'git',
-    '-C',
-    cwd,
-    ...,
-  }
-  if success then
-    return stdout:gsub('\n', '')
-  end
-  return nil
-end
 
 -- Claude 関連の定数
 local CLAUDE_CONSTANTS = {
@@ -206,16 +289,15 @@ local function add_claude_status_to_elements(elements, tab_sessions, window)
       table.insert(elements, { Foreground = { Color = '#8B4513' } })
       table.insert(elements, { Text = '🧔' })
     end
-    
+
     -- 最後以外はスペースを追加
     if i < #tab_sessions then
       table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
     end
   end
-  
+
   table.insert(elements, { Text = CLAUDE_CONSTANTS.SPACING_SINGLE })
 end
-
 
 -- プロセスの実行状態をチェックするヘルパー関数
 local function check_process_running(pid)
@@ -306,19 +388,23 @@ local function get_claude_status(window)
       local is_running = false
 
       -- タブ内の全ペインをチェック
-      local tab_success, panes = pcall(function() return tab:panes() end)
+      local tab_success, panes = pcall(function()
+        return tab:panes()
+      end)
       if tab_success and panes then
         for _, pane in ipairs(panes) do
-          local proc_success, proc_info = pcall(function() return pane:get_foreground_process_info() end)
+          local proc_success, proc_info = pcall(function()
+            return pane:get_foreground_process_info()
+          end)
           if proc_success and proc_info then
             -- Claudeプロセスかチェック（プロセス名またはargvで）
             local is_claude_process = false
-            if proc_info.name and proc_info.name:match('^claude') then
+            if proc_info.name and proc_info.name:match '^claude' then
               is_claude_process = true
-            elseif proc_info.argv and #proc_info.argv > 0 and proc_info.argv[1]:match('^claude') then
+            elseif proc_info.argv and #proc_info.argv > 0 and proc_info.argv[1]:match '^claude' then
               is_claude_process = true
             end
-            
+
             if is_claude_process then
               -- 除外パターンをチェック
               local should_exclude = false
@@ -347,7 +433,7 @@ local function get_claude_status(window)
       table.insert(tab_sessions, {
         tab_index = tab_index,
         has_claude = has_claude,
-        running = is_running
+        running = is_running,
       })
     end
 
@@ -362,27 +448,11 @@ local function get_claude_status(window)
   end
 end
 
-
--- Git URL からリポジトリ名を抽出
-local function extract_repo_name_from_url(url)
-  if not url then
-    return nil
-  end
-
-  -- パターンマッチング
-  -- https://github.com/JUMPTOON/app.git → app
-  -- git@github.com:JUMPTOON/app.git → app
-  local repo_name = url:match '([^/]+)%.git$' or url:match '([^/]+)$'
-
-  return repo_name
-end
-
 wezterm.on('update-right-status', function(window, pane)
   local elements = {}
 
   -- Claude ステータスを取得
   local claude_status = get_claude_status(window)
-  
 
   local cwd = pane:get_current_working_dir()
   if not cwd then
@@ -394,62 +464,14 @@ wezterm.on('update-right-status', function(window, pane)
 
   local cwd_path = cwd.file_path
 
-  -- Git リポジトリかチェック
-  if not safe_git_command(cwd_path, 'rev-parse', '--git-dir') then
-    -- Claude ステータスのみ表示
+  -- Git リポジトリ名を取得
+  local repo_name = get_git_repo_name(cwd_path)
+
+  if not repo_name then
+    -- Git リポジトリでない場合は Claude ステータスのみ表示
     add_claude_status_to_elements(elements, claude_status.tab_sessions, window)
     window:set_right_status(wezterm.format(elements))
     return
-  end
-
-  -- リポジトリ名を取得（優先順位）
-  local repo_name = nil
-
-  -- 方法1: remote origin の URL から取得
-  local remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.origin.url')
-  if remote_url then
-    repo_name = extract_repo_name_from_url(remote_url)
-  end
-
-  -- 方法2: 他の remote から取得
-  if not repo_name then
-    local remotes = safe_git_command(cwd_path, 'remote')
-    if remotes and remotes ~= '' then
-      -- 最初の remote を使用
-      local first_remote = remotes:match '([^\n]+)'
-      if first_remote then
-        remote_url = safe_git_command(cwd_path, 'config', '--get', 'remote.' .. first_remote .. '.url')
-        if remote_url then
-          repo_name = extract_repo_name_from_url(remote_url)
-        end
-      end
-    end
-  end
-
-  -- 方法3: toplevel のディレクトリ名（通常のリポジトリ）
-  if not repo_name then
-    local toplevel = safe_git_command(cwd_path, 'rev-parse', '--show-toplevel')
-    if toplevel then
-      -- worktree の場合、.bare や .git を含む親ディレクトリを探す
-      local bare_pattern = '([^/]+)%.bare'
-      local git_pattern = '([^/]+)%.git'
-      local dir_pattern = '([^/]+)$'
-
-      if toplevel:match '%.bare/' or toplevel:match '%.git/' then
-        -- パスから bareリポジトリ名を抽出
-        repo_name = toplevel:match(bare_pattern) or toplevel:match(git_pattern)
-      else
-        -- 通常のリポジトリ
-        repo_name = toplevel:match(dir_pattern)
-      end
-    end
-  end
-
-  -- 方法4: 現在のディレクトリ名（最終手段）
-  if not repo_name then
-    local dir_name = cwd_path:match '([^/]+)$'
-    -- .git 拡張子を削除
-    repo_name = dir_name:gsub('%.git$', '')
   end
 
   -- ブランチ名を取得
@@ -476,6 +498,16 @@ wezterm.on('update-right-status', function(window, pane)
       table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.GIT_BRANCH_COLOR } })
       table.insert(elements, { Text = branch })
     end
+
+    -- アクティブなタブのタイトルを更新
+    local mux_window = window:mux_window()
+    if mux_window then
+      local active_tab = mux_window:active_tab()
+      if active_tab and active_tab:tab_id() == pane:tab():tab_id() then
+        -- タブタイトルをリポジトリ名に設定
+        active_tab:set_title(repo_name)
+      end
+    end
   end
 
   -- Claude ステータス表示（最後に表示）
@@ -487,15 +519,66 @@ wezterm.on('update-right-status', function(window, pane)
   window:set_right_status(wezterm.format(elements))
 end)
 
+-- タブタイトルを更新する関数
+local function update_tab_titles(window)
+  if not window then
+    return
+  end
+
+  local mux_window = window:mux_window()
+  if not mux_window then
+    return
+  end
+
+  local tabs = mux_window:tabs()
+  if not tabs then
+    return
+  end
+
+  for _, tab in ipairs(tabs) do
+    local panes = tab:panes()
+    if panes and #panes > 0 then
+      local pane = panes[1] -- 最初のペインを使用
+      local cwd = pane:get_current_working_dir()
+
+      if cwd then
+        local cwd_path = cwd.file_path
+        local repo_name = get_git_repo_name(cwd_path)
+
+        if repo_name then
+          tab:set_title(repo_name)
+        end
+      end
+    end
+  end
+end
+
 -- タブがアクティブになった時にも更新（即座更新）
 wezterm.on('tab-active', function(tab, pane, window)
   -- すぐに更新をトリガー
   wezterm.emit('update-right-status', window, pane)
-  
+
+  -- タブタイトルを更新
+  update_tab_titles(window)
+
   -- 少し遅れてもう一度更新（確実性向上）
   wezterm.time.call_after(0.1, function()
     wezterm.emit('update-right-status', window, pane)
+    update_tab_titles(window)
   end)
+end)
+
+-- ウィンドウフォーカス時にタブタイトルを更新
+wezterm.on('window-focus-changed', function(window, pane)
+  update_tab_titles(window)
+end)
+
+-- 新しいタブ作成時にタブタイトルを更新
+wezterm.on('new-tab-button-click', function(window, pane, button, default_action)
+  wezterm.time.call_after(0.5, function()
+    update_tab_titles(window)
+  end)
+  return false
 end)
 
 -- ベルイベントを捕捉する
