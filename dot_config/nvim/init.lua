@@ -2519,15 +2519,15 @@ require('lazy').setup {
           vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { buffer = term.bufnr })
         end,
         open_mapping = '<C-t>',
-        direction = 'vertical',
+        -- direction = 'horizontal',
         -- サイズ設定（画面の半分）
-        size = function(term)
-          if term.direction == 'horizontal' then
-            return vim.o.lines * 0.5 -- 画面の高さの50%
-          elseif term.direction == 'vertical' then
-            return vim.o.columns * 0.5 -- 画面の幅の50%
-          end
-        end,
+        -- size = function(term)
+        --   if term.direction == 'horizontal' then
+        --     return vim.o.lines * 0.5 -- 画面の高さの50%
+        --   elseif term.direction == 'vertical' then
+        --     return vim.o.columns * 0.5 -- 画面の幅の50%
+        --   end
+        -- end,
         float_opts = {
           winblend = 10,
           border = 'curved',
@@ -2883,15 +2883,15 @@ require('lazy').setup {
     },
 
     -- Markdown プレビュー
-    {
-      'MeanderingProgrammer/render-markdown.nvim',
-      enabled = vim.g.vscode == nil,
-      dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-      ---@module 'render-markdown'
-      ---@type render.md.UserConfig
-      opts = { filetypes = { 'markdown', 'mdc' } },
-      ft = { 'markdown', 'mdc' },
-    },
+    -- {
+    --   'MeanderingProgrammer/render-markdown.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    --   ---@module 'render-markdown'
+    --   ---@type render.md.UserConfig
+    --   opts = { filetypes = { 'markdown', 'mdc' } },
+    --   ft = { 'markdown', 'mdc' },
+    -- },
 
     -- Markdown テーブル整形
     {

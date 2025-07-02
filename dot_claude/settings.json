@@ -92,5 +92,13 @@
       "Bash(wget * | sh)",
       "Bash(yum install *)"
     ]
+  },
+  "Stop": {
+    "": {
+      "hooks": [{
+        "type": "command",
+        "command": "echo '{\"userMessage\": \"✅ 完了！\\n\\n💡 ヒント: /show-plan でプランを確認できます\"}'"
+      }]
+    }
   }
 }

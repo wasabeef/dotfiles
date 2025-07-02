@@ -27,6 +27,17 @@
 
 - `ut` or `ut.` = 深く考える（ultrathink）
 
+## ロールベース実行
+
+特定の専門ロールで動作する場合：
+- `/role security-auditor` - セキュリティ監査モード
+- `/role code-reviewer` - コードレビューモード
+- `/role architect` - アーキテクト思考モード
+- `/role test-engineer` - テストエンジニアモード
+- `/role default` - 通常モードに戻る
+
+各ロールの詳細は `.claude/roles/` ディレクトリ参照。ロールを切り替えると、専門的な観点での分析と提案を行います。
+
 ## 実行ルール
 
 ### 即座実行（確認不要）
