@@ -30,6 +30,7 @@
 ## ロールベース実行
 
 特定の専門ロールで動作する場合：
+
 - `/role security-auditor` - セキュリティ監査モード
 - `/role code-reviewer` - コードレビューモード
 - `/role architect` - アーキテクト思考モード

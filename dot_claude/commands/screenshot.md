@@ -94,7 +94,7 @@ macOS でスクリーンショットを撮影し、画像を解析します。
   ```
   「どの方法でスクリーンショットを撮影しますか？
   1. ウィンドウを選択 (--window) → screencapture -W
-  2. 画面全体 (--full) → screencapture -x  
+  2. 画面全体 (--full) → screencapture -x
   3. 範囲を選択 (--crop) → screencapture -i」
   ```
 - ユーザーが screencapture コマンドを実行した後に画像解析を開始してください

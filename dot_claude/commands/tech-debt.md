@@ -14,7 +14,7 @@ ls -la
 
 ```bash
 # TODO/FIXME コメントの分析
-grep -r "TODO\|FIXME\|HACK\|XXX" . --exclude-dir=node_modules --exclude-dir=.git
+grep -r "TODO\|FIXME\|HACK\|XXX\|WORKAROUND" . --exclude-dir=node_modules --exclude-dir=.git
 「これらの TODO コメントを優先度順に整理して改善計画を立てて」
 
 # プロジェクトの依存関係確認
@@ -63,7 +63,7 @@ find . -maxdepth 2 -type f \( -name "package.json" -o -name "Cargo.toml" -o -nam
 4. 段階的な改善戦略」
 
 # コードの品質メトリクス分析
-find . -type f -name "*" | grep -E "\.(js|ts|py|rs|go|dart|java)$" | wc -l
+find . -type f -name "*" | grep -E "\.(js|ts|py|rs|go|dart|kotlin|swift|java)$" | wc -l
 「プロジェクトのコード品質を分析し、以下のメトリクスを提示：
 - 循環的複雑度が高い関数
 - 重複コードの検出

@@ -184,4 +184,3 @@ Claude は実際のファイル内容を読み込み、textlint-rule-preset-ai-w
 ### 参考
 
 このコマンドは [textlint-rule-preset-ai-writing](https://github.com/textlint-ja/textlint-rule-preset-ai-writing) のルールセットを参考に作成されています。AI が生成した文章の機械的なパターンを検出し、より自然な表現を促すための textlint ルールプリセットです。
-
