@@ -13,7 +13,7 @@ git diff
 git diff --staged
 
 # 3. Claude に依頼
-「この変更から Conventional Commits 形式で1行のコミットメッセージを生成して」
+「この変更から Conventional Commits 形式で 1 行のコミットメッセージを生成して」
 
 # 4. 生成されたメッセージでコミット
 git commit -m "生成されたメッセージ"
@@ -47,9 +47,9 @@ git commit -m "feat: add user authentication system"
 
 依頼文のバリエーション：
 
-- 「この変更から Conventional Commits 形式で 1 行のコミットメッセージを生成して。50文字以内で」
+- 「この変更から Conventional Commits 形式で 1 行のコミットメッセージを生成して。50 文字以内で」
 - 「バグ修正のコミットメッセージを作って」
-- 「この diff から適切なコミットメッセージを1行で」
+- 「この diff から適切なコミットメッセージを 1 行で」
 
 ### 注意事項
 

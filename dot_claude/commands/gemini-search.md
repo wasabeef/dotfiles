@@ -47,7 +47,7 @@ gemini --prompt "WebSearch: JavaScript ES2015 ES2016 ES2017 ES2018 ES2019 ES2020
 
 # 特定ドメインに絞った検索
 gemini --prompt "WebSearch: site:github.com Rust WebAssembly projects stars:>1000"
-「スター数の多い順に10個のプロジェクトをリストアップして」
+「スター数の多い順に 10 個のプロジェクトをリストアップして」
 
 # 最新のセキュリティ情報
 gemini --prompt "WebSearch: CVE-2024 Node.js vulnerabilities"

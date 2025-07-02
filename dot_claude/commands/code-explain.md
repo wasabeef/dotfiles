@@ -31,7 +31,7 @@ cat factory.rs
 ```bash
 # 初心者向け解説
 cat complex_function.py
-「このコードを初心者にもわかりやすく1行ずつ解説して」
+「このコードを初心者にもわかりやすく 1 行ずつ解説して」
 
 # パフォーマンス分析
 cat algorithm.rs
