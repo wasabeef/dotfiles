@@ -2,6 +2,7 @@
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": 600000,
     "BASH_MAX_TIMEOUT_MS": 600000,
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
     "SHELL": "/opt/homebrew/bin/zsh"
   },
   "includeCoAuthoredBy": false,
@@ -93,12 +94,31 @@
       "Bash(yum install *)"
     ]
   },
-  "Stop": {
-    "": {
-      "hooks": [{
-        "type": "command",
-        "command": "echo '{\"userMessage\": \"✅ 完了！\\n\\n💡 ヒント: /show-plan でプランを確認できます\"}'"
-      }]
-    }
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"確認をお待ちしています\" with title \"Claude Code\"' && afplay ~/.claude/perfect.mp3"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"userMessage\": \"✅ 完了！\\n\\n💡 ヒント: /show-plan でプランを確認できます\"}'"
+          },
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\"' && afplay ~/.claude/perfect.mp3"
+          }
+        ]
+      }
+    ]
   }
 }
