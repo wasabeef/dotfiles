@@ -95,8 +95,20 @@
     ]
   },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Read:*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'File read hook triggered'"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",

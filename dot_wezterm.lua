@@ -582,37 +582,37 @@ wezterm.on('new-tab-button-click', function(window, pane, button, default_action
 end)
 
 -- ベルイベントを捕捉する
-config.audible_bell = 'Disabled'
-wezterm.on('bell', function(window, pane)
-  local proc_info = pane:get_foreground_process_info()
-  if not proc_info or not proc_info.argv then
-    return
-  end
-  local cmdline = table.concat(proc_info.argv, ' ')
-
-  if string.find(cmdline, 'claude') then
-    -- Claude タスクが完了したときの処理
-    local sound_file = wezterm.home_dir .. '/.claude/perfect.mp3'
-    if os == 'macOS' then
-      wezterm.background_child_process { 'afplay', sound_file }
-    elseif os == 'linux' then
-      wezterm.background_child_process { 'aplay', sound_file }
-    end
-    -- ウィンドウに通知を表示
-    local process_name = proc_info.name or 'プロセス'
-    window:toast_notification('Claude タスク完了', process_name .. ' が完了しました', nil, 3000)
-  else
-    -- その他のプロセスのベルイベント
-    -- config.audible_bell = 'Disabled' にしているので、ここで音を鳴らす
-    if os == 'macOS' then
-      -- macOS の場合、デフォルトのサウンドを鳴らす
-      wezterm.background_child_process { 'afplay', '/System/Library/Sounds/Tink.aiff' }
-    elseif os == 'linux' then
-      wezterm.background_child_process { 'aplay', '/usr/share/sounds/freedesktop/stereo/bell.oga' }
-    end
-    return
-  end
-end)
+-- config.audible_bell = 'Disabled'
+-- wezterm.on('bell', function(window, pane)
+--   local proc_info = pane:get_foreground_process_info()
+--   if not proc_info or not proc_info.argv then
+--     return
+--   end
+--   local cmdline = table.concat(proc_info.argv, ' ')
+--
+--   if string.find(cmdline, 'claude') then
+--     -- Claude タスクが完了したときの処理
+--     local sound_file = wezterm.home_dir .. '/.claude/perfect.mp3'
+--     if os == 'macOS' then
+--       wezterm.background_child_process { 'afplay', sound_file }
+--     elseif os == 'linux' then
+--       wezterm.background_child_process { 'aplay', sound_file }
+--     end
+--     -- ウィンドウに通知を表示
+--     local process_name = proc_info.name or 'プロセス'
+--     window:toast_notification('Claude タスク完了', process_name .. ' が完了しました', nil, 3000)
+--   else
+--     -- その他のプロセスのベルイベント
+--     -- config.audible_bell = 'Disabled' にしているので、ここで音を鳴らす
+--     if os == 'macOS' then
+--       -- macOS の場合、デフォルトのサウンドを鳴らす
+--       wezterm.background_child_process { 'afplay', '/System/Library/Sounds/Tink.aiff' }
+--     elseif os == 'linux' then
+--       wezterm.background_child_process { 'aplay', '/usr/share/sounds/freedesktop/stereo/bell.oga' }
+--     end
+--     return
+--   end
+-- end)
 
 -- 自動ウィンドウ分割機能
 -- 特定のコマンドを実行した際にウィンドウを自動分割する関数
