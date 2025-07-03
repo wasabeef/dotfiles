@@ -22,7 +22,6 @@
     "Write"
   ],
   "permissions": {
-    "defaultMode": "acceptAll",
     "allow": [
       "Bash(*)",
       "Edit(**)",
@@ -95,17 +94,6 @@
     ]
   },
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Read:*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo 'File read hook triggered'"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "*",
