@@ -5,59 +5,19 @@
 	helper = osxkeychain
 [core]
     editor = nvim
-	  pager = delta
     attributesfile = ~/.gitattributes
-[interactive]
-    diffFilter = delta --color-only
-[delta]
-    navigate = true
-    dark = true
-    syntax-theme = Nord
-    
-    # ファイルヘッダー
-    file-style = "#ffcc00" bold
-    file-decoration-style = none
-    
-    # ハンクヘッダー
-    hunk-header-decoration-style = "#41444d" ul
-    hunk-header-file-style = "#8f9aae"
-    hunk-header-line-number-style = "#8f9aae" 
-    hunk-header-style = file line-number syntax
-    
-    # 行番号
-    line-numbers = true
-    line-numbers-left-style = "#41444d"
-    line-numbers-right-style = "#41444d"
-    line-numbers-minus-style = "#fc2f52" bold
-    line-numbers-plus-style = "#25a45c" bold
-    line-numbers-zero-style = "#41444d"
-    line-numbers-left-format = "{nm:>4}┊"
-    line-numbers-right-format = "{np:>4}│"
-    
-    # 差分表示（背景色なし、文字色のみ）
-    minus-style = "#fc2f52"
-    minus-emph-style = "#fc2f52" bold
-    plus-style = "#25a45c"
-    plus-emph-style = "#25a45c" bold
-    
-    # その他
-    whitespace-error-style = "#fc2f52" reverse
-    zero-style = syntax
-    
-    # コミットとメタ情報
-    commit-decoration-style = bold yellow box ul
-    commit-style = bold yellow
-    
-    # blame
-    blame-palette = "#282c34 #2d323a #353b45 #3e4451"
-    
-    # マージコンフリクト
-    merge-conflict-begin-symbol = ⏴
-    merge-conflict-end-symbol = ⏵
-    merge-conflict-ours-diff-header-style = "#ffcc00" bold
-    merge-conflict-theirs-diff-header-style = "#3476ff" bold
-    merge-conflict-ours-diff-header-decoration-style = "#41444d" ul
-    merge-conflict-theirs-diff-header-decoration-style = "#41444d" ul
+[diff "lockb"]
+	textconv = bun
+	binary = true
+[diff]
+  tool = difftastic
+  external = difft --background dark
+[difftool]
+  prompt = false
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+  difftool = true
 [merge]
     conflictstyle = zdiff3
 [color]
@@ -104,9 +64,6 @@
 	ghelp = !gcop help
 	amend = commit --amend
   set = branch --set-upstream-to
-[diff "lockb"]
-	textconv = bun
-	binary = true
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f

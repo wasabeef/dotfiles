@@ -1,28 +1,5 @@
-# --- delta で diff を表示するカスタムバインド ---
-bind diff   D >sh -c "git show %(commit) | delta --paging always"
-bind diff   S >sh -c "git show %(commit) | delta --paging always --side-by-side"
+# --- ENTER キーを difftastic diff にバインド ---
+bind main   <Enter> >sh -c "GIT_EXTERNAL_DIFF=difft git show %(commit)"
+bind diff   <Enter> >sh -c "GIT_EXTERNAL_DIFF=difft git show %(commit)"
+bind status <Enter> >sh -c "if git diff --cached --name-only | grep -q %(file); then GIT_EXTERNAL_DIFF=difft git diff --cached -- %(file); elif git ls-files --error-unmatch %(file) >/dev/null 2>&1; then GIT_EXTERNAL_DIFF=difft git diff -- %(file); else difft /dev/null %(file) | less -R; fi"
 
-# stage view: ステージされたファイルの差分を表示
-bind stage  D >sh -c "git diff --cached -- %(file) | delta --paging always"
-bind stage  S >sh -c "git diff --cached -- %(file) | delta --paging always --side-by-side"
-
-# status view: ヘルパースクリプトを使用してファイルの状態に応じた表示
-bind status D >sh -c "~/.local/bin/tig-diff-helper '%(file)' normal"
-bind status S >sh -c "~/.local/bin/tig-diff-helper '%(file)' side-by-side"
-
-# --- ENTER キーを delta diff にバインド（side-by-side 表示） ---
-bind main   <Enter> >sh -c "git show %(commit) | delta --paging always --side-by-side"
-bind diff   <Enter> >sh -c "git show %(commit) | delta --paging always --side-by-side"
-bind stage  <Enter> >sh -c "git diff --cached -- %(file) | delta --paging always --side-by-side"
-bind status <Enter> >sh -c "~/.local/bin/tig-diff-helper '%(file)' side-by-side"
-
-# --- ファイル間のナビゲーション ---
-# bind status <Tab> next
-# bind status <BackTab> previous
-# bind stage <Tab> next
-# bind stage <BackTab> previous
-
-# --- すべての変更を一度に表示 ---
-# A: すべての変更ファイルの差分を連続表示
-bind status A >sh -c "/Users/a12622/.local/bin/tig-diff-all | delta --paging always --side-by-side"
-bind stage  A >sh -c "/Users/a12622/.local/bin/tig-diff-all | delta --paging always --side-by-side"
