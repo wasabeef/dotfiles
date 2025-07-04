@@ -1,26 +1,16 @@
 {
+  "language": "ja",
   "env": {
-    "BASH_DEFAULT_TIMEOUT_MS": 600000,
-    "BASH_MAX_TIMEOUT_MS": 600000,
+    "CLAUDE_LANGUAGE": "ja",
+    "BASH_DEFAULT_TIMEOUT_MS": "600000",
+    "BASH_MAX_TIMEOUT_MS": "600000",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
     "SHELL": "/opt/homebrew/bin/zsh"
   },
+  "hasTrustDialogAccepted": true,
+  "hasCompletedProjectOnboarding": true,
   "includeCoAuthoredBy": false,
   "cleanupPeriodDays": 30,
-  "allowedTools": [
-    "Bash",
-    "Create",
-    "Edit",
-    "Fetch",
-    "GlobTool",
-    "GrepTool",
-    "Read",
-    "Search",
-    "Update",
-    "WebFetch",
-    "WebSearch",
-    "Write"
-  ],
   "permissions": {
     "allow": [
       "Bash(*)",
@@ -94,13 +84,24 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/deny-check.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"確認をお待ちしています\" with title \"Claude Code\"' && afplay ~/.claude/perfect.mp3"
+            "command": "osascript -e 'display notification \"確認待ち\" with title \"Claude Code\"' && afplay ~/.claude/assets/confirm.mp3"
           }
         ]
       }
@@ -111,11 +112,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"userMessage\": \"✅ 完了！\\n\\n💡 ヒント: /show-plan でプランを確認できます\"}'"
+            "command": "osascript -e 'display notification \"タスク完了\" with title \"Claude Code\"' && afplay ~/.claude/assets/perfect.mp3"
           },
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\"' && afplay ~/.claude/perfect.mp3"
+            "command": "echo '{\"continue\": false, \"stopReason\": \"💡 /show-plan でプランを確認\"}'"
           }
         ]
       }

@@ -10,20 +10,20 @@
 
 ### 利用可能なロール
 
-- `security-auditor` : セキュリティ監査の専門家として動作
-- `code-reviewer` : コードレビュアーとして品質チェック
+- `security` : セキュリティ監査の専門家として動作
+- `reviewer` : コードレビュアーとして品質チェック
 - `architect` : システムアーキテクトとして設計分析
-- `test-engineer` : テストエンジニアとしてテスト戦略立案
+- `qa` : テストエンジニアとしてテスト戦略立案
 
 ### 基本例
 
 ```bash
 # セキュリティ監査モードに切り替え
-/role security-auditor
+/role security
 「このプロジェクトのセキュリティ脆弱性をチェックして」
 
 # コードレビューモードに切り替え
-/role code-reviewer
+/role reviewer
 「最近の変更をレビューして改善点を指摘して」
 
 # 通常モードに戻る
@@ -35,7 +35,7 @@
 
 ```bash
 # セキュリティ特化の分析
-/role security-auditor
+/role security
 cat app.js
 「このコードの潜在的なセキュリティリスクを詳細に分析して」
 
@@ -45,7 +45,7 @@ ls -la src/
 「現在の構造の問題点と改善案を提示して」
 
 # テスト戦略の立案
-/role test-engineer
+/role qa
 「このプロジェクトに最適なテスト戦略を提案して」
 ```
 
@@ -53,18 +53,18 @@ ls -la src/
 
 ```bash
 # 複数ロールでの分析
-/role security-auditor
+/role security
 「まずセキュリティ観点でチェック」
 git diff HEAD~1
 
-/role code-reviewer
+/role reviewer
 「次に一般的なコード品質をレビュー」
 
 /role architect
 「最後にアーキテクチャの観点から評価」
 
 # ロール固有の出力形式
-/role security-auditor
+/role security
 🔒 セキュリティ分析結果
 ━━━━━━━━━━━━━━━━━━━━━
 脆弱性: SQL インジェクション
@@ -75,13 +75,13 @@ git diff HEAD~1
 
 ### ロールの特徴
 
-#### security-auditor
+#### security
 
 - OWASP Top 10 に基づく脆弱性検出
 - False positive を恐れない徹底的なチェック
 - セキュアコーディングのベストプラクティス提案
 
-#### code-reviewer
+#### reviewer
 
 - 可読性、保守性、パフォーマンスの観点
 - コーディング規約の遵守チェック
@@ -93,7 +93,7 @@ git diff HEAD~1
 - スケーラビリティと拡張性の分析
 - 技術的負債の特定
 
-#### test-engineer
+#### qa
 
 - テストカバレッジの分析
 - E2E、統合、単体テストの戦略
