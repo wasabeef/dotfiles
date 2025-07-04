@@ -149,6 +149,7 @@ feat: JWT 認証システムを実装
 #### 4. ステージング分析の詳細
 
 分析に使用する情報（読み取りのみ）:
+
 - `git diff --staged --name-only` - 変更ファイル一覧
 - `git diff --staged` - 実際の変更内容
 - `git status --porcelain` - ファイル状態

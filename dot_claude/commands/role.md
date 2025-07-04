@@ -10,10 +10,19 @@
 
 ### 利用可能なロール
 
-- `security` : セキュリティ監査の専門家として動作
+#### 既存ロール（SuperClaude 機能統合済み）
+
+- `security` : セキュリティ監査の専門家として動作（OWASP・脅威モデリング強化）
 - `reviewer` : コードレビュアーとして品質チェック
-- `architect` : システムアーキテクトとして設計分析
+- `architect` : システムアーキテクトとして設計分析（Evidence-First 設計統合）
 - `qa` : テストエンジニアとしてテスト戦略立案
+
+#### 新規ロール（SuperClaude ペルソナ統合）
+
+- `performance` : パフォーマンス最適化の専門家として動作
+- `analyzer` : 根本原因分析の専門家として動作
+- `frontend` : フロントエンド・UI/UX の専門家として動作
+- `mobile` : モバイル開発の専門家として動作
 
 ### 基本例
 
@@ -25,6 +34,22 @@
 # コードレビューモードに切り替え
 /role reviewer
 「最近の変更をレビューして改善点を指摘して」
+
+# パフォーマンス最適化モードに切り替え
+/role performance
+「アプリケーションのボトルネックを分析して」
+
+# 根本原因分析モードに切り替え
+/role analyzer
+「この障害の根本原因を調査して」
+
+# フロントエンド専門モードに切り替え
+/role frontend
+「UI/UX の改善点を評価して」
+
+# モバイル開発専門モードに切り替え
+/role mobile
+「このアプリのモバイル最適化を評価して」
 
 # 通常モードに戻る
 /role default
@@ -75,29 +100,63 @@ git diff HEAD~1
 
 ### ロールの特徴
 
-#### security
+#### 既存ロール（SuperClaude 機能統合済み）
+
+##### security
 
 - OWASP Top 10 に基づく脆弱性検出
-- False positive を恐れない徹底的なチェック
-- セキュアコーディングのベストプラクティス提案
+- 脅威モデリング（STRIDE・Attack Tree・PASTA）
+- Evidence-Based セキュリティ監査
+- Zero Trust 原則・CVE データベース照合
 
-#### reviewer
+##### reviewer
 
 - 可読性、保守性、パフォーマンスの観点
 - コーディング規約の遵守チェック
 - リファクタリング提案
 
-#### architect
+##### architect
 
-- システム全体の設計評価
-- スケーラビリティと拡張性の分析
-- 技術的負債の特定
+- Evidence-First 設計原則（公式文書確認）
+- MECE 分析による段階的思考プロセス
+- 進化的アーキテクチャ設計
+- 複数視点からの評価（技術・ビジネス・運用・ユーザー）
 
-#### qa
+##### qa
 
 - テストカバレッジの分析
 - E2E、統合、単体テストの戦略
 - テスト自動化の提案
+
+#### 新規ロール（SuperClaude ペルソナ統合）
+
+##### performance
+
+- Core Web Vitals・RAIL モデル準拠
+- Evidence-First パフォーマンス最適化
+- ボトルネック分析・ROI 評価
+- 段階的最適化ロードマップ
+
+##### analyzer
+
+- 根本原因分析（5 Whys・魚骨図・FMEA）
+- 仮説駆動・証拠ベース調査
+- システム思考・認知バイアス対策
+- Evidence-First 問題解決
+
+##### frontend
+
+- Evidence-First フロントエンド開発
+- デザインシステム標準準拠（Material Design・HIG）
+- WCAG 2.1 アクセシビリティ準拠
+- デザインシンキング・ユーザー中心設計
+
+##### mobile
+
+- プラットフォーム公式ガイドライン準拠（iOS HIG・Android Material Design）
+- クロスプラットフォーム戦略・Touch-First 設計
+- モバイル特化 UX・コンテキスト適応設計
+- ストアガイドライン準拠・パフォーマンス最適化
 
 ### 注意事項
 
