@@ -158,9 +158,52 @@ git diff HEAD~1
 - モバイル特化 UX・コンテキスト適応設計
 - ストアガイドライン準拠・パフォーマンス最適化
 
-### 注意事項
+## 高度なロール機能
+
+### インテリジェントロール選択
+- `/smart-review` : プロジェクト分析による自動ロール提案
+- `/role-help` : 状況に応じた最適ロール選択ガイド
+
+### マルチロール協調
+- `/multi-role <ロール1>,<ロール2>` : 複数ロール同時分析
+- `/role-debate <ロール1>,<ロール2>` : ロール間議論
+
+### 使用例
+
+#### 自動ロール提案
+```bash
+/smart-review
+→ 現在の状況を分析して最適なロールを提案
+
+/smart-review src/auth/
+→ 認証関連ファイルから security ロールを推奨
+```
+
+#### 複数ロール分析
+```bash
+/multi-role security,performance
+「この API を複数の視点で評価して」
+→ セキュリティとパフォーマンスの両面から統合分析
+
+/role-debate frontend,security
+「2段階認証の UX について議論して」
+→ ユーザビリティとセキュリティの観点で議論
+```
+
+#### ロール選択に迷った場合
+```bash
+/role-help "API が遅くてセキュリティも心配"
+→ 適切なアプローチ（multi-role や debate）を提案
+
+/role-help compare frontend,mobile
+→ フロントエンドとモバイルロールの違いと使い分け
+```
+
+## 注意事項
 
 - ロールを切り替えると、Claude の振る舞いと優先事項が変化します
 - 各ロールの詳細設定は `.claude/roles/` ディレクトリ内のファイルで定義
 - `default` で通常モードに戻ります
 - ロールは現在のセッション内でのみ有効です
+- 複雑な問題ほど multi-role や role-debate が効果的です
+- 迷った時は smart-review や role-help をご利用ください
