@@ -1,0 +1,50 @@
+# Claude Code エラーナレッジベース
+# 過去のエラーと解決方法を蓄積し、同じエラーを回避するために利用
+
+errors:
+  # テンプレート例
+  - timestamp: "2025-07-06 18:00:00"
+    type: "example"
+    tool: "npm"
+    command: "npm install"
+    error: "JavaScript heap out of memory"
+    solution: "NODE_OPTIONS='--max-old-space-size=4096' npm install"
+  - timestamp: "2025-07-06 18:01:00"
+    type: "example"
+    tool: "git"
+    command: "git push"
+    error: "Permission denied (publickey)"
+    solution: "SSH 鍵の設定を確認 ssh-add -l"
+  - timestamp: "2025-07-06 18:19:07"
+    type: runtime_error
+    tool: ""
+    command: ""
+    project: /Users/a12622/.claude
+    error: 'yq テストエラー: Permission denied'
+    solution: null
+  - timestamp: "2025-07-06 18:19:20"
+    type: session_summary
+    count: 1
+    errors: '18:19:14: セッション yq テスト: 正常動作'
+    solution: null
+  - timestamp: "2025-07-06 18:24:02"
+    type: runtime_error
+    tool: ""
+    command: ""
+    project: /Users/a12622/.claude
+    error: '基本エラー: ファイルが見つかりません'
+    solution: null
+  - timestamp: "2025-07-06 18:24:36"
+    type: session_summary
+    count: 2
+    errors: |-
+      18:24:24: セッションエラー1: 接続タイムアウト
+      18:24:30: セッションエラー2: メモリ不足
+    solution: null
+  - timestamp: "2025-07-06 18:25:05"
+    type: runtime_error
+    tool: ""
+    command: ""
+    project: /Users/a12622/.claude
+    error: "\e[31m[bat error]\e[0m: '/nonexistent/file.txt': No such file or directory (os error 2)"
+    solution: null
