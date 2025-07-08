@@ -1,5 +1,33 @@
-# --- ENTER キーを difftastic diff にバインド ---
-bind main   <Enter> >sh -c "GIT_EXTERNAL_DIFF=difft git show %(commit)"
-bind diff   <Enter> >sh -c "GIT_EXTERNAL_DIFF=difft git show %(commit)"
-bind status <Enter> >sh -c "if git diff --cached --name-only | grep -q %(file); then GIT_EXTERNAL_DIFF=difft git diff --cached -- %(file); elif git ls-files --error-unmatch %(file) >/dev/null 2>&1; then GIT_EXTERNAL_DIFF=difft git diff -- %(file); else difft /dev/null %(file) | less -R; fi"
+# --- delta で diff を表示するカスタムバインド ---
+bind diff   D >sh -c "git show %(commit) | delta --paging always"
+bind diff   S >sh -c "git show %(commit) | delta --paging always --side-by-side"
 
+# stage view: ステージされたファイルの差分を表示
+bind stage  D >sh -c "git diff --cached -- %(file) | delta --paging always"
+bind stage  S >sh -c "git diff --cached -- %(file) | delta --paging always --side-by-side"
+
+# status view: ヘルパースクリプトを使用してファイルの状態に応じた表示
+bind status D >sh -c "git diff -- %(file) | delta --paging always"
+bind status S >sh -c "git diff -- %(file) | delta --paging always --side-by-side"
+
+# --- ENTER キーを delta diff にバインド（side-by-side 表示） ---
+bind main   <Enter> >sh -c "git show %(commit) | delta --paging always --side-by-side"
+bind diff   <Enter> >sh -c "git show %(commit) | delta --paging always --side-by-side"
+bind stage  <Enter> >sh -c "git diff --cached -- %(file) | delta --paging always --side-by-side"
+# === status view のキーバインド ===
+# tig の制限により、status view では現在のセクションを判別できません
+# そのため、明示的なキーバインドを使用してください：
+#
+# Enter: デフォルト（tig 標準の動作）
+# c: staged の差分を表示 (cached)
+# w: unstaged の差分を表示 (working directory)
+# a: 全体の差分を表示 (all, HEAD との比較)
+#
+bind status c >sh -c "git diff --cached -- %(file) | delta --paging always --side-by-side"
+bind status w >sh -c "git diff -- %(file) | delta --paging always --side-by-side"
+bind status a >sh -c "git diff HEAD -- %(file) | delta --paging always --side-by-side"
+
+# --- すべての変更を一度に表示 ---
+# A: すべての変更ファイルの差分を連続表示
+bind status A >sh -c "git diff | delta --paging always --side-by-side"
+bind stage  A >sh -c "git diff HEAD | delta --paging always --side-by-side"

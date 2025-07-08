@@ -5,7 +5,6 @@
     "BASH_MAX_TIMEOUT_MS": "600000",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
     "CLAUDE_LANGUAGE": "ja",
-    "MAX_THINKING_TOKENS": "31999",
     "SHELL": "/opt/homebrew/bin/zsh"
   },
   "hasTrustDialogAccepted": true,
@@ -35,9 +34,6 @@
       "Bash(format *)",
       "Bash(gem install *)",
       "Bash(gh api --method DELETE:*)",
-      "Bash(gh api --method PATCH:*)",
-      "Bash(gh api --method POST:*)",
-      "Bash(gh api --method PUT:*)",
       "Bash(gh auth logout:*)",
       "Bash(gh auth refresh:*)",
       "Bash(gh gist create:*)",
@@ -99,6 +95,26 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/japanese-space-formatter.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/error-recorder.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "*",
@@ -116,15 +132,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/session-error-summary.sh"
-          },
-          {
-            "type": "command",
             "command": "osascript -e 'display notification \"タスク完了\" with title \"Claude Code\"' && afplay ~/.claude/assets/perfect.mp3"
           },
           {
             "type": "command",
-            "command": "echo '{\"continue\": false, \"stopReason\": \"💡 /show-plan でプランを確認\"}'"
+            "command": "~/.claude/scripts/check-project-plan.sh"
           }
         ]
       }
