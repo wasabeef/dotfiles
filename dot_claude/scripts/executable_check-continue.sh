@@ -15,8 +15,28 @@ input_json=$(cat)
 transcript_path=$(echo "$input_json" | jq -r '.transcript_path // empty')
 
 if [ -n "$transcript_path" ] && [ -f "$transcript_path" ]; then
-  # 最後のアシスタントメッセージのテキストを取得
-  last_message=$(tail -n 1 "$transcript_path" | jq -r '.message.content[0].text // empty')
+  # 最後のメッセージ全体を取得（エラーメッセージも含む）
+  last_entry=$(tail -n 1 "$transcript_path")
+
+  # デバッグ用（必要に応じて有効化）
+  # echo "Debug: last_entry=$last_entry" >&2
+
+  # アシスタントメッセージのテキストを取得
+  last_message=$(echo "$last_entry" | jq -r '.message.content[0].text // empty' 2>/dev/null || echo "")
+
+  # エラーフィールドの様々な可能性をチェック
+  error_message=$(echo "$last_entry" | jq -r '.message.error // .error // empty' 2>/dev/null || echo "")
+
+  # メッセージ全体を文字列化してチェック（JSON の構造に関わらず）
+  full_entry_text=$(echo "$last_entry" | jq -r '.' 2>/dev/null || echo "$last_entry")
+
+  # Claude usage limit reached のチェック（複数の方法で）
+  if echo "$error_message" | grep -qi "usage limit" || \
+     echo "$last_message" | grep -qi "usage limit" || \
+     echo "$full_entry_text" | grep -qi "usage limit"; then
+    # Usage limit エラーの場合は何もしない（正常終了）
+    exit 0
+  fi
 
   # 合い言葉チェック
   if echo "$last_message" | grep -q "$COMPLETION_PHRASE"; then
@@ -29,6 +49,6 @@ fi
 cat <<EOF
 {
   "decision": "block",
-  "reason": "作業を再開してください。続ける作業がない場合は \`$COMPLETION_PHRASE\` を出力して終了してください。"
+  "reason": "作業を再開してください。\n  続ける作業がない場合は \`$COMPLETION_PHRASE\` を出力して終了してください。"
 }
 EOF

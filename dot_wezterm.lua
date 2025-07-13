@@ -85,7 +85,7 @@ end
 
 -- tab bar
 config.tab_bar_at_bottom = true
-config.tab_max_width = 32
+config.tab_max_width = 50
 config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
 
@@ -238,7 +238,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, conf, hover, max_width
 end)
 
 -- 右下に Git ブランチを表示する
-config.status_update_interval = 1000 -- 1秒ごとに更新
+config.status_update_interval = 1000 -- 1 秒ごとに更新
 
 -- Claude 関連の定数
 local CLAUDE_CONSTANTS = {
@@ -247,8 +247,8 @@ local CLAUDE_CONSTANTS = {
   INVALID_TTY = '??',
 
   -- 実行判定の閾値
-  CPU_ACTIVE_THRESHOLD = 1.0, -- CPU使用率がこれ以上なら実行中
-  CPU_CHECK_THRESHOLD = 0.1, -- FDチェックを行う最小CPU使用率
+  CPU_ACTIVE_THRESHOLD = 1.0, -- CPU 使用率がこれ以上なら実行中
+  CPU_CHECK_THRESHOLD = 0.1, -- FD チェックを行う最小 CPU 使用率
   FD_ACTIVE_THRESHOLD = 15, -- ファイルディスクリプタ数の閾値
 
   -- 表示
@@ -256,7 +256,7 @@ local CLAUDE_CONSTANTS = {
   EMOJI_RUNNING = '⚡',
   COLOR_ICON = '#FF6B6B',
 
-  -- Git表示色
+  -- Git 表示色
   GIT_ICON_COLOR = '#569CD6',
   GIT_REPO_COLOR = '#808080',
   GIT_BRANCH_ICON_COLOR = '#4EC9B0',
@@ -280,12 +280,12 @@ local function add_claude_status_to_elements(elements, tab_sessions, window)
   -- タブ順序に従ってステータスを表示
   for i, tab_session in ipairs(tab_sessions) do
     if tab_session.has_claude then
-      -- Claudeタブの場合
+      -- Claude タブの場合
       table.insert(elements, { Foreground = { Color = CLAUDE_CONSTANTS.COLOR_ICON } })
       local emoji = tab_session.running and CLAUDE_CONSTANTS.EMOJI_RUNNING or CLAUDE_CONSTANTS.EMOJI_IDLE
       table.insert(elements, { Text = emoji })
     else
-      -- 非Claudeタブの場合
+      -- 非 Claude タブの場合
       table.insert(elements, { Foreground = { Color = '#8B4513' } })
       table.insert(elements, { Text = '🧔' })
     end
@@ -336,7 +336,7 @@ local function check_process_running(pid)
 
   local cpu_usage = tonumber(pcpu) or 0
 
-  -- 2. CPU使用率による判定
+  -- 2. CPU 使用率による判定
   if cpu_usage >= CLAUDE_CONSTANTS.CPU_ACTIVE_THRESHOLD then
     return true
   end
@@ -397,7 +397,7 @@ local function get_claude_status(window)
             return pane:get_foreground_process_info()
           end)
           if proc_success and proc_info then
-            -- Claudeプロセスかチェック（プロセス名またはargvで）
+            -- Claude プロセスかチェック（プロセス名または argv で）
             local is_claude_process = false
             if proc_info.name and proc_info.name:match '^claude' then
               is_claude_process = true
@@ -422,14 +422,14 @@ local function get_claude_status(window)
                 if proc_info.pid then
                   is_running = check_process_running(proc_info.pid)
                 end
-                break -- タブ内に1つでもClaudeがあれば十分
+                break -- タブ内に 1 つでも Claude があれば十分
               end
             end
           end
         end
       end
 
-      -- タブごとのClaude情報を記録
+      -- タブごとの Claude 情報を記録
       table.insert(tab_sessions, {
         tab_index = tab_index,
         has_claude = has_claude,
@@ -513,8 +513,12 @@ wezterm.on('update-right-status', function(window, pane)
     if mux_window then
       local active_tab = mux_window:active_tab()
       if active_tab and active_tab:tab_id() == pane:tab():tab_id() then
-        -- タブタイトルをリポジトリ名に設定
-        active_tab:set_title(repo_name)
+        -- タブタイトルを repo_name/branch 形式に設定
+        local tab_title = repo_name
+        if branch then
+          tab_title = repo_name .. '/' .. branch
+        end
+        active_tab:set_title(tab_title)
       end
     end
   end
@@ -555,7 +559,23 @@ local function update_tab_titles(window)
         local repo_name = get_git_repo_name(cwd_path)
 
         if repo_name then
-          tab:set_title(repo_name)
+          -- ブランチ名を取得
+          local branch = safe_git_command(cwd_path, 'branch', '--show-current')
+          if not branch or branch == '' then
+            local ref = safe_git_command(cwd_path, 'symbolic-ref', '--short', 'HEAD')
+            if ref then
+              branch = ref
+            else
+              branch = safe_git_command(cwd_path, 'rev-parse', '--short', 'HEAD')
+            end
+          end
+
+          -- タブタイトルを repo_name/branch 形式に設定
+          local tab_title = repo_name
+          if branch then
+            tab_title = repo_name .. '/' .. branch
+          end
+          tab:set_title(tab_title)
         end
       end
     end

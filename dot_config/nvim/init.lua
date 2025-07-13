@@ -15,7 +15,7 @@ vim.keymap.set('n', ',', '<LocalLeader>', {})
 vim.opt.confirm = true
 -- バックアップファイル出力無効
 vim.opt.backup = false
--- swpファイル出力無効
+-- swp ファイル出力無効
 vim.opt.swapfile = false
 -- 外部でファイルに変更がされた場合は読みなおす
 vim.opt.autoread = true
@@ -77,19 +77,19 @@ local function set_cursorline_nr_color(mode)
     vim.cmd('highlight CursorLineNr guifg=' .. color)
   end
 end
--- Normalモード
+-- Normal モード
 vim.api.nvim_create_autocmd('InsertLeave', {
   callback = function()
     set_cursorline_nr_color 'n'
   end,
 })
--- Insertモード
+-- Insert モード
 vim.api.nvim_create_autocmd('InsertEnter', {
   callback = function()
     set_cursorline_nr_color 'i'
   end,
 })
--- Visualモード
+-- Visual モード
 vim.api.nvim_create_autocmd('ModeChanged', {
   pattern = '*:[vV\x16]*',
   callback = function()
@@ -179,7 +179,7 @@ local function keymap_opts(desc)
   }
 end
 
--- ESC連打でハイライト解除
+-- ESC 連打でハイライト解除
 vim.keymap.set('n', '<Esc><Esc>', ':nohlsearch<CR><Esc>', keymap_opts 'Cancel Highlight')
 
 -- 折り返し時に表示行単位での移動できるようにする
@@ -249,7 +249,7 @@ vim.keymap.set('n', '<C-q>', ':q<CR>', keymap_opts 'Quit')
 -- Ctrl+Shift+Q で :qa
 vim.keymap.set('n', '<C-S-Q>', ':qa<CR>', keymap_opts 'Quit All')
 
--- w!!でsudoを忘れても保存
+-- w!!で sudo を忘れても保存
 vim.keymap.set('c', 'w!!', 'w !sudo tee > /dev/null %<CR> :e!<CR>', keymap_opts 'Save with sudo')
 
 -- <C-a> で全選択
@@ -2528,9 +2528,9 @@ require('lazy').setup {
         -- サイズ設定（画面の半分）
         -- size = function(term)
         --   if term.direction == 'horizontal' then
-        --     return vim.o.lines * 0.5 -- 画面の高さの50%
+        --     return vim.o.lines * 0.5 -- 画面の高さの 50%
         --   elseif term.direction == 'vertical' then
-        --     return vim.o.columns * 0.5 -- 画面の幅の50%
+        --     return vim.o.columns * 0.5 -- 画面の幅の 50%
         --   end
         -- end,
         float_opts = {
@@ -2555,7 +2555,7 @@ require('lazy').setup {
       dependencies = { 'echasnovski/mini.icons' },
     },
 
-    -- バッファ操作(マネージャー)
+    -- バッファ操作 (マネージャー)
     -- {
     --   'j-morano/buffer_manager.nvim',
     --   enabled = vim.g.vscode == nil,
@@ -2579,7 +2579,7 @@ require('lazy').setup {
     --   },
     -- },
 
-    -- バッファ操作(タブ)
+    -- バッファ操作 (タブ)
     {
       'willothy/nvim-cokeline',
       enabled = vim.g.vscode == nil,
@@ -3061,12 +3061,13 @@ require('lazy').setup {
         'williamboman/mason-lspconfig.nvim',
         'WhoIsSethDaniel/mason-tool-installer.nvim',
 
-        'hrsh7th/cmp-nvim-lsp',
+        'saghen/blink.cmp',
         'b0o/schemastore.nvim',
       },
       event = 'VeryLazy',
       config = function()
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
+        local capabilities = require('blink.cmp').get_lsp_capabilities()
+
         local on_attach = function(_, bufnr)
           vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
           vim.lsp.inlay_hint.enable(true)
@@ -3209,12 +3210,12 @@ require('lazy').setup {
         --   on_attach = on_attach,
         --   capabilities = capabilities,
         --   root_dir = function(fname)
-        --     -- プロジェクトマーカーが見つからない場合はnilを返してLSPを起動しない
+        --     -- プロジェクトマーカーが見つからない場合は nil を返して LSP を起動しない
         --     local root = lspconfig.util.root_pattern('.git', '.luarc.json', 'init.lua')(fname)
         --     if root and root ~= vim.env.HOME then
         --       return root
         --     end
-        --     -- ホームディレクトリではLSPを起動しない
+        --     -- ホームディレクトリでは LSP を起動しない
         --     return nil
         --   end,
         --   single_file_support = false, -- 単一ファイルサポートを無効化
@@ -3350,7 +3351,7 @@ require('lazy').setup {
       dependencies = {
         'nvim-lua/plenary.nvim',
         'stevearc/dressing.nvim',
-        'hrsh7th/cmp-nvim-lsp',
+        'saghen/blink.cmp',
       },
       ft = { 'dart' },
       config = function()
@@ -3493,7 +3494,7 @@ require('lazy').setup {
               end, keymap_opts 'FLUTTER DEV LOG')
             end,
 
-            capabilities = require('cmp_nvim_lsp').default_capabilities {},
+            capabilities = require('blink.cmp').get_lsp_capabilities(),
             settings = {
               showTodos = true,
               completeFunctionCalls = true,
@@ -3661,260 +3662,152 @@ require('lazy').setup {
       },
     },
 
-    -- LSP cmp
+    -- 補完
     {
-      'hrsh7th/nvim-cmp',
-      enabled = vim.g.vscode == nil,
+      'saghen/blink.cmp',
+      version = '1.*',
       dependencies = {
-        'onsails/lspkind-nvim',
-        'neovim/nvim-lspconfig',
-        'hrsh7th/cmp-buffer',
-        'hrsh7th/cmp-path',
-        'hrsh7th/cmp-cmdline',
-        'rcarriga/cmp-dap',
-
-        'hrsh7th/cmp-nvim-lsp-signature-help',
-        'hrsh7th/cmp-nvim-lsp-document-symbol',
-
         {
-          'L3MON4D3/LuaSnip',
-          build = 'make install_jsregexp',
-          dependencies = {
-            'rafamadriz/friendly-snippets',
-            'saadparwaiz1/cmp_luasnip',
-          },
-          config = function()
-            local vscode = require 'luasnip.loaders.from_vscode'
-            vscode.lazy_load()
-            vscode.lazy_load { paths = { '~/.config/nvim/snippets' } }
-            local luasnip = require 'luasnip'
-            -- luasnip.log.set_loglevel 'debug'
-            luasnip.filetype_extend('all', { '_' })
-            luasnip.filetype_extend('c', { 'cdoc' })
-            luasnip.filetype_extend('cpp', { 'cppdoc' })
-            luasnip.filetype_extend('cs', { 'csharpdoc' })
-            luasnip.filetype_extend('java', { 'javadoc' })
-            luasnip.filetype_extend('javascript', { 'javascriptreact', 'typescriptreact', 'jsdoc' })
-            luasnip.filetype_extend('javascriptreact', { 'html' })
-            luasnip.filetype_extend('typescript', { 'tsdoc' })
-            luasnip.filetype_extend('typescriptreact', { 'html' })
-            luasnip.filetype_extend('kotlin', { 'kdoc' })
-            luasnip.filetype_extend('lua', { 'luadoc' })
-            luasnip.filetype_extend('php', { 'phpdoc' })
-            luasnip.filetype_extend('python', { 'pydoc' })
-            luasnip.filetype_extend('ruby', { 'rdoc' })
-            luasnip.filetype_extend('rust', { 'rustdoc' })
-            luasnip.filetype_extend('sh', { 'shelldoc' })
-            luasnip.filetype_extend('dart', { 'flutter' })
-
-            luasnip.setup {
-              enable_autosnippets = true,
-              snippet_source = true,
-              store_selection_keys = '<Tab>',
-            }
-          end,
+          'Kaiser-Yang/blink-cmp-dictionary',
+          dependencies = { 'nvim-lua/plenary.nvim' },
         },
-
-        -- LSP Copilot
-        {
-          'zbirenbaum/copilot-cmp',
-          dependencies = {
-            'zbirenbaum/copilot.lua',
+        'fang2hou/blink-copilot',
+      },
+      opts = {
+        -- 外観設定
+        appearance = {
+          use_nvim_cmp_as_default = true, -- nvim-cmp 互換の見た目
+          nerd_font_variant = 'mono', -- nerd font アイコンの最適化
+        },
+        -- パフォーマンス設定
+        enabled = function()
+          -- 特定のファイルタイプでは補完を無効化
+          local disabled_filetypes = { 'TelescopePrompt', 'NvimTree', 'help' }
+          return not vim.tbl_contains(disabled_filetypes, vim.bo.filetype)
+        end,
+        -- 補完の動作設定
+        keyword = {
+          range = 'full', -- 前後のファジーマッチング有効化
+        },
+        completion = {
+          signature = { enabled = true }, -- シグネチャヘルプを有効化
+          list = {
+            selection = {
+              preselect = false, -- 最初の項目を自動選択しない
+              auto_insert = true, -- 補完リストが 1 つの場合は自動挿入
+            },
           },
-          fix_pairs = true,
-          cmd = 'Copilot',
-          config = function()
-            require('copilot').setup {
-              panel = {
-                enabled = false,
+          menu = {
+            border = 'rounded', -- 角丸ボーダー
+            winblend = 10, -- 10% 透明度
+            winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None',
+            scrollbar = true, -- スクロールバー表示
+            max_height = 20, -- 最大表示行数
+            auto_show = true,
+            draw = {
+              columns = {
+                { 'kind_icon', 'kind', gap = 1 }, -- アイコンと種類
+                { 'label', 'label_description', gap = 1 }, -- ラベルと説明
               },
-              suggestion = {
-                enabled = false,
+              components = {
+                kind_icon = {
+                  ellipsis = false,
+                  width = { min = 1, max = 2 },
+                },
+                kind = {
+                  ellipsis = false,
+                  width = { min = 6, max = 12 },
+                },
+                label = {
+                  width = { fill = true },
+                  ellipsis = true,
+                },
+                label_description = {
+                  width = { max = 30 },
+                  ellipsis = true,
+                },
               },
-              copilot_model = 'gpt-4o',
-              filetypes = {
-                yaml = true,
-                markdown = false,
-                help = false,
-                gitcommit = false,
-                gitrebase = false,
-                hgcommit = false,
-                svn = false,
-                cvs = false,
-                ['.'] = false,
+            },
+          },
+          documentation = {
+            auto_show = true, -- ドキュメントを自動表示
+            auto_show_delay_ms = 200, -- 200ms 遅延で表示
+            window = {
+              border = 'rounded', -- 統一されたボーダーデザイン
+              winblend = 10, -- メニューと同じ透明度
+              scrollbar = true,
+            },
+          },
+          ghost_text = {
+            enabled = true, -- インライン補完プレビュー表示
+          },
+        },
+        sources = {
+          default = { 'lsp', 'path', 'snippets', 'buffer', 'copilot', 'dictionary' },
+          providers = {
+            dictionary = {
+              module = 'blink-cmp-dictionary',
+              name = 'Dict',
+              min_keyword_length = 3,
+              opts = {
+                dictionary_files = {
+                  vim.fn.stdpath 'config' .. '/lua/envs/cmp-dictionary.txt',
+                },
               },
-              copilot_node_command = vim.env.HOME .. '/.local/share/mise/shims/node',
-              server_opts_overrides = {},
-            }
-            -- register_status_notification_handler が利用できない
-            -- require('copilot.api').register_status_notification_handler(function(data)
-            --   local ns = vim.api.nvim_create_namespace 'user.copilot'
-            --   vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
-            --   if vim.fn.mode() == 'i' and data.status == 'InProgress' then
-            --     vim.api.nvim_buf_set_extmark(0, ns, vim.fn.line '.' - 1, 0, {
-            --       virt_text = { { '  Thinking...', 'Comment' } },
-            --       virt_text_pos = 'eol',
-            --       hl_mode = 'combine',
-            --     })
-            --   end
-            -- end)
-            require('copilot_cmp').setup {
-              method = 'getCompletionsCycling',
-            }
-          end,
+            },
+            buffer = {
+              name = 'Buffer',
+              module = 'blink.cmp.sources.buffer',
+              -- LSP がない時のみ buffer ソースを有効化
+              enabled = function()
+                local clients = vim.lsp.get_clients({ bufnr = 0 })
+                return #clients == 0
+              end,
+            },
+            copilot = {
+              name = 'Copilot',
+              module = 'blink-copilot',
+              score_offset = 100, -- 高い優先度で表示
+              async = true,
+            },
+          },
+        },
+        -- コマンドライン補完設定
+        cmdline = {
+          completion = {
+            menu = {
+              auto_show = true, -- 入力中にリアルタイムで補完表示
+              draw = {
+                columns = {
+                  { 'label' }, -- kind（Property など）を非表示
+                },
+              },
+            },
+            ghost_text = { enabled = true }, -- ゴーストテキスト表示
+          },
         },
       },
-      event = { 'InsertEnter', 'LspAttach' },
-      config = function()
-        local cmp = require 'cmp'
-        local types = require 'cmp.types'
-        local lspkind = require 'lspkind'
+    },
 
-        lspkind.init {
-          mode = 'symbol_text',
-          symbol_map = {
-            Copilot = '',
-            Codeium = '',
-            Text = '󰉿',
-            Method = '󰆧',
-            Function = '󰊕',
-            Constructor = '',
-            Field = '󰜢',
-            Variable = '󰀫',
-            Class = '󰠱',
-            Interface = '',
-            Module = '',
-            Property = '󰜢',
-            Unit = '󰑭',
-            Value = '󰎠',
-            Enum = '',
-            Keyword = '󰌋',
-            Snippet = '',
-            Color = '󰏘',
-            File = '󰈙',
-            Reference = '󰈇',
-            Folder = '󰉋',
-            EnumMember = '',
-            Constant = '󰏿',
-            Struct = '󰙅',
-            Event = '',
-            Operator = '󰆕',
-            TypeParameter = '',
-          },
-        }
-
-        vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
-        vim.opt.completefunc = 'v:lua.require("cmp").complete()'
-
-        cmp.setup {
-          snippet = {
-            expand = function(args)
-              require('luasnip').lsp_expand(args.body)
-            end,
-          },
-          completion = {
-            autocomplete = {
-              types.cmp.TriggerEvent.InsertEnter,
-              types.cmp.TriggerEvent.TextChanged,
-            },
-            completion = {
-              completeopt = 'menu,menuone,noinsert,noselect',
-            },
-            keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]],
-            keyword_length = 1,
-          },
-          preselect = cmp.PreselectMode.Item,
-          window = {
-            completion = cmp.config.window.bordered {
-              border = 'rounded',
-              -- max_width = 80,
-              winhighlight = 'NormalFloat:NormalFloat,FloatBorder:FloatBorder',
-            },
-            documentation = cmp.config.window.bordered {
-              border = 'rounded',
-            },
-          },
-          formatting = {
-            expandable_indicator = true,
-            fields = { 'kind', 'abbr', 'menu' },
-            format = function(entry, vim_item)
-              local kind = lspkind.cmp_format {
-                ellipsis_char = '…',
-                maxwidth = 100,
-                mode = 'symbol_text',
-                with_text = true,
-              }(entry, vim_item)
-              local strings = vim.split(kind.kind, '%s', { trimempty = true })
-              kind.kind = ' ' .. (strings[1] or '') .. ' '
-              kind.menu = '    (' .. (strings[2] or '') .. ')'
-
-              return kind
-            end,
-          },
-          mapping = cmp.mapping.preset.insert {
-            ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-            ['<C-f>'] = cmp.mapping.scroll_docs(4),
-            ['<C-p>'] = cmp.mapping.select_prev_item(),
-            ['<C-n>'] = cmp.mapping.select_next_item(),
-            ['<C-Space>'] = cmp.mapping.complete(),
-            ['<C-e>'] = cmp.mapping.abort(),
-            ['<CR>'] = cmp.mapping.confirm { select = false },
-          },
-          sources = cmp.config.sources({
-            { name = 'copilot', group_index = 1 },
-            { name = 'codeium', group_index = 1 },
-            { name = 'luasnip', keyword_length = 2 },
-            { name = 'nvim_lsp', group_index = 2 },
-            { name = 'lazydev', group_index = 2 },
-            { name = 'path', group_index = 2 },
-            { name = 'nvim_lsp_document_symbol', group_index = 2 },
-            { name = 'nvim_lsp_signature_help', group_index = 2 },
-          }, {
-            { name = 'buffer', group_index = 2 },
-          }),
-          performance = {
-            max_view_entries = 50,
-            debounce = 0, -- default is 60ms
-            throttle = 0, -- default is 30ms
-          },
-          matching = {
-            disallow_fuzzy_matching = true,
-            disallow_fullfuzzy_matching = true,
-            disallow_partial_fuzzy_matching = true,
-            disallow_partial_matching = false,
-            disallow_prefix_unmatching = true,
-          },
-          experimental = {
-            ghost_text = true,
-          },
-        }
-
-        cmp.setup.filetype({ 'dap-repl' }, {
-          enabled = true,
-          sources = cmp.config.sources {
-            { name = 'dap' },
-          },
-        })
-
-        cmp.setup.cmdline({ '/', '?' }, {
-          mapping = cmp.mapping.preset.cmdline(),
-          sources = cmp.config.sources({
-            { name = 'nvim_lsp_document_symbol' },
-          }, {
-            { name = 'buffer' },
-          }),
-        })
-
-        cmp.setup.cmdline(':', {
-          mapping = cmp.mapping.preset.cmdline(),
-          sources = cmp.config.sources({
-            { name = 'path' },
-          }, {
-            { name = 'cmdline' },
-          }),
-          matching = { disallow_symbol_nonprefix_matching = false },
-        })
-      end,
+    -- GitHub Copilot
+    {
+      'zbirenbaum/copilot.lua',
+      event = 'InsertEnter',
+      opts = {
+        suggestion = { enabled = false }, -- blink.cmp との競合を避けるため無効化
+        panel = { enabled = false }, -- blink.cmp との競合を避けるため無効化
+        filetypes = {
+          yaml = false,
+          markdown = false,
+          help = false,
+          gitcommit = false,
+          gitrebase = false,
+          hgcommit = false,
+          svn = false,
+          cvs = false,
+          ['.'] = false,
+        },
+      },
     },
 
     -- デバッグ
@@ -4199,7 +4092,7 @@ require('lazy').setup {
           focus_on_open = true,
           dismiss_on_move = false,
           force_close = true,
-          -- 複数LSPクライアントがある場合、最初の1つのみ使用
+          -- 複数 LSP クライアントがある場合、最初の 1 つのみ使用
           post_open_hook = function(bufnr, winnr)
             -- 既存のプレビューウィンドウを閉じて単一表示に制限
             local preview_wins = {}
