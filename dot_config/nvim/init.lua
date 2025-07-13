@@ -1227,18 +1227,23 @@ require('lazy').setup {
     {
       'MagicDuck/grug-far.nvim',
       enabled = vim.g.vscode == nil,
-      event = 'VeryLazy',
+      cmd = 'GrugFar',
       keys = {
         {
           mode = { 'n', 'o', 'x' },
           '<C-/>',
-          "<cmd>lua require('grug-far').grug_far({ prefills = { search = vim.fn.expand('<cword>'), paths = vim.fn.expand('%') } })<CR>",
+          function()
+            require('grug-far').open {
+              search = vim.fn.expand '<cword>',
+              paths = vim.fn.expand '%',
+            }
+          end,
           desc = 'grug-far',
         },
       },
       config = function()
         require('grug-far').setup {
-          windowCreationCommand = 'rightbelow 120vnew',
+          windowCreationCommand = 'rightbelow 80vnew',
         }
       end,
     },

@@ -468,6 +468,15 @@ wezterm.on('update-right-status', function(window, pane)
   local repo_name = get_git_repo_name(cwd_path)
 
   if not repo_name then
+    -- Git リポジトリでない場合
+    local mux_window = window:mux_window()
+    if mux_window then
+      local active_tab = mux_window:active_tab()
+      if active_tab and active_tab:tab_id() == pane:tab():tab_id() then
+        active_tab:set_title('')
+      end
+    end
+
     -- Git リポジトリでない場合は Claude ステータスのみ表示
     add_claude_status_to_elements(elements, claude_status.tab_sessions, window)
     window:set_right_status(wezterm.format(elements))
