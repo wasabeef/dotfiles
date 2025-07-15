@@ -47,13 +47,86 @@ $ /commit-message
 - コミットコマンドを `pbcopy` に渡す際は、メッセージ出力とは別プロセスで実行すること
 - `echo` の代わりに `printf` を使用して末尾の改行を避けること
 
+### プロジェクト規約の自動検出
+
+**重要**: プロジェクト独自の規約が存在する場合は、それを優先します。
+
+#### 1. CommitLint 設定の確認
+
+以下のファイルから設定を自動検出：
+
+- `commitlint.config.js`
+- `commitlint.config.mjs`
+- `commitlint.config.cjs`
+- `commitlint.config.ts`
+- `.commitlintrc.js`
+- `.commitlintrc.json`
+- `.commitlintrc.yml`
+- `.commitlintrc.yaml`
+- `package.json` の `commitlint` セクション
+
+```bash
+# 設定ファイルの検索
+find . -name "commitlint.config.*" -o -name ".commitlintrc.*" | head -1
+```
+
+#### 2. カスタムタイプの検出
+
+プロジェクト独自のタイプ例：
+
+```javascript
+// commitlint.config.mjs
+export default {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'type-enum': [
+      2,
+      'always',
+      [
+        'feat', 'fix', 'docs', 'style', 'refactor', 'test', 'chore',
+        'wip',      // 作業中
+        'hotfix',   // 緊急修正
+        'release',  // リリース
+        'deps',     // 依存関係更新
+        'config'    // 設定変更
+      ]
+    ]
+  }
+}
+```
+
+#### 3. 言語設定の検出
+
+```javascript
+// プロジェクトが日本語メッセージを使用する場合
+export default {
+  rules: {
+    'subject-case': [0],  // 日本語対応のため無効化
+    'subject-max-length': [2, 'always', 72]  // 日本語は文字数制限を調整
+  }
+}
+```
+
+#### 4. 既存コミット履歴の分析
+
+```bash
+# 最近のコミットから使用パターンを学習
+git log --oneline -50 --pretty=format:"%s"
+
+# 使用タイプ統計
+git log --oneline -100 --pretty=format:"%s" | \
+grep -oE '^[a-z]+(\([^)]+\))?' | \
+sort | uniq -c | sort -nr
+```
+
 ### 言語の自動判定
 
 以下の条件で自動的に日本語/英語を切り替えます：
 
-1. **過去のコミット履歴**をチェック
-2. **README** や **ドキュメント**の言語を確認
-3. **コメント**の言語を分析
+1. **CommitLint 設定**から言語設定を確認
+2. **git log 分析**による自動判定
+3. **プロジェクトファイル**の言語設定
+4. **変更ファイル内**のコメント・文字列分析
 
 デフォルトは英語。日本語プロジェクトと判定された場合は日本語で生成。
 
@@ -69,16 +142,21 @@ $ /commit-message
 
 **注意**: プロジェクト独自の規約がある場合は、それを優先します。
 
-### 標準プレフィックス
+### 標準タイプ
 
-- `feat`: 新機能
+**必須タイプ**:
+- `feat`: 新機能（ユーザーに見える機能追加）
 - `fix`: バグ修正
+
+**任意タイプ**:
+- `build`: ビルドシステムや外部依存関係の変更
+- `chore`: その他の変更（リリースに影響しない）
+- `ci`: CI 設定ファイルやスクリプトの変更
 - `docs`: ドキュメントのみの変更
-- `style`: コードの意味に影響しない変更
+- `style`: コードの意味に影響しない変更（空白、フォーマット、セミコロンなど）
 - `refactor`: バグ修正や機能追加を伴わないコード変更
 - `perf`: パフォーマンス改善
-- `test`: テストの追加・修正
-- `chore`: ビルドプロセスやツールの変更
+- `test`: テストの追加や修正
 
 ### 出力例（英語プロジェクト）
 
@@ -184,16 +262,34 @@ feat: JWT 認証システムを実装
 
 ### Breaking Change 検出時
 
+API の破壊的変更がある場合：
+
 **英語**:
 
 ```bash
-feat: [BREAKING CHANGES] change API response format for user endpoints
+feat!: change user API response format
+
+BREAKING CHANGE: user response now includes additional metadata
+```
+
+または
+
+```bash
+feat(api)!: change authentication flow
 ```
 
 **日本語**:
 
 ```bash
-feat: [BREAKING CHANGES] ユーザーエンドポイントの API レスポンス形式を変更
+feat!: ユーザー API レスポンス形式を変更
+
+BREAKING CHANGE: レスポンスに追加のメタデータが含まれるようになりました
+```
+
+または
+
+```bash
+feat(api)!: 認証フローを変更
 ```
 
 ### ベストプラクティス
