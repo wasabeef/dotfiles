@@ -3686,11 +3686,11 @@ require('lazy').setup {
           return not vim.tbl_contains(disabled_filetypes, vim.bo.filetype)
         end,
         -- 補完の動作設定
-        keyword = {
-          range = 'full', -- 前後のファジーマッチング有効化
-        },
+        signature = { enabled = true }, -- シグネチャヘルプを有効化
         completion = {
-          signature = { enabled = true }, -- シグネチャヘルプを有効化
+          keyword = {
+            range = 'full', -- 前後のファジーマッチング有効化
+          },
           list = {
             selection = {
               preselect = false, -- 最初の項目を自動選択しない
@@ -3731,7 +3731,7 @@ require('lazy').setup {
           },
           documentation = {
             auto_show = true, -- ドキュメントを自動表示
-            auto_show_delay_ms = 200, -- 200ms 遅延で表示
+            -- auto_show_delay_ms = 200, -- 200ms 遅延で表示
             window = {
               border = 'rounded', -- 統一されたボーダーデザイン
               winblend = 10, -- メニューと同じ透明度
@@ -3746,8 +3746,8 @@ require('lazy').setup {
           default = { 'lsp', 'path', 'snippets', 'buffer', 'copilot', 'dictionary' },
           providers = {
             dictionary = {
-              module = 'blink-cmp-dictionary',
               name = 'Dict',
+              module = 'blink-cmp-dictionary',
               min_keyword_length = 3,
               opts = {
                 dictionary_files = {
@@ -3760,7 +3760,7 @@ require('lazy').setup {
               module = 'blink.cmp.sources.buffer',
               -- LSP がない時のみ buffer ソースを有効化
               enabled = function()
-                local clients = vim.lsp.get_clients({ bufnr = 0 })
+                local clients = vim.lsp.get_clients { bufnr = 0 }
                 return #clients == 0
               end,
             },
@@ -3785,6 +3785,11 @@ require('lazy').setup {
             },
             ghost_text = { enabled = true }, -- ゴーストテキスト表示
           },
+        },
+        -- キーマップ設定
+        keymap = {
+          preset = 'default',
+          ['<CR>'] = { 'accept', 'fallback' }, -- エンターで補完確定、補完がない場合は改行
         },
       },
     },

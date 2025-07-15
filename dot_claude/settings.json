@@ -69,6 +69,7 @@
       "Bash(mkfs *)",
       "Bash(npm install -g *)",
       "Bash(pip install *)",
+      "Bash(bundle install *)",
       "Bash(rm -rf /)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf ~/*)",
@@ -114,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"確認待ち\" with title \"Claude Code\"' && afplay ~/.claude/assets/confirm.mp3"
+            "command": "osascript -e 'display notification \"確認待ち\" with title \"Claude Code\"' && afplay -v 0.5 ~/.claude/assets/confirm.mp3"
           }
         ]
       }
@@ -129,7 +130,7 @@
           },
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"タスク完了\" with title \"Claude Code\"' && afplay ~/.claude/assets/perfect.mp3"
+            "command": "osascript -e 'display notification \"タスク完了\" with title \"Claude Code\"' && afplay -v 0.5 ~/.claude/assets/perfect.mp3"
           }
         ]
       }
