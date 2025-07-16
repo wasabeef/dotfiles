@@ -1,8 +1,8 @@
 ## Spec
 
-**「コードを書く前に構造を与える」** - Kiro の革新的 spec-driven development に完全準拠
+**「コードを書く前に構造を与える」** - Kiro の spec-driven development に完全準拠
 
-従来のコード生成ツールとは異なり、開発の混沌に構造を与えることに重点を置いた Kiro の仕様駆動開発を実現。わずか 4 行程度の要件入力から、プロダクトマネージャーレベルの詳細な仕様と実装可能な設計まで段階的に展開し、**プロトタイプから本番環境**まで一貫した品質を保証します。
+従来のコード生成ツールとは異なり、開発の混沌に構造を与えることに重点を置いた Kiro の仕様駆動開発を実現。わずかな要件入力から、プロダクトマネージャーレベルの詳細な仕様と実装可能な設計まで段階的に展開し、**プロトタイプから本番環境**まで一貫した品質を保証します。
 
 ### 使い方
 
@@ -11,7 +11,7 @@
 「[機能説明] の spec を作成して」
 
 # Kiro 式段階的展開:
-# 1. 4 行程度の簡単な要件 → 詳細なユーザーストーリー自動生成
+# 1. 簡単な要件 → 詳細なユーザーストーリー自動生成
 # 2. EARS 記法による構造化された要件記述
 # 3. 段階的対話を通じた仕様の精緻化
 # 4. 3 つの独立したファイルを生成:
@@ -91,7 +91,7 @@
 
 **3 段階の対話的展開**
 - **Phase 1**: Requirements Discovery → 議論 → 承認 → `requirements.md` 生成
-- **Phase 2**: Design Exploration → 議論 → 承認 → `design.md` 生成  
+- **Phase 2**: Design Exploration → 議論 → 承認 → `design.md` 生成
 - **Phase 3**: Implementation Planning → 議論 → 承認 → `tasks.md` 生成
 
 **動的な仕様策定**
@@ -126,7 +126,7 @@
 - プロフィール編集
 - 管理者権限」
 
-Claude: 「4 行の要件から詳細なユーザーストーリーを生成します。
+Claude: 「要件から詳細なユーザーストーリーを生成します。
 この理解で正しいですか？
 
 自動生成されたユーザーストーリー:
@@ -219,11 +219,11 @@ graph TB
     API --> Auth[Auth Service]
     API --> User[User Service]
     API --> Profile[Profile Service]
-    
+
     Auth --> AuthDB[(Auth Database)]
     User --> UserDB[(User Database)]
     Profile --> ProfileDB[(Profile Database)]
-    
+
     Auth --> JWT[JWT Service]
     Auth --> OAuth[OAuth Provider]
 ```
@@ -452,7 +452,7 @@ THE SYSTEM SHALL [対応動作]
 **ファイル生成タイミング**
 ```
 Phase 1 完了 → 「次に進んで」 → requirements.md 生成
-Phase 2 完了 → 「次に進んで」 → design.md 生成  
+Phase 2 完了 → 「次に進んで」 → design.md 生成
 Phase 3 完了 → 「次に進んで」 → tasks.md 生成
 ```
 
@@ -469,7 +469,7 @@ Claude: 「Requirements Phase が完了しました。次に進んでよろし�
 ユーザー: 「次に進んで」
 → requirements.md 生成
 
-# Phase 2: Design Exploration  
+# Phase 2: Design Exploration
 Claude: [設計の提案と議論開始]
 ユーザー: [技術選択・アーキテクチャ議論]
 Claude: 「Design Phase が完了しました。次に進んでよろしいですか？」
