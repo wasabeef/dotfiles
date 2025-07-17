@@ -1,0 +1,192 @@
+name: Sync Claude Settings
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'dot_claude/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.repository == 'wasabeef/dotfiles'
+    
+    steps:
+    - name: Checkout dotfiles
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: dotfiles
+        fetch-depth: 2
+
+    - name: Checkout claude-code-settings
+      uses: actions/checkout@v4
+      with:
+        repository: wasabeef/claude-code-settings
+        token: ${{ secrets.CLAUDE_SYNC_TOKEN }}
+        path: claude-code-settings
+
+    - name: Get changed files
+      id: changed-files
+      working-directory: dotfiles
+      run: |
+        # Get list of changed files in dot_claude directory
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          # For manual runs, consider all files as changed
+          CHANGED_FILES=$(find dot_claude -type f | head -20)
+          echo "Manual run - processing all files in dot_claude/"
+        else
+          # For push events, get actual changed files
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- dot_claude/ | head -20)
+        fi
+        
+        echo "changed-files<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        # Check if there are any changes
+        if [[ -n "$CHANGED_FILES" ]]; then
+          echo "has-changes=true" >> $GITHUB_OUTPUT
+          echo "📝 Changed files:"
+          echo "$CHANGED_FILES" | sed 's/^/  - /'
+        else
+          echo "has-changes=false" >> $GITHUB_OUTPUT
+          echo "No changes in dot_claude directory"
+        fi
+
+    - name: Sync dot_claude directory
+      if: steps.changed-files.outputs.has-changes == 'true'
+      run: |
+        # Remove existing content in claude-code-settings (except .git and .github)
+        cd claude-code-settings
+        find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' -exec rm -rf {} +
+        
+        # Copy dot_claude contents to claude-code-settings with proper naming
+        cp -r ../dotfiles/dot_claude/* .
+        
+        # Transform chezmoi naming convention to actual file names
+        echo "🔄 Converting chezmoi naming convention to actual file names..."
+        
+        # Function to convert chezmoi names
+        convert_chezmoi_names() {
+          # Handle files and directories in depth-first order (deepest first)
+          find . -depth \( -name "*dot_*" -o -name "executable_*" \) | while read item; do
+            dir=$(dirname "$item")
+            base=$(basename "$item")
+            
+            # Convert based on chezmoi naming rules
+            if [[ "$base" =~ ^private_dot_(.+)$ ]]; then
+              # private_dot_filename -> .filename
+              newname="${dir}/.${BASH_REMATCH[1]}"
+            elif [[ "$base" =~ ^dot_(.+)$ ]]; then
+              # dot_filename -> .filename
+              newname="${dir}/.${BASH_REMATCH[1]}"
+            elif [[ "$base" =~ ^executable_(.+)$ ]]; then
+              # executable_filename -> filename (with +x permission)
+              newname="${dir}/${BASH_REMATCH[1]}"
+            else
+              continue
+            fi
+            
+            if [[ "$item" != "$newname" && ! -e "$newname" ]]; then
+              mv "$item" "$newname"
+              echo "  Renamed: $item -> $newname"
+              
+              # Set executable permission for executable_* files
+              if [[ "$base" =~ ^executable_ ]]; then
+                chmod +x "$newname"
+                echo "  Made executable: $newname"
+              fi
+            fi
+          done
+        }
+        
+        # Run the conversion
+        convert_chezmoi_names
+        
+        echo "✅ Chezmoi naming conversion completed"
+        
+        # Create .gitignore if it doesn't exist
+        if [[ ! -f .gitignore ]]; then
+          cat > .gitignore << 'EOF'
+        # Temporary files
+        *.tmp
+        *.swp
+        *.swo
+        *~
+        
+        # OS generated files
+        .DS_Store
+        .DS_Store?
+        ._*
+        .Spotlight-V100
+        .Trashes
+        ehthumbs.db
+        Thumbs.db
+        EOF
+        fi
+        
+        # Check if there are any changes
+        if [[ -n $(git status --porcelain) ]]; then
+          echo "Changes detected, preparing commit..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create detailed commit message
+          COMMIT_MSG="Sync from dotfiles/dot_claude
+
+        Updated files:
+        ${{ steps.changed-files.outputs.changed-files }}
+
+        Source commit: ${{ github.sha }}
+        Workflow: ${{ github.workflow }}
+        Run ID: ${{ github.run_id }}"
+          
+          git add .
+          git commit -m "$COMMIT_MSG"
+          git push
+          
+          echo "✅ Successfully synchronized changes"
+        else
+          echo "ℹ️ No changes to commit after sync"
+        fi
+
+    - name: Create sync summary
+      if: always()
+      run: |
+        echo "## 🔄 Claude Settings Sync Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Source Repository**: wasabeef/dotfiles" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target Repository**: wasabeef/claude-code-settings" >> $GITHUB_STEP_SUMMARY
+        echo "- **Source Directory**: dot_claude/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date -Iseconds)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ steps.changed-files.outputs.has-changes }}" == "true" ]]; then
+          echo "### ✅ Sync Status: Success" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Changed Files:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed-files.outputs.changed-files }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### ℹ️ Sync Status: No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "No changes detected in dot_claude directory." >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "## ❌ Claude Settings Sync Failed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The synchronization process encountered an error." >> $GITHUB_STEP_SUMMARY
+        echo "Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Troubleshooting:**" >> $GITHUB_STEP_SUMMARY
+        echo "1. Verify CLAUDE_SYNC_TOKEN is valid and has proper permissions" >> $GITHUB_STEP_SUMMARY
+        echo "2. Check if claude-code-settings repository is accessible" >> $GITHUB_STEP_SUMMARY
+        echo "3. Review the workflow logs for specific error messages" >> $GITHUB_STEP_SUMMARY 
