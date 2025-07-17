@@ -78,7 +78,7 @@
       "Bash(yum install *)"
     ]
   },
-  "model": "sonnet",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {

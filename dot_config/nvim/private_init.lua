@@ -2352,7 +2352,7 @@ require('lazy').setup {
             bash = { 'shfmt' },
             zsh = { 'shfmt' },
             lua = { 'stylua' },
-            markdown = { 'prettier' },
+            markdown = { 'markdownlint-cli2' },
             json = { 'prettier' },
             yaml = { 'prettier' },
             toml = { 'dprint' },
