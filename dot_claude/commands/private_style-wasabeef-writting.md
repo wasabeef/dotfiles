@@ -1,4 +1,4 @@
-# wasabeef-style
+## wasabeef-style
 
 わさびーふの文体ガイドラインに沿った文章作成・レビューを行います。技術記事を親しみやすく謙虚なトーンで執筆するためのコマンドです。
 
@@ -410,7 +410,8 @@ flutter pub global activate flutter_tool
 
 おしまい
 
-GitHub: https://github.com/example/flutter-tool
+GitHub: <https://github.com/example/flutter-tool>
+
 ```
 
 ## Twitter 投稿から学んだ良い特徴
