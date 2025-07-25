@@ -506,14 +506,14 @@ macOS の iCUE では接続できませんでしたが、Windows の iCUE でや
 ### ポイント
 
 - **実際にありそうな組み合わせを使う**: 「日本語 Claude コード」など
-- **不自然な空白を避ける**: 「日本語 Claude コード」は不自然
+- **不自然な空白を避ける**: 「日本語Claudeコード」は不自然
 - **具体的な技術名を使う**: Python より Rust、MySQL より PostgreSQL
 
 ### 例
 
 ```markdown
 ❌ 不自然：
-「日本語 AI ツール」「最新 JavaScript フレームワーク」
+「日本語AIツール」「最新JavaScriptフレームワーク」
 
 ✅ 自然：
 「日本語 AI ツール」「最新 JavaScript フレームワーク」
