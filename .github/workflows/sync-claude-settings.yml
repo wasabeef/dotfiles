@@ -38,7 +38,14 @@ jobs:
           echo "Manual run - processing all files in dot_claude/"
         else
           # For push events, get actual changed files
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- dot_claude/ | head -20)
+          # Handle merge commits properly by using git diff-tree
+          if git rev-parse HEAD^2 >/dev/null 2>&1; then
+            # This is a merge commit, compare with both parents
+            CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD -- dot_claude/ | head -20)
+          else
+            # Regular commit
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- dot_claude/ | head -20)
+          fi
         fi
         
         echo "changed-files<<EOF" >> $GITHUB_OUTPUT
