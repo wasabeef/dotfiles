@@ -134,9 +134,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
+          # Get the original commit message from dotfiles repo
+          cd ../dotfiles
+          ORIGINAL_COMMIT_MSG=$(git log -1 --pretty=format:"%s" HEAD)
+          ORIGINAL_COMMIT_BODY=$(git log -1 --pretty=format:"%b" HEAD)
+          cd ../claude-code-settings
+          
           # Create detailed commit message
-          COMMIT_MSG="Sync from dotfiles/dot_claude
+          COMMIT_MSG="$ORIGINAL_COMMIT_MSG
 
+        $ORIGINAL_COMMIT_BODY
+
+        ---
+        Synced from dotfiles/dot_claude
         Updated files:
         ${{ steps.changed-files.outputs.changed-files }}
 
