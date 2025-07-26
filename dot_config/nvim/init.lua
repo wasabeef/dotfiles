@@ -2599,6 +2599,15 @@ require('lazy').setup {
         },
       },
       config = function()
+        -- Markdown での cokeline キーマッピング上書き
+        vim.api.nvim_create_autocmd('FileType', {
+          pattern = 'markdown',
+          callback = function()
+            vim.keymap.set('n', ']]', '<Plug>(cokeline-focus-next)', { buffer = true, desc = 'Next Buffer (cokeline)' })
+            vim.keymap.set('n', '[[', '<Plug>(cokeline-focus-prev)', { buffer = true, desc = 'Prev Buffer (cokeline)' })
+          end,
+        })
+
         local get_hex = require('cokeline.hlgroups').get_hl_attr
         -- local mappings = require 'cokeline/mappings'
 
