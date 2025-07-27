@@ -1,0 +1,49 @@
+{
+  "profiles": [
+    {
+      "name": "Default profile",
+      "selected": true,
+
+      "simple_modifications": [
+        {
+          "from": { "key_code": "caps_lock" },
+          "to": [{ "key_code": "left_control" }]
+        },
+        {
+          "from": { "key_code": "right_command" },
+          "to": [{ "key_code": "japanese_eisuu" }]
+        }
+      ],
+
+      "complex_modifications": {
+        "rules": [
+          {
+            "description": "Esc で英数に切替＋Esc 送出（日本語入力時のみ）",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": { "key_code": "escape" },
+                "to": [
+                  {
+                    "select_input_source": {
+                      "language": "en",
+                      "input_source_id": "com.apple.keylayout.ABC"
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [{ "language": "ja" }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+    }
+  ]
+}
