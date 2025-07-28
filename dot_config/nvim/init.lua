@@ -751,15 +751,16 @@ require('lazy').setup {
             disabled_filetypes = {
               statusline = { 'alpha' },
               winbar = {
-                'alpha',
-                'dropbar_menu',
-                'NvimTree',
                 'DiffviewFileHistory',
                 'DiffviewFiles',
+                'NvimTree',
+                'alpha',
+                'dap-repl',
+                'dap-view',
+                'dropbar_menu',
                 'lazy',
                 'mason',
-                'dap-view',
-                'dap-repl',
+                'toggleterm',
               },
             },
             theme = bubbles_theme,
@@ -2511,28 +2512,26 @@ require('lazy').setup {
       enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       keys = {
-        { '<C-t>t', '<Cmd>ToggleTerm direction=float<CR>' },
-        { '<C-t>v', '<Cmd>ToggleTerm direction=vertical<CR>' },
-        { '<C-t>h', '<Cmd>ToggleTerm direction=horizontal<CR>' },
+        { '<C-t>t', '<Cmd>1ToggleTerm direction=float<CR>' },
+        { '<C-t>v', '<Cmd>2ToggleTerm direction=vertical<CR>' },
+        { '<C-t>h', '<Cmd>3ToggleTerm direction=horizontal<CR>' },
       },
       opts = {
         on_open = function(term)
-          vim.cmd 'wincmd H'
           vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { buffer = term.bufnr })
         end,
         on_create = function(term) -- 例 : Esc でノーマルに戻す
           vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { buffer = term.bufnr })
         end,
         open_mapping = '<C-t>',
-        -- direction = 'horizontal',
-        -- サイズ設定（画面の半分）
-        -- size = function(term)
-        --   if term.direction == 'horizontal' then
-        --     return vim.o.lines * 0.5 -- 画面の高さの 50%
-        --   elseif term.direction == 'vertical' then
-        --     return vim.o.columns * 0.5 -- 画面の幅の 50%
-        --   end
-        -- end,
+        direction = 'float',
+        size = function(term)
+          if term.direction == 'horizontal' then
+            return math.floor(vim.o.lines * 0.3)
+          elseif term.direction == 'vertical' then
+            return math.floor(vim.o.columns * 0.5)
+          end
+        end,
         float_opts = {
           winblend = 10,
           border = 'curved',
@@ -2550,34 +2549,11 @@ require('lazy').setup {
         require('bufferin').setup {
           show_window_layout = true,
         }
+        vim.keymap.set('n', '[]', '<cmd>Bufferin<cr>', { desc = 'Toggle Bufferin' })
       end,
       -- Optional: for file icons
       dependencies = { 'echasnovski/mini.icons' },
     },
-
-    -- バッファ操作 (マネージャー)
-    -- {
-    --   'j-morano/buffer_manager.nvim',
-    --   enabled = vim.g.vscode == nil,
-    --   dependencies = {
-    --     'nvim-lua/plenary.nvim',
-    --   },
-    --   event = { 'BufReadPre', 'BufNewFile' },
-    --   opts = {
-    --     -- order_buffers = "lastused",
-    --     width = 0.4,
-    --     height = 0.3,
-    --   },
-    --   keys = {
-    --     {
-    --       '[]',
-    --       function()
-    --         require('buffer_manager.ui').toggle_quick_menu()
-    --       end,
-    --     },
-    --     desc = 'Buffer Manager',
-    --   },
-    -- },
 
     -- バッファ操作 (タブ)
     {
