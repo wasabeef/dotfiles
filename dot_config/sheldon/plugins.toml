@@ -13,10 +13,17 @@ github = "wintermi/zsh-brew"
 [templates]
 defer = "{% for file in files %} zsh-defer source \"{{ file }}\"\n {% endfor %}"
 
-[plugins.direnv]
-github = "ohmyzsh/ohmyzsh"
-dir = "plugins/direnv"
-apply = ["defer"]
+# [plugins.direnv]
+# github = "ohmyzsh/ohmyzsh"
+# dir = "plugins/direnv"
+# apply = ["defer"]
+
+# [plugins.direnv-hook]
+# inline = '''
+# if [ -f "$HOME/.env" ]; then
+#   source "$HOME/.env"
+# fi
+# '''
 
 [plugins.prompt]
 ## https://scriptingosx.com/2019/07/moving-to-zsh-06-customizing-the-zsh-prompt/

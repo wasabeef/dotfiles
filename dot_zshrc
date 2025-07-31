@@ -102,3 +102,7 @@ alias yolo='claude --dangerously-skip-permissions'
 # if (which zprof > /dev/null 2>&1) ;then
 #   zprof | less
 # fi
+
+if [ -f "$HOME/.env" ]; then
+  source "$HOME/.env"
+fi
