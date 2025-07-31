@@ -29,7 +29,7 @@ setopt HIST_VERIFY            # Don't execute immediately upon history expansion
 setopt HIST_BEEP              # Beep when accessing nonexistent history.
 setopt AUTO_CD
 
-# OS別
+# OS 別
 case $(uname | tr '[:upper:]' '[:lower:]') in
 linux*)
   eval "$(/home/linuxbrew/.linuxbrew/bin/sheldon source)"
