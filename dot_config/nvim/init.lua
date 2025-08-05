@@ -1372,7 +1372,8 @@ require('lazy').setup {
 
     -- Claude Code 用のヤンク
     {
-      dir = '~/git/yank-for-claude.nvim',
+      'wasabeef/yank-for-claude.nvim',
+      -- dir = '~/git/yank-for-claude.nvim',
       enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       config = function()
@@ -2747,8 +2748,8 @@ require('lazy').setup {
 
     -- タスクショートカット
     {
-      dir = '~/git/melos.nvim',
-      -- 'wasabeef/melos.nvim',
+      -- dir = '~/git/melos.nvim',
+      'wasabeef/melos.nvim',
       enabled = vim.g.vscode == nil,
       event = 'VeryLazy',
       dependencies = { 'nvim-telescope/telescope.nvim' },
@@ -2872,7 +2873,41 @@ require('lazy').setup {
       end,
     },
 
-    -- Markdown プレビュー
+    -- Mermaid を表示する
+    -- Required the mermaid-cli
+    {
+      '3rd/diagram.nvim',
+      enabled = vim.g.vscode == nil,
+      ft = 'markdown',
+      -- event = "VeryLazy",
+      dependencies = {
+        '3rd/image.nvim',
+      },
+      config = function()
+        require('image').setup {}
+        require('diagram').setup {
+          integrations = {
+            require 'diagram.integrations.markdown',
+            require 'diagram.integrations.neorg',
+          },
+          events = {
+            render_buffer = { 'InsertLeave', 'BufWinEnter', 'TextChanged' },
+            clear_buffer = { 'BufLeave' },
+          },
+          renderer_options = {
+            mermaid = {
+              -- background = 'transparent',
+              -- theme = 'forest',
+              -- scale = 3,
+              -- width = 800,
+              -- height = 600,
+            },
+          },
+        }
+        -- vim.keymap.set('n', '<Leader>m', '<cmd>DiagramToggle<CR>', { desc = 'Toggle Mermaid Diagram' })
+      end,
+    },
+
     -- {
     --   'MeanderingProgrammer/render-markdown.nvim',
     --   enabled = vim.g.vscode == nil,
@@ -2980,31 +3015,6 @@ require('lazy').setup {
         }
       end,
     },
-
-    {
-      'greggh/claude-code.nvim',
-      event = 'VeryLazy',
-      dependencies = {
-        'nvim-lua/plenary.nvim', -- Required for git operations
-      },
-      config = function()
-        require('claude-code').setup()
-      end,
-    },
-
-    -- Windsurf
-    -- {
-    --   'Exafunction/windsurf.nvim',
-    --   enabled = vim.g.vscode == nil,
-    --   event = 'VeryLazy',
-    --   dependencies = {
-    --     'nvim-lua/plenary.nvim',
-    --     'hrsh7th/nvim-cmp',
-    --   },
-    --   config = function()
-    --     require('codeium').setup {}
-    --   end,
-    -- },
 
     -- ブラウザ検索
     {
@@ -3412,19 +3422,8 @@ require('lazy').setup {
             },
             on_attach = function(client, bufnr)
               -- inlay hints
-              -- 有効にすると lsp が効かなくなる
-              -- client.server_capabilities.inlayHintProvider = true
-              -- vim.lsp.inlay_hint.enable(true)
-
-              -- local function opts(desc)
-              --   return {
-              --     desc = 'flutter-tools: ' .. desc,
-              --     buffer = bufnr,
-              --     noremap = true,
-              --     silent = true,
-              --     nowait = true,
-              --   }
-              -- end
+              client.server_capabilities.inlayHintProvider = true
+              vim.lsp.inlay_hint.enable(true)
 
               -- Restore dev log buffer
               local dev_log = '__FLUTTER_DEV_LOG__$'
