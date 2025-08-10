@@ -22,7 +22,7 @@ config.webgpu_power_preference = 'HighPerformance'
 -- window
 config.adjust_window_size_when_changing_font_size = false
 config.integrated_title_button_style = 'Windows'
-config.window_decorations = 'NONE'
+config.window_decorations = 'RESIZE'
 config.window_background_opacity = 1
 config.window_padding = {
   left = '0.5cell',
