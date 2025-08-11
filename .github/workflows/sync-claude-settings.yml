@@ -1,10 +1,10 @@
 name: Sync Claude Settings
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'dot_claude/**'
+  # push:
+  #   branches: [ main ]
+  #   paths:
+  #     - 'dot_claude/**'
   workflow_dispatch:
 
 jobs:
