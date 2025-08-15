@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Constants
-readonly MAX_CONTEXT=160000  # 200K * 0.8
+readonly MAX_CONTEXT=160000 # 200K * 0.8
 readonly CACHE_FILE="/tmp/claude_statusline_cost_cache"
-readonly CACHE_TTL=60  # seconds
+readonly CACHE_TTL=60 # seconds
 
 # Calculate daily cost using ccusage
 calculate_daily_cost() {
