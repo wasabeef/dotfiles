@@ -2875,38 +2875,38 @@ require('lazy').setup {
 
     -- Mermaid を表示する
     -- Required the mermaid-cli
-    {
-      '3rd/diagram.nvim',
-      enabled = vim.g.vscode == nil,
-      ft = 'markdown',
-      -- event = "VeryLazy",
-      dependencies = {
-        '3rd/image.nvim',
-      },
-      config = function()
-        require('image').setup {}
-        require('diagram').setup {
-          integrations = {
-            require 'diagram.integrations.markdown',
-            require 'diagram.integrations.neorg',
-          },
-          events = {
-            render_buffer = { 'InsertLeave', 'BufWinEnter', 'TextChanged' },
-            clear_buffer = { 'BufLeave' },
-          },
-          renderer_options = {
-            mermaid = {
-              -- background = 'transparent',
-              -- theme = 'forest',
-              -- scale = 3,
-              -- width = 800,
-              -- height = 600,
-            },
-          },
-        }
-        -- vim.keymap.set('n', '<Leader>m', '<cmd>DiagramToggle<CR>', { desc = 'Toggle Mermaid Diagram' })
-      end,
-    },
+    -- {
+    --   '3rd/diagram.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   ft = 'markdown',
+    --   -- event = "VeryLazy",
+    --   dependencies = {
+    --     '3rd/image.nvim',
+    --   },
+    --   config = function()
+    --     require('image').setup {}
+    --     require('diagram').setup {
+    --       integrations = {
+    --         require 'diagram.integrations.markdown',
+    --         require 'diagram.integrations.neorg',
+    --       },
+    --       events = {
+    --         render_buffer = { 'InsertLeave', 'BufWinEnter', 'TextChanged' },
+    --         clear_buffer = { 'BufLeave' },
+    --       },
+    --       renderer_options = {
+    --         mermaid = {
+    --           -- background = 'transparent',
+    --           -- theme = 'forest',
+    --           -- scale = 3,
+    --           -- width = 800,
+    --           -- height = 600,
+    --         },
+    --       },
+    --     }
+    --     -- vim.keymap.set('n', '<Leader>m', '<cmd>DiagramToggle<CR>', { desc = 'Toggle Mermaid Diagram' })
+    --   end,
+    -- },
 
     -- {
     --   'MeanderingProgrammer/render-markdown.nvim',
@@ -3104,6 +3104,7 @@ require('lazy').setup {
             'yaml-language-server',
             'json-lsp',
             'rust_analyzer',
+            'deno',
 
             -- Formatter/Linter
             'typos',
@@ -3177,29 +3178,38 @@ require('lazy').setup {
         --   },
         -- }
 
+        -- Deno
+        -- require('lspconfig').denols.setup {
+        --   root_dir = require('lspconfig.util').root_pattern('deno.json', 'deno.jsonc'),
+        --   init_options = {
+        --     lint = true,
+        --     unstable = true,
+        --   },
+        -- }
+
         -- tsserver
-        local inlayHints = {
-          includeInlayParameterNameHints = 'all',
-          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayVariableTypeHints = true,
-          includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayEnumMemberValueHints = true,
-        }
-        lspconfig.ts_ls.setup {
-          on_attach = on_attach,
-          capabilities = capabilities,
-          settings = {
-            typescript = {
-              inlayHints = inlayHints,
-            },
-            javascript = {
-              inlayHints = inlayHints,
-            },
-          },
-        }
+        -- local inlayHints = {
+        --   includeInlayParameterNameHints = 'all',
+        --   includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        --   includeInlayFunctionParameterTypeHints = true,
+        --   includeInlayVariableTypeHints = true,
+        --   includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+        --   includeInlayPropertyDeclarationTypeHints = true,
+        --   includeInlayFunctionLikeReturnTypeHints = true,
+        --   includeInlayEnumMemberValueHints = true,
+        -- }
+        -- lspconfig.ts_ls.setup {
+        --   on_attach = on_attach,
+        --   capabilities = capabilities,
+        --   settings = {
+        --     typescript = {
+        --       inlayHints = inlayHints,
+        --     },
+        --     javascript = {
+        --       inlayHints = inlayHints,
+        --     },
+        --   },
+        -- }
 
         -- lspconfig.lua_ls.setup {
         --   on_attach = on_attach,

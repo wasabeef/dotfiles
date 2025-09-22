@@ -229,3 +229,12 @@ function _maestro() {
 }
 zsh-defer _maestro
 '''
+
+[plugins.local]
+inline = '''
+function _local() {
+  export PATH="$PATH":"$HOME/.local/bin"
+}
+zsh-defer _local
+'''
+

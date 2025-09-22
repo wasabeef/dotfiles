@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# デバッグログ出力（本番環境ではコメントアウト）
+# echo "$(date): deny-check.sh called" >> ~/.claude/deny-check.log
+DEBUG=false
+
 # JSON 入力を読み取り、コマンドとツール名を抽出
 input=$(cat)
+
+# デバッグ: 入力を記録
+# echo "Input received: $input" >> ~/.claude/deny-check.log
 command=$(echo "$input" | jq -r '.tool_input.command' 2>/dev/null || echo "")
 tool_name=$(echo "$input" | jq -r '.tool_name' 2>/dev/null || echo "")
 
@@ -25,6 +32,28 @@ matches_deny_pattern() {
   cmd="${cmd#"${cmd%%[![:space:]]*}"}" # 先頭の空白を削除
   cmd="${cmd%"${cmd##*[![:space:]]}"}" # 末尾の空白を削除
 
+  # 特殊なパターンの処理
+  # "bash:*" や "sh:*" は bash/sh で始まるコマンドをブロック
+  if [[ "$pattern" == "bash:*" ]]; then
+    if [[ "$cmd" == "bash "* ]] || [[ "$cmd" == "bash" ]]; then
+      return 0  # マッチ
+    fi
+    return 1  # マッチしない
+  fi
+  
+  if [[ "$pattern" == "sh:*" ]]; then
+    if [[ "$cmd" == "sh "* ]] || [[ "$cmd" == "sh" ]]; then
+      return 0  # マッチ
+    fi
+    return 1  # マッチしない
+  fi
+
+  # :* パターンの処理（プレフィックスマッチング）
+  if [[ "$pattern" == *":*"* ]]; then
+    # :* を * に変換してプレフィックスマッチング
+    pattern="${pattern//:*/*}"
+  fi
+
   # glob パターンマッチング（ワイルドカード対応）
   [[ "$cmd" == $pattern ]]
 }
@@ -33,6 +62,8 @@ matches_deny_pattern() {
 while IFS= read -r pattern; do
   # 空行をスキップ
   [ -z "$pattern" ] && continue
+  
+  [ "$DEBUG" = "true" ] && echo "Checking pattern: '$pattern' against command: '$command'" >&2
 
   # コマンド全体がパターンにマッチするかチェック
   if matches_deny_pattern "$command" "$pattern"; then
