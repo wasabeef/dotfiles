@@ -21,7 +21,7 @@ get_cached_cost() {
 update_cost_cache() {
   local cost="$1"
   local cache_file="$HOME/.claude/.cache_daily_cost"
-  echo "$cost" > "$cache_file"
+  echo "$cost" >"$cache_file"
 }
 
 # Reset daily cost at midnight
@@ -39,11 +39,11 @@ reset_daily_cost() {
     if [ "$current_date" != "$cached_date" ]; then
       # Reset cost for new day
       update_cost_cache "0.00"
-      echo "$current_date" > "$cache_date_file"
+      echo "$current_date" >"$cache_date_file"
     fi
   else
     # Initialize date file
-    echo "$current_date" > "$cache_date_file"
+    echo "$current_date" >"$cache_date_file"
     update_cost_cache "0.00"
   fi
 }
@@ -65,7 +65,7 @@ calculate_cost_from_file() {
     if [ -n "$cost" ]; then
       total_cost=$(echo "scale=2; $total_cost + $cost" | bc -l 2>/dev/null || echo "0.00")
     fi
-  done < "$CLAUDE_TOKEN_FILE"
+  done <"$CLAUDE_TOKEN_FILE"
 
   echo "$total_cost"
 }
@@ -341,7 +341,7 @@ main() {
   printf "%b - - - - -%b\n" "$DIM_GRAY" "$RESET"
 
   # Line 3: Git and Review
-  printf "${BG_GRAY5} ${FG_BLUE} Review %s/100 ${RESET}${BG_GRAY6}${ARROW_GRAY5}${ARROW}${RESET}${BG_GRAY6}${FG_ORANGE} %s ${RESET}${ARROW_GRAY6}${ARROW}${RESET}\n" \
+  printf " ${BG_GRAY5}${FG_BLUE} Review %s/100 ${RESET}${BG_GRAY6}${ARROW_GRAY5}${ARROW}${RESET}${BG_GRAY6}${FG_ORANGE} %s ${RESET}${ARROW_GRAY6}${ARROW}${RESET}\n" \
     "$review_score" "$git_stats"
 
   # Show review comment if exists
@@ -350,7 +350,7 @@ main() {
     if [ ${#review_comment} -gt $max_width ]; then
       review_comment="${review_comment:0:$max_width}..."
     fi
-    printf "  %s${RESET}\n" "$review_comment"
+    printf " %s${RESET}\n" "$review_comment"
   fi
 
   # Blank line with dim gray color
