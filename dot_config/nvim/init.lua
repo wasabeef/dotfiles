@@ -1994,7 +1994,6 @@ require('lazy').setup {
       'SmiteshP/nvim-navbuddy',
       enabled = vim.g.vscode == nil,
       dependencies = {
-        'neovim/nvim-lspconfig',
         'SmiteshP/nvim-navic',
         'MunifTanjim/nui.nvim',
       },
@@ -2003,7 +2002,8 @@ require('lazy').setup {
       },
       event = 'VeryLazy',
       config = function()
-        require('nvim-navbuddy').setup {
+        local navbuddy = require 'nvim-navbuddy'
+        navbuddy.setup {
           window = {
             border = 'rounded',
             size = '80%',
@@ -3049,13 +3049,11 @@ require('lazy').setup {
 
     -- LSP Management
     {
-      'neovim/nvim-lspconfig',
+      'williamboman/mason.nvim',
       enabled = vim.g.vscode == nil,
       dependencies = {
-        { 'williamboman/mason.nvim', dependencies = { 'Zeioth/mason-extra-cmds', opts = {} } },
-        'williamboman/mason-lspconfig.nvim',
+        'Zeioth/mason-extra-cmds',
         'WhoIsSethDaniel/mason-tool-installer.nvim',
-
         'saghen/blink.cmp',
         'b0o/schemastore.nvim',
       },
@@ -3090,9 +3088,7 @@ require('lazy').setup {
         --   },
         -- }
 
-        local lspconfig = require 'lspconfig'
         require('mason').setup()
-        require('mason-lspconfig').setup()
         require('mason-tool-installer').setup {
           ensure_installed = {
             -- LSP
@@ -3136,17 +3132,11 @@ require('lazy').setup {
           debounce_hours = 5,
         }
 
-        -- require('mason-lspconfig').setup_handlers {
-        --   function(server_name)
-        --     lspconfig[server_name].setup {
-        --       on_attach = on_attach,
-        --       capabilities = capabilities,
-        --     }
-        --   end,
-        -- }
-
         -- jsonls
-        lspconfig.jsonls.setup {
+        vim.lsp.config.jsonls = {
+          cmd = { 'vscode-json-language-server', '--stdio' },
+          filetypes = { 'json', 'jsonc' },
+          root_markers = { '.git' },
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -3158,128 +3148,166 @@ require('lazy').setup {
         }
 
         -- yamlls
-        -- lspconfig.yamlls.setup {
-        --   on_attach = on_attach,
-        --   capabilities = capabilities,
-        --   settings = {
-        --     yaml = {
-        --       completion = true,
-        --       validate = true,
-        --       schemas = require('schemastore').yaml.schemas {
-        --         extra = {
-        --           {
-        --             url = 'https://raw.githubusercontent.com/blaugold/melos-code/main/melos.yaml.schema.json',
-        --             name = 'Melos',
-        --             fileMatch = 'melos.yaml',
-        --           },
-        --         },
-        --       },
-        --     },
-        --   },
-        -- }
+        vim.lsp.config.yamlls = {
+          cmd = { 'yaml-language-server', '--stdio' },
+          filetypes = { 'yaml', 'yaml.docker-compose' },
+          root_markers = { '.git' },
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            yaml = {
+              completion = true,
+              validate = true,
+              schemas = require('schemastore').yaml.schemas {
+                extra = {
+                  {
+                    url = 'https://raw.githubusercontent.com/blaugold/melos-code/main/melos.yaml.schema.json',
+                    name = 'Melos',
+                    fileMatch = 'melos.yaml',
+                  },
+                },
+              },
+            },
+          },
+        }
 
         -- Deno
-        -- require('lspconfig').denols.setup {
-        --   root_dir = require('lspconfig.util').root_pattern('deno.json', 'deno.jsonc'),
+        -- vim.lsp.config.denols = {
+        --   cmd = { 'deno', 'lsp' },
+        --   filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
+        --   root_dir = function(fname)
+        --     return vim.fs.root(fname, { 'deno.json', 'deno.jsonc' })
+        --   end,
+        --   on_attach = on_attach,
+        --   capabilities = capabilities,
         --   init_options = {
         --     lint = true,
         --     unstable = true,
         --   },
         -- }
+        -- vim.lsp.enable({ 'denols' }) -- 有効化する場合
 
         -- tsserver
-        -- local inlayHints = {
-        --   includeInlayParameterNameHints = 'all',
-        --   includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        --   includeInlayFunctionParameterTypeHints = true,
-        --   includeInlayVariableTypeHints = true,
-        --   includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-        --   includeInlayPropertyDeclarationTypeHints = true,
-        --   includeInlayFunctionLikeReturnTypeHints = true,
-        --   includeInlayEnumMemberValueHints = true,
-        -- }
-        -- lspconfig.ts_ls.setup {
-        --   on_attach = on_attach,
-        --   capabilities = capabilities,
-        --   settings = {
-        --     typescript = {
-        --       inlayHints = inlayHints,
-        --     },
-        --     javascript = {
-        --       inlayHints = inlayHints,
-        --     },
-        --   },
-        -- }
+        local inlayHints = {
+          includeInlayParameterNameHints = 'all',
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = true,
+          includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        }
+        vim.lsp.config.ts_ls = {
+          cmd = { 'typescript-language-server', '--stdio' },
+          filetypes = {
+            'javascript',
+            'javascriptreact',
+            'javascript.jsx',
+            'typescript',
+            'typescriptreact',
+            'typescript.tsx',
+          },
+          root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            typescript = {
+              inlayHints = inlayHints,
+            },
+            javascript = {
+              inlayHints = inlayHints,
+            },
+          },
+        }
 
-        -- lspconfig.lua_ls.setup {
-        --   on_attach = on_attach,
-        --   capabilities = capabilities,
-        --   root_dir = function(fname)
-        --     -- プロジェクトマーカーが見つからない場合は nil を返して LSP を起動しない
-        --     local root = lspconfig.util.root_pattern('.git', '.luarc.json', 'init.lua')(fname)
-        --     if root and root ~= vim.env.HOME then
-        --       return root
-        --     end
-        --     -- ホームディレクトリでは LSP を起動しない
-        --     return nil
-        --   end,
-        --   single_file_support = false, -- 単一ファイルサポートを無効化
-        --   settings = {
-        --     runtime = {
-        --       version = 'LuaJIT',
-        --     },
-        --     Lua = {
-        --       diagnostics = {
-        --         globals = { 'vim' },
-        --       },
-        --       -- inlay hints
-        --       hint = { enable = true },
-        --       workspace = {
-        --         -- ホームディレクトリ全体のスキャンを無効化
-        --         checkThirdParty = false,
-        --         ignoreDir = {
-        --           '~/.*',
-        --           '~/*',
-        --         },
-        --         library = {},
-        --         -- ワークスペースのスキャンを無効化
-        --         maxPreload = 100,
-        --         preloadFileSize = 50,
-        --       },
-        --       telemetry = {
-        --         enable = false,
-        --       },
-        --     },
-        --   },
-        -- }
+        vim.lsp.config.lua_ls = {
+          cmd = { 'lua-language-server' },
+          filetypes = { 'lua' },
+          root_dir = function(fname)
+            -- プロジェクトマーカーが見つからない場合は nil を返して LSP を起動しない
+            local root = vim.fs.root(fname, { '.git', '.luarc.json', 'init.lua' })
+            if root and root ~= vim.env.HOME then
+              return root
+            end
+            -- ホームディレクトリでは LSP を起動しない
+            return nil
+          end,
+          single_file_support = false, -- 単一ファイルサポートを無効化
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            runtime = {
+              version = 'LuaJIT',
+            },
+            Lua = {
+              diagnostics = {
+                globals = { 'vim' },
+              },
+              -- inlay hints
+              hint = { enable = true },
+              workspace = {
+                -- ホームディレクトリ全体のスキャンを無効化
+                checkThirdParty = false,
+                ignoreDir = {
+                  '~/.*',
+                  '~/*',
+                },
+                library = {},
+                -- ワークスペースのスキャンを無効化
+                maxPreload = 100,
+                preloadFileSize = 50,
+              },
+              telemetry = {
+                enable = false,
+              },
+            },
+          },
+        }
 
         -- graphql
-        lspconfig.graphql.setup {
+        vim.lsp.config.graphql = {
+          cmd = { 'graphql-lsp', 'server', '-m', 'stream' },
+          filetypes = { 'graphql', 'typescriptreact', 'javascriptreact' },
+          root_markers = {
+            '.git',
+            '.graphqlrc',
+            '.graphqlrc.json',
+            '.graphqlrc.yaml',
+            '.graphqlrc.yml',
+            'graphql.config.js',
+          },
           on_attach = on_attach,
           capabilities = capabilities,
         }
 
         -- rust_analyzer
-        -- lspconfig.rust_analyzer.setup {
-        --   on_attach = on_attach,
-        --   capabilities = capabilities,
-        --   settings = {
-        --     rust_analyzer = {
-        --       hints = {
-        --         rangeVariableTypes = true,
-        --         parameterNames = true,
-        --         constantValues = true,
-        --         assignVariableTypes = true,
-        --         compositeLiteralFields = true,
-        --         compositeLiteralTypes = true,
-        --         functionTypeParameters = true,
-        --       },
-        --     },
-        --   },
-        -- }
+        vim.lsp.config.rust_analyzer = {
+          cmd = { 'rust-analyzer' },
+          filetypes = { 'rust' },
+          root_markers = { 'Cargo.toml', 'rust-project.json' },
+          on_attach = on_attach,
+          capabilities = capabilities,
+          settings = {
+            rust_analyzer = {
+              hints = {
+                rangeVariableTypes = true,
+                parameterNames = true,
+                constantValues = true,
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                functionTypeParameters = true,
+              },
+            },
+          },
+        }
 
         -- gopls
-        lspconfig.gopls.setup {
+        vim.lsp.config.gopls = {
+          cmd = { 'gopls' },
+          filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+          root_markers = { 'go.work', 'go.mod', '.git' },
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -3309,14 +3337,15 @@ require('lazy').setup {
           'build.gradle', -- Gradle
           'build.gradle.kts', -- Gradle
         }
-        local util = require 'lspconfig.util'
-        lspconfig.kotlin_language_server.setup {
+
+        vim.lsp.config.kotlin_language_server = {
+          cmd = { 'kotlin-language-server' },
+          filetypes = { 'kotlin' },
+          root_dir = function(fname)
+            return vim.fs.root(fname, root_files) or vim.fs.root(fname, fallback_root_files)
+          end,
           on_attach = on_attach,
           capabilities = capabilities,
-          cmd = { 'kotlin-language-server' },
-          root_dir = function(fname)
-            return util.root_pattern(unpack(root_files))(fname) or util.root_pattern(unpack(fallback_root_files))(fname)
-          end,
         }
 
         -- SourceKit-LSP
@@ -3328,9 +3357,8 @@ require('lazy').setup {
           file:close()
           return output
         end
-        lspconfig.sourcekit.setup {
-          on_attach = on_attach,
-          capabilities = capabilities,
+
+        vim.lsp.config.sourcekit = {
           cmd = {
             'sourcekit-lsp',
             '-Xswiftc',
@@ -3344,6 +3372,23 @@ require('lazy').setup {
               .. execute('xcrun --sdk iphonesimulator --show-sdk-version'):gsub('\n', '')
               .. '-simulator', -- "x86_64-apple-ios17.5-simulator"
           },
+          filetypes = { 'swift', 'objective-c', 'objective-cpp' },
+          root_markers = { 'Package.swift', '.git' },
+          on_attach = on_attach,
+          capabilities = capabilities,
+        }
+
+        -- LSP サーバーを有効化
+        vim.lsp.enable {
+          'jsonls',
+          'yamlls',
+          'graphql',
+          'ts_ls',
+          'lua_ls',
+          'rust_analyzer',
+          'gopls',
+          'kotlin_language_server',
+          'sourcekit',
         }
       end,
     },
@@ -3645,7 +3690,6 @@ require('lazy').setup {
     {
       'zeioth/garbage-day.nvim',
       enabled = vim.g.vscode == nil,
-      dependencies = 'neovim/nvim-lspconfig',
       event = 'VeryLazy',
       opts = {
         excluded_lsp_clients = { 'copilot', 'dartls' },
