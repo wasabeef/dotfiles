@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# 日本語・英語混在テキストの自動スペースフォーマット（v7 - 完全再設計版）
+# 日本語・英語混在テキストの自動スペースフォーマット（v8 - 除外リスト対応版）
 #
 # 実装されたルール:
 # 1. 全角文字（日本語）と半角英数字の間に半角スペース挿入
@@ -11,6 +11,7 @@ set -euo pipefail
 # 5. 句読点（。、）の前後はスペースを入れない
 # 6. コードブロック、インラインコード、文字列の保護
 # 7. シェルスクリプトの構文（if [ など）を正しく処理
+# 8. 除外リスト（ja-space-exclusions.json）の単語はスペース挿入をスキップ
 
 # ファイルパス取得
 if [ -n "${1:-}" ]; then
@@ -35,14 +36,29 @@ fi
 temp_file=$(mktemp)
 trap 'rm -f "$temp_file"' EXIT
 
-# Python スクリプトで処理（v7 - 完全再設計）
-python3 - "$file_path" "$temp_file" << 'EOF'
+# 除外リストのパス
+exclusions_file="$(dirname "$0")/ja-space-exclusions.json"
+
+# Python スクリプトで処理（v7 - 完全再設計 + 除外リスト対応）
+python3 - "$file_path" "$temp_file" "$exclusions_file" << 'EOF'
 import re
 import sys
 import json
+import os
 
 file_path = sys.argv[1]
 output_path = sys.argv[2]
+exclusions_file = sys.argv[3] if len(sys.argv) > 3 else None
+
+# 除外リストを読み込み
+exclusions = []
+if exclusions_file and os.path.exists(exclusions_file):
+    try:
+        with open(exclusions_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            exclusions = data.get('exclusions', [])
+    except:
+        pass  # 除外リストの読み込みに失敗してもスキップ
 
 # ファイル内容を読み込み
 with open(file_path, 'r', encoding='utf-8') as f:
@@ -96,6 +112,17 @@ content = re.sub(
     lambda m: protect_content(m.group(0)),
     content
 )
+
+# Step 6: 除外リストの単語を保護
+for exclusion in exclusions:
+    # エスケープして正規表現として安全に使用
+    # \b は ASCII のみなので、日本語を含む単語では使えない
+    escaped = re.escape(exclusion)
+    content = re.sub(
+        rf'{escaped}',
+        lambda m: protect_content(m.group(0)),
+        content
+    )
 
 # CJK文字の判定
 def is_cjk_char(char):
@@ -188,7 +215,7 @@ def add_space_after_percent(match):
 
 content = re.sub(r'(%)(.)', add_space_after_percent, content)
 
-# Step 6: 保護した内容をすべて復元
+# Step 7: 保護した内容をすべて復元
 content = restore_protected(content)
 
 # 復元確認 - NULL文字が残っていないか確認
