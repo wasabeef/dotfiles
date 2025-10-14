@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Codex を使用してプロンプトを評価するスクリプト（セッション管理版）
-# hook モード専用 - JSON にスコアと履歴を保存
+# Codex を使用してプロンプトを評価するスクリプト（v2）
+# 過去のプロンプトを前提状況として活用する改良版
 
 # 引数チェック
 if [ -z "$1" ]; then
@@ -11,7 +11,13 @@ fi
 
 # プロンプトとセッション ID を取得
 prompt="$1"
-session_id="${2:-}"  # セッション ID（オプション）
+session_id="${2:-}" # セッション ID（オプション）
+
+# /clear や /compact コマンドの場合はスキップ
+if echo "$prompt" | grep -qE '(^|[^a-zA-Z0-9])(/clear|/compact)([^a-zA-Z0-9]|$)'; then
+  echo "Skipping prompt evaluation for /clear or /compact command" >&2
+  exit 0
+fi
 
 # 現在のディレクトリのフルパスを取得（プロジェクトキーとして使用）
 project_path=$(pwd)
@@ -78,42 +84,63 @@ if [ -f "$score_file" ] && command -v jq >/dev/null 2>&1; then
   fi
 fi
 
-# 評価用のプロンプトを作成
-evaluation_prompt="以下のプロンプトをプロンプトエンジニアリングのベストプラクティスに基づいて評価してください。
-$([ -n "$recent_prompts" ] && echo "
-同一セッション内の過去のプロンプト履歴：
+# 評価用のプロンプトを作成（v2: 過去のプロンプトを前提として強調）
+evaluation_prompt="以下のプロンプトを評価してください。
+
+## 重要な評価方針
+
+**過去のプロンプトは「既に共有された前提・文脈」として扱ってください。**
+つまり、過去のプロンプトで言及された内容は：
+- すでに AI と共有済みの背景情報
+- 今回のプロンプトの暗黙の前提
+- 追加で説明不要な既知の文脈
+
+として評価に反映させてください。
+
+$([ -n "$recent_prompts" ] && echo "## 同一セッション内の過去のプロンプト履歴（前提として扱う）：
+
 ${recent_prompts}
 
 --- 今回のプロンプト ---")
-評価対象プロンプト：
+
+## 評価対象プロンプト：
 \"${prompt}\"
 
-以下の観点で 0-100 点で採点し、JSON 形式で返してください：
+## 評価基準（0-100 点）
 
-1. 明確性と具体性 (clarity) - 30 点満点
+以下の観点で採点してください。**ただし、過去のプロンプトで既に提供された情報は「コンテキスト」として加点対象とします**：
+
+1. **明確性と具体性 (clarity)** - 30 点満点
+   - 今回のプロンプト単体での明確さ
    - 曖昧さがなく、明確な指示があるか
-   - 肯定的な表現で「何をすべきか」が明確か
    - 期待する出力や目的が明確か
 
-2. コンテキスト提供 (context) - 25 点満点
-   - 必要な背景情報が提供されているか
+2. **コンテキスト提供 (context)** - 25 点満点
+   - **過去のプロンプトで提供された背景も含めて評価**
+   - 必要な背景情報が（過去または今回で）提供されているか
    - 前提条件や現状が明確か
    - 成功基準が示されているか
 
-3. 構造化 (structure) - 20 点満点
+3. **構造化 (structure)** - 20 点満点
    - 論理的な構成になっているか
    - 段階的な指示がある場合、適切に分割されているか
-   - XML タグやマークダウンなどで整理されているか
+   - 過去の文脈を踏まえた論理的な流れか
 
-4. 制約条件の明確化 (constraints) - 15 点満点
+4. **制約条件の明確化 (constraints)** - 15 点満点
    - 出力の長さ、形式、スタイルなどが指定されているか
    - してはいけないことが明確か
-   - 境界条件や例外処理が考慮されているか
+   - 過去の指示との整合性があるか
 
-5. 具体例の提供 (examples) - 10 点満点
+5. **具体例の提供 (examples)** - 10 点満点
    - 必要に応じて例が含まれているか
-   - Few-shot learning を活用しているか
+   - 過去のプロンプトの例も考慮
    - 期待する出力の例が示されているか
+
+## 評価時の重要な注意点
+
+- **過去のプロンプトがある場合**：それらは「すでに AI が知っている前提」として扱う
+- **単発のプロンプトの場合**：通常通り、単体での完成度を評価
+- **継続的な会話の一部**：前の文脈があることを前提に、追加指示として妥当か評価
 
 **回答は必ず以下の JSON 形式でのみ返してください：**
 {
@@ -140,10 +167,11 @@ temp_file=$(mktemp)
   # --output-last-message: 最終メッセージ（JSON 結果）を保存
   echo "$evaluation_prompt" | timeout 300 codex exec \
     --sandbox read-only \
+    --skip-git-repo-check \
     --color never \
     --json \
     --output-last-message "$temp_file" \
-    - >/dev/null 2>&1
+    >/dev/null 2>&1
 
   if [ -f "$temp_file" ] && [ -s "$temp_file" ]; then
     evaluation=$(cat "$temp_file")
@@ -161,7 +189,8 @@ temp_file=$(mktemp)
     timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     # プロジェクトのプロンプトデータを作成（最新の評価）
-    project_data=$(cat <<EOF
+    project_data=$(
+      cat <<EOF
 {
   "score": $score,
   "max_score": 100,
@@ -181,10 +210,11 @@ temp_file=$(mktemp)
   "project_path": "$project_path"
 }
 EOF
-)
+    )
 
     # 履歴エントリを作成（セッション ID 付き）
-    history_entry=$(cat <<EOF
+    history_entry=$(
+      cat <<EOF
 {
   "prompt": "$prompt_full",
   "score": $score,
@@ -192,20 +222,20 @@ EOF
   "session_id": "$session_id"
 }
 EOF
-)
+    )
 
     # jq を使用してプロジェクトごとに保存（履歴も含む）
     if command -v jq >/dev/null 2>&1; then
       if [ -f "$score_file" ]; then
         # 既存ファイルがある場合：履歴を更新
         jq --argjson new "$project_data" \
-           --argjson hist "$history_entry" \
-           --arg proj "$project_path" '
+          --argjson hist "$history_entry" \
+          --arg proj "$project_path" '
           # 履歴配列を初期化または更新（最大 10 件保持）
           .[$proj].history = ((.[$proj].history // []) + [$hist])[-10:] |
           # 最新のデータで上書き
           .[$proj] = .[$proj] + $new
-        ' "$score_file" > "${score_file}.tmp" && mv "${score_file}.tmp" "$score_file"
+        ' "$score_file" >"${score_file}.tmp" && mv "${score_file}.tmp" "$score_file"
       else
         # 新規ファイルの場合：履歴付きで作成
         echo "$project_data" | jq --argjson hist "$history_entry" \
@@ -215,13 +245,13 @@ EOF
               "history": [$hist]
             }
           }
-        ' > "$score_file"
+        ' >"$score_file"
       fi
     else
       # jq がない場合は個別ファイルとして保存（履歴なし）
       safe_filename=$(echo "$project_path" | sed 's/\//_/g')
       individual_score_file="$HOME/.claude/prompt_score_${safe_filename}.json"
-      echo "$project_data" > "$individual_score_file"
+      echo "$project_data" >"$individual_score_file"
     fi
   fi
 
@@ -229,6 +259,6 @@ EOF
 ) &
 
 # バックグラウンドで実行するため、即座に終了
-echo "Prompt evaluation with Codex v2 (session-aware) started in background" >&2
+echo "Prompt evaluation with Codex v2 (context-aware) started in background" >&2
 exit 0
 

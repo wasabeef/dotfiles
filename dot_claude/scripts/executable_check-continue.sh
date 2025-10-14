@@ -53,7 +53,8 @@ if [ -n "$transcript_path" ] && [ -f "$transcript_path" ]; then
   fi
 
   # Stop hook feedback の繰り返しパターンの検出
-  if echo "$last_message" | grep -qi "Stop hook feedback" &&
+  if echo "$last_message" | grep -qi "Stop hook feedback" ||
+    echo "$full_entry_text" | grep -qi "Stop hook feedback" ||
     echo "$last_message" | grep -qi "作業を再開してください"; then
     # Stop hook feedback の繰り返しパターンの場合は何もしない（正常終了）
     exit 0
@@ -81,10 +82,30 @@ if [ -n "$transcript_path" ] && [ -f "$transcript_path" ]; then
     exit 0
   fi
 
-  # 合い言葉チェック
+  # 合い言葉チェック（最初に確認）
   if echo "$last_message" | grep -q "$COMPLETION_PHRASE"; then
     # 合い言葉があれば何もしない（正常終了）
     exit 0
+  fi
+
+  # 無限ループ防止: 直前のやり取りをチェック
+  if [ -f "$transcript_path" ]; then
+    # 最後の3行を取得（user -> assistant -> user のパターン確認用）
+    last_3_lines=$(tail -n 3 "$transcript_path" 2>/dev/null)
+
+    # 直前が「Stop hook feedback → May the Force → Stop hook feedback」のパターンかチェック
+    if echo "$last_3_lines" | grep -q "$COMPLETION_PHRASE" && \
+       echo "$last_3_lines" | grep -q "Stop hook feedback"; then
+      # このパターンの場合は無限ループ防止のため終了
+      exit 0
+    fi
+
+    # 連続で同じ Stop hook feedback が出ている場合もチェック
+    last_2_messages=$(tail -n 2 "$transcript_path" | jq -r '.message.content[0].text // empty' 2>/dev/null)
+    if echo "$last_2_messages" | grep -c "作業を再開してください" | grep -q "2"; then
+      # 連続で同じメッセージなら無限ループ防止
+      exit 0
+    fi
   fi
 fi
 

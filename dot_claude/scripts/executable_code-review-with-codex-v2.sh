@@ -16,6 +16,12 @@ if [ -z "$DIFF_CONTENT" ]; then
   exit 0
 fi
 
+# /clear や /compact コマンドの場合はスキップ
+if echo "$DIFF_CONTENT" | grep -qE '^\+.*(^|[^a-zA-Z0-9])(/clear|/compact)([^a-zA-Z0-9]|$)'; then
+  echo "Skipping code review for /clear or /compact command" >&2
+  exit 0
+fi
+
 # Codex 利用可能性確認
 if ! command -v codex >/dev/null 2>&1; then
   echo "Error: codex command not found" >&2
@@ -214,6 +220,7 @@ temp_file=$(mktemp)
     # -c: MCP サーバー設定（Devin と DeepWiki の両方）
     echo "$prompt" | timeout 300 codex exec \
       --sandbox read-only \
+      --skip-git-repo-check \
       --color never \
       --json \
       --output-last-message "$temp_file" \
@@ -222,17 +229,18 @@ temp_file=$(mktemp)
       -c "mcp_servers.devin.env={ DEVIN_AUTH = \"Bearer $DEVIN_API_KEY\" }" \
       -c 'mcp_servers.deepwiki.command="npx"' \
       -c 'mcp_servers.deepwiki.args=["-y","@himanoa-mcp/deepwiki"]' \
-      - >/dev/null 2>&1
+      >/dev/null 2>&1
   else
     # DeepWiki MCP のみ利用可能な場合
     echo "$prompt" | timeout 300 codex exec \
       --sandbox read-only \
+      --skip-git-repo-check \
       --color never \
       --json \
       --output-last-message "$temp_file" \
       -c 'mcp_servers.deepwiki.command="npx"' \
       -c 'mcp_servers.deepwiki.args=["-y","@himanoa-mcp/deepwiki"]' \
-      - >/dev/null 2>&1
+      >/dev/null 2>&1
   fi
 
   if [ -f "$temp_file" ] && [ -s "$temp_file" ]; then
@@ -254,7 +262,8 @@ temp_file=$(mktemp)
     devin_insights=$(echo "$evaluation" | jq '.devin_insights // {}')
 
     # プロジェクトのレビューデータを作成
-    project_data=$(cat <<EOF
+    project_data=$(
+      cat <<EOF
 {
   "score": $score,
   "max_score": 100,
@@ -276,7 +285,7 @@ temp_file=$(mktemp)
   "project_path": "$project_path"
 }
 EOF
-)
+    )
 
     # jq を使用してプロジェクトごとに保存
     if command -v jq >/dev/null 2>&1; then

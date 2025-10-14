@@ -24,7 +24,7 @@ if [ -n "$prompt" ]; then
     fi
 
     # プロンプトとセッション ID を評価スクリプトに渡す
-    ~/.claude/scripts/evaluate-prompt-with-codex-v2.sh "$prompt" "$session_id" 2>/dev/null
+    ~/.claude/scripts/evaluate-prompt-with-codex.sh "$prompt" "$session_id" 2>/dev/null
   } &
 fi
 

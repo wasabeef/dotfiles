@@ -21,7 +21,7 @@ if [ -n "$diff_content" ]; then
   # バックグラウンドでレビューを実行（UI をブロックしない）
   {
     # コードレビューを実行（hook モード）
-    ~/.claude/scripts/code-review-with-codex-v2.sh hook 2>/dev/null
+    ~/.claude/scripts/code-review-with-codex.sh hook 2>/dev/null
   } &
 fi
 

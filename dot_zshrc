@@ -96,7 +96,7 @@ alias cat='bat'
 alias man='tldr'
 alias ps='procs'
 alias cast='scrcpy'
-alias yolo='claude --dangerously-skip-permissions --mcp-config ~/Library/Application\ Support/Claude/claude_desktop_config.json'
+alias yolo='source ~/.env && claude --dangerously-skip-permissions --strict-mcp-config --mcp-config ~/.claude/.mcp.public.json ~/.claude/.mcp.private.json'
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then

@@ -5,7 +5,9 @@
     "BASH_MAX_TIMEOUT_MS": "600000",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
     "CLAUDE_LANGUAGE": "ja",
-    "SHELL": "/opt/homebrew/bin/zsh"
+    "SHELL": "/opt/homebrew/bin/zsh",
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}",
+    "DEVIN_API_KEY": "${DEVIN_API_KEY}"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -68,12 +70,13 @@
       "Bash(git checkout:*)",
       "Bash(git config:*)",
       "Bash(git rebase:*)",
-      "Bash(git reset --hard:*)",
+      "Bash(git reset:*)",
       "Bash(git restore:*)",
+      "Bash(git clean:*)",
       "Bash(mkfs:*)",
       "Bash(npm install -g:*)",
       "Bash(pip install:*)",
-     "Bash(rm -rf ../*)",
+      "Bash(rm -rf ../*)",
       "Bash(rm -rf /)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf ~/*)",
@@ -82,13 +85,13 @@
     ]
   },
   "hooks": {
-    "UserPromptSubmit": [
+    "SessionStart": [
       {
-        "matcher": "*",
+        "matcher": "startup|clear",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/evaluate-prompt-hook.sh"
+            "command": "~/.claude/scripts/session-init-hook.sh"
           }
         ]
       }
@@ -158,10 +161,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/check-continue.sh"
-          },
-          {
-            "type": "command",
             "command": "~/.claude/scripts/code-review-hook.sh"
           },
           {
@@ -172,8 +171,10 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/scripts/statusline.sh"
-  }
+  "enabledPlugins": {
+    "claude-code-cookbook-fr@claude-code-cookbook": true,
+    "claude-code-cookbook-ja@claude-code-cookbook": true
+  },
+  "outputStyle": "default",
+  "alwaysThinkingEnabled": true
 }

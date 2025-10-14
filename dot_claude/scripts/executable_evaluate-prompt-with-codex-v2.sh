@@ -11,7 +11,13 @@ fi
 
 # プロンプトとセッション ID を取得
 prompt="$1"
-session_id="${2:-}"  # セッション ID（オプション）
+session_id="${2:-}" # セッション ID（オプション）
+
+# /clear や /compact コマンドの場合はスキップ
+if echo "$prompt" | grep -qE '(^|[^a-zA-Z0-9])(/clear|/compact)([^a-zA-Z0-9]|$)'; then
+  echo "Skipping prompt evaluation for /clear or /compact command" >&2
+  exit 0
+fi
 
 # 現在のディレクトリのフルパスを取得（プロジェクトキーとして使用）
 project_path=$(pwd)
@@ -161,10 +167,11 @@ temp_file=$(mktemp)
   # --output-last-message: 最終メッセージ（JSON 結果）を保存
   echo "$evaluation_prompt" | timeout 300 codex exec \
     --sandbox read-only \
+    --skip-git-repo-check \
     --color never \
     --json \
     --output-last-message "$temp_file" \
-    - >/dev/null 2>&1
+    >/dev/null 2>&1
 
   if [ -f "$temp_file" ] && [ -s "$temp_file" ]; then
     evaluation=$(cat "$temp_file")
@@ -182,7 +189,8 @@ temp_file=$(mktemp)
     timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     # プロジェクトのプロンプトデータを作成（最新の評価）
-    project_data=$(cat <<EOF
+    project_data=$(
+      cat <<EOF
 {
   "score": $score,
   "max_score": 100,
@@ -202,10 +210,11 @@ temp_file=$(mktemp)
   "project_path": "$project_path"
 }
 EOF
-)
+    )
 
     # 履歴エントリを作成（セッション ID 付き）
-    history_entry=$(cat <<EOF
+    history_entry=$(
+      cat <<EOF
 {
   "prompt": "$prompt_full",
   "score": $score,
@@ -213,20 +222,20 @@ EOF
   "session_id": "$session_id"
 }
 EOF
-)
+    )
 
     # jq を使用してプロジェクトごとに保存（履歴も含む）
     if command -v jq >/dev/null 2>&1; then
       if [ -f "$score_file" ]; then
         # 既存ファイルがある場合：履歴を更新
         jq --argjson new "$project_data" \
-           --argjson hist "$history_entry" \
-           --arg proj "$project_path" '
+          --argjson hist "$history_entry" \
+          --arg proj "$project_path" '
           # 履歴配列を初期化または更新（最大 10 件保持）
           .[$proj].history = ((.[$proj].history // []) + [$hist])[-10:] |
           # 最新のデータで上書き
           .[$proj] = .[$proj] + $new
-        ' "$score_file" > "${score_file}.tmp" && mv "${score_file}.tmp" "$score_file"
+        ' "$score_file" >"${score_file}.tmp" && mv "${score_file}.tmp" "$score_file"
       else
         # 新規ファイルの場合：履歴付きで作成
         echo "$project_data" | jq --argjson hist "$history_entry" \
@@ -236,13 +245,13 @@ EOF
               "history": [$hist]
             }
           }
-        ' > "$score_file"
+        ' >"$score_file"
       fi
     else
       # jq がない場合は個別ファイルとして保存（履歴なし）
       safe_filename=$(echo "$project_path" | sed 's/\//_/g')
       individual_score_file="$HOME/.claude/prompt_score_${safe_filename}.json"
-      echo "$project_data" > "$individual_score_file"
+      echo "$project_data" >"$individual_score_file"
     fi
   fi
 

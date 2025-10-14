@@ -4,35 +4,49 @@
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
     },
-    "github": {
+    "GitHub": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_*****************"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     },
-    "notionMCP": {
+    "Notion": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.notion.com/sse"]
     },
-    "deepwiki": {
+    "DeepWiki": {
       "command": "npx",
       "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
     },
-    "filesystem": {
+    "Devin": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.devin.ai/sse",
+        "--header",
+        "Authorization:${DEVIN_AUTH}"
+      ],
+      "env": {
+        "DEVIN_AUTH": "Bearer ${DEVIN_API_KEY}"
+      }
+    },
+    "Filesystem": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "~/git"],
       "env": {}
     },
-    "fetch": {
-      "command": "uvx",
-      "args": ["mcp-server-fetch"],
-      "env": {}
-    },
-    "sequential-thinking": {
+    "Sequential Thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "Serena": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena-mcp-server"
+      ]
     }
- }
+  }
 }
-
