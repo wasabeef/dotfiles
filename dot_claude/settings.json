@@ -171,9 +171,12 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline.sh"
+  },
   "enabledPlugins": {
-    "claude-code-cookbook-fr@claude-code-cookbook": true,
-    "claude-code-cookbook-ja@claude-code-cookbook": true
+    "cook@claude-code-cookbook": true
   },
   "outputStyle": "default",
   "alwaysThinkingEnabled": true
