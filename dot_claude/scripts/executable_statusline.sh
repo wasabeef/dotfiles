@@ -5,7 +5,7 @@ get_today_cost() {
   local today_date
   today_date=$(date +%Y-%m-%d)
   local cost
-  cost=$(ccusage daily --json 2>/dev/null | jq -r --arg date "$today_date" '.daily[] | select(.date == $date) | .totalCost // "0.00"' 2>/dev/null)
+  cost=$(bunx ccusage daily --json 2>/dev/null | jq -r --arg date "$today_date" '.daily[] | select(.date == $date) | .totalCost // "0.00"' 2>/dev/null)
 
   if [ -z "$cost" ] || [ "$cost" = "null" ]; then
     echo "0.00"
