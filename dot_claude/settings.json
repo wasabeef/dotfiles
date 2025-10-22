@@ -70,8 +70,6 @@
       "Bash(git checkout:*)",
       "Bash(git config:*)",
       "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(git restore:*)",
       "Bash(git clean:*)",
       "Bash(mkfs:*)",
       "Bash(npm install -g:*)",
@@ -85,17 +83,6 @@
     ]
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/session-init-hook.sh"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -161,11 +148,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/code-review-hook.sh"
+            "command": "osascript -e 'display notification \"Task completed\" with title \"Claude Code\"' && afplay -v 0.3 ~/.claude/assets/perfect.mp3"
           },
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"Task completed\" with title \"Claude Code\"' && afplay -v 0.3 ~/.claude/assets/perfect.mp3"
+            "command": "~/.claude/scripts/code-review-hook.sh"
           }
         ]
       }
@@ -176,7 +163,7 @@
     "command": "~/.claude/scripts/statusline.sh"
   },
   "enabledPlugins": {
-    "cook@claude-code-cookbook": true
+    "cook@claude-code-cookbook": false
   },
   "outputStyle": "default",
   "alwaysThinkingEnabled": true

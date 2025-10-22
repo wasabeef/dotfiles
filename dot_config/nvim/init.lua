@@ -2873,6 +2873,7 @@ require('lazy').setup {
       end,
     },
 
+    -- Markdown
     -- Mermaid を表示する
     -- Required the mermaid-cli
     -- {
@@ -2908,15 +2909,15 @@ require('lazy').setup {
     --   end,
     -- },
 
-    -- {
-    --   'MeanderingProgrammer/render-markdown.nvim',
-    --   enabled = vim.g.vscode == nil,
-    --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-    --   ---@module 'render-markdown'
-    --   ---@type render.md.UserConfig
-    --   opts = { filetypes = { 'markdown', 'mdc' } },
-    --   ft = { 'markdown', 'mdc' },
-    -- },
+    {
+      'MeanderingProgrammer/render-markdown.nvim',
+      enabled = vim.g.vscode == nil,
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+      ---@module 'render-markdown'
+      ---@type render.md.UserConfig
+      opts = { filetypes = { 'markdown', 'mdc' }, code = { style = 'normal', border = 'thick' } },
+      ft = { 'markdown', 'mdc' },
+    },
 
     -- Markdown テーブル整形
     {
@@ -3687,18 +3688,18 @@ require('lazy').setup {
     },
 
     -- LSP のガベージコレクション
-    {
-      'zeioth/garbage-day.nvim',
-      enabled = vim.g.vscode == nil,
-      event = 'VeryLazy',
-      opts = {
-        excluded_lsp_clients = { 'copilot', 'dartls' },
-        aggressive_mode = false,
-        grace_period = 60 * 30, -- 30 minutes
-        wakeup_delay = 5000,
-        notifications = true,
-      },
-    },
+    -- {
+    --   'zeioth/garbage-day.nvim',
+    --   enabled = vim.g.vscode == nil,
+    --   event = 'VeryLazy',
+    --   opts = {
+    --     excluded_lsp_clients = { 'copilot', 'dartls' },
+    --     aggressive_mode = false,
+    --     grace_period = 60 * 30, -- 30 minutes
+    --     wakeup_delay = 5000,
+    --     notifications = true,
+    --   },
+    -- },
 
     -- 補完
     {
