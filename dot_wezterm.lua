@@ -366,6 +366,39 @@ local function check_process_running(pid)
   return false
 end
 
+-- TTY ベースで Claude プロセスを検出する関数
+local function find_claude_by_tty(tty_name)
+  if not tty_name or tty_name == '' then
+    return nil
+  end
+
+  -- tty 名を正規化（/dev/ プレフィックスを削除）
+  local tty = tty_name:gsub('^/dev/', '')
+
+  -- この TTY で実行中の claude プロセスを検索
+  local ps_success, ps_stdout = wezterm.run_child_process {
+    '/bin/ps',
+    '-t',
+    tty,
+    '-o',
+    'pid,comm',
+  }
+
+  if not ps_success or not ps_stdout then
+    return nil
+  end
+
+  -- 出力から claude プロセスを探す
+  for line in ps_stdout:gmatch '[^\n]+' do
+    local pid, comm = line:match '%s*(%d+)%s+(.+)'
+    if pid and comm and comm:match 'claude' and not comm:match 'claude%-code' then
+      return tonumber(pid)
+    end
+  end
+
+  return nil
+end
+
 -- Claude プロセス情報を取得する関数
 local function get_claude_status(window)
   -- エラーハンドリング
@@ -389,6 +422,7 @@ local function get_claude_status(window)
     for tab_index, tab in ipairs(tabs) do
       local has_claude = false
       local is_running = false
+      local claude_pid = nil
 
       -- タブ内の全ペインをチェック
       local tab_success, panes = pcall(function()
@@ -396,37 +430,18 @@ local function get_claude_status(window)
       end)
       if tab_success and panes then
         for _, pane in ipairs(panes) do
-          local proc_success, proc_info = pcall(function()
-            return pane:get_foreground_process_info()
+          -- TTY 名を取得
+          local tty_success, tty_name = pcall(function()
+            return pane:get_tty_name()
           end)
-          if proc_success and proc_info then
-            -- Claude プロセスかチェック（プロセス名または argv で）
-            local is_claude_process = false
-            if proc_info.name and proc_info.name:match '^claude' then
-              is_claude_process = true
-            elseif proc_info.argv and #proc_info.argv > 0 and proc_info.argv[1]:match '^claude' then
-              is_claude_process = true
-            end
 
-            if is_claude_process then
-              -- 除外パターンをチェック
-              local should_exclude = false
-              local cmdline = table.concat(proc_info.argv or {}, ' ')
-              for _, pattern in ipairs(CLAUDE_CONSTANTS.EXCLUDE_PATTERNS) do
-                if cmdline:match(pattern) then
-                  should_exclude = true
-                  break
-                end
-              end
+          if tty_success and tty_name then
+            claude_pid = find_claude_by_tty(tty_name)
 
-              if not should_exclude then
-                has_claude = true
-                -- 実行状態をチェック
-                if proc_info.pid then
-                  is_running = check_process_running(proc_info.pid)
-                end
-                break -- タブ内に 1 つでも Claude があれば十分
-              end
+            if claude_pid then
+              has_claude = true
+              is_running = check_process_running(claude_pid)
+              break -- タブ内に 1 つでも Claude があれば十分
             end
           end
         end

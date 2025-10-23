@@ -166,5 +166,5 @@
     "cook@claude-code-cookbook": false
   },
   "outputStyle": "default",
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }
