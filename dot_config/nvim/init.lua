@@ -547,7 +547,6 @@ require('lazy').setup {
           dashboard.button('r', '󱌣   Restore Session', "<cmd>lua require('persistence').load()<CR>"),
           dashboard.button('m', '󱌣   Mason', ':Mason<CR>'),
           dashboard.button('l', '󰒲   Lazy', ':Lazy<CR>'),
-          dashboard.button('c', '󰒲   MCP', ':e ~/.config/mcp/servers.json <CR>'),
           dashboard.button('q', '   Quit NVIM', ':qa<CR>'),
         }
 
