@@ -96,7 +96,11 @@ alias cat='bat'
 alias man='tldr'
 alias ps='procs'
 alias cast='scrcpy'
-alias yolo='source ~/.env && claude --dangerously-skip-permissions --strict-mcp-config --mcp-config ~/.claude/.mcp.public.json ~/.claude/.mcp.private.json'
+
+export ENABLE_TOOL_SEARCH=true
+export ENABLE_EXPERIMENTAL_MCP_CLI=false
+# alias yolo='source ~/.env && claude --dangerously-skip-permissions --strict-mcp-config --mcp-config ~/.claude/.mcp.public.json ~/.claude/.mcp.private.json '
+alias yolo='source ~/.env && claude --permission-mode auto --strict-mcp-config --mcp-config ~/.claude/.mcp.public.json ~/.claude/.mcp.private.json '
 
 # Profile
 # if (which zprof > /dev/null 2>&1) ;then
@@ -106,3 +110,11 @@ alias yolo='source ~/.env && claude --dangerously-skip-permissions --strict-mcp-
 if [ -f "$HOME/.env" ]; then
   source "$HOME/.env"
 fi
+
+# Added by Antigravity
+# export PATH="/Users/a12622/.antigravity/antigravity/bin:$PATH"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/a12622/.lmstudio/bin"
+# End of LM Studio CLI section
+

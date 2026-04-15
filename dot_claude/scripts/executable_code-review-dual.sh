@@ -34,75 +34,189 @@ fi
 
 # background モードの場合、ログファイルにリダイレクト
 if [ "$REVIEW_MODE" = "background" ]; then
-  # stdout を /dev/null に、stderr をログファイルに（JSON 漏れを防ぐ）
+  # stdout を /dev/null に（JSON 出力が新セッションに漏れるのを防ぐ）
+  # stderr はログファイルに（エラーメッセージを記録）
   log_file="$HOME/.claude/logs/code-review-background.log"
   mkdir -p "$(dirname "$log_file")"
   exec >/dev/null 2>> "$log_file"
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') Background review started ===" >&2
   echo "Project: $(pwd)" >&2
+
+  # PID ファイルで排他制御（実際の background プロセスの PID を記録）
+  _pid_dir="$HOME/.claude/cache/code-review"
+  mkdir -p "$_pid_dir"
+  _safe_name="$(pwd | sed 's/[^a-zA-Z0-9]/_/g')"
+  _pid_file="$_pid_dir/${_safe_name}.pid"
+
+  if [ -f "$_pid_file" ]; then
+    _old_pid=$(cat "$_pid_file" 2>/dev/null)
+    if [ -n "$_old_pid" ] && kill -0 "$_old_pid" 2>/dev/null; then
+      echo "Skipping: another review already running (PID: $_old_pid)" >&2
+      exit 0
+    fi
+  fi
+  echo "$$" > "$_pid_file"
+
+  # 終了時に PID ファイルを削除
+  trap 'rm -f "$_pid_file"' EXIT
 fi
 
 # ANSI Color codes
 readonly WHITE='\033[97m'
 readonly RESET='\033[0m'
 
-# Git リポジトリでない場合はスキップ
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  exit 0
+# 除外パターン（Git/非Git共通）
+EXCLUDE_DIRS="node_modules|\.git|\.claude|dist|build|vendor|__pycache__|\.venv|coverage|\.next|\.nuxt|\.cache|\.turbo"
+MAX_FILE_SIZE=1048576  # 1MB
+
+# バイナリファイル判定
+is_binary_file() {
+  local file="$1"
+  # file コマンドでバイナリ判定（テキスト系は除外）
+  local file_type
+  file_type=$(file -b "$file" 2>/dev/null)
+  # テキスト系は明示的に許可
+  if echo "$file_type" | grep -qiE 'text|script|source|json|xml|html|css|markdown'; then
+    return 1
+  fi
+  # バイナリ系は除外
+  if echo "$file_type" | grep -qiE 'executable|binary|data|image|audio|video|archive|compressed|ELF|Mach-O'; then
+    return 0
+  fi
+  # NUL バイト検出（最初の8KB）
+  if head -c 8192 "$file" 2>/dev/null | LC_ALL=C grep -q "$(printf '\x00')"; then
+    return 0
+  fi
+  return 1
+}
+
+# 非 Git 環境用: ディレクトリ全体を diff 形式で生成
+generate_directory_diff() {
+  local dir="${1:-.}"
+  local diff_output=""
+
+  while IFS= read -r -d '' file; do
+    # サイズチェック
+    local file_size
+    file_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+    if [ "$file_size" -gt "$MAX_FILE_SIZE" ]; then
+      continue
+    fi
+
+    # バイナリチェック
+    if is_binary_file "$file"; then
+      continue
+    fi
+
+    # diff 形式で追加
+    local rel_path="${file#$dir/}"
+    diff_output="${diff_output}
+diff --git a/$rel_path b/$rel_path
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/$rel_path
+$(cat "$file" 2>/dev/null | sed 's/^/+/')"
+  done < <(find "$dir" -type f \
+    ! -path "*/.git/*" \
+    ! -path "*/.claude/*" \
+    ! -path "*/node_modules/*" \
+    ! -path "*/dist/*" \
+    ! -path "*/build/*" \
+    ! -path "*/vendor/*" \
+    ! -path "*/__pycache__/*" \
+    ! -path "*/.venv/*" \
+    ! -path "*/coverage/*" \
+    ! -path "*/.next/*" \
+    ! -path "*/.nuxt/*" \
+    ! -path "*/.cache/*" \
+    ! -path "*/.turbo/*" \
+    -print0 2>/dev/null)
+
+  echo "$diff_output"
+}
+
+IS_GIT_REPO=false
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  IS_GIT_REPO=true
 fi
 
-# ===== ブランチベースレビュー =====
-# base ブランチを検出（main, master, develop など）
-base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-if [ -z "$base_branch" ]; then
-  # フォールバック: よくある base ブランチ名を試す
-  for candidate in main master develop; do
-    if git show-ref --verify --quiet refs/remotes/origin/${candidate}; then
-      base_branch="$candidate"
-      break
-    fi
-  done
+# 現在のディレクトリ名が除外対象の場合はスキップ（非 Git の場合のみ）
+if [ "$IS_GIT_REPO" = false ]; then
+  current_dir_name=$(basename "$(pwd)")
+  if echo "$current_dir_name" | grep -qE "^(\.claude|\.git|node_modules|dist|build|vendor|__pycache__|\.venv|coverage|\.next|\.nuxt|\.cache|\.turbo)$"; then
+    echo "Info: Skipping excluded directory: $current_dir_name" >&2
+    exit 0
+  fi
 fi
 
 DIFF_CONTENT=""
 
-# ブランチが base から分岐している場合、ブランチ全体の変更をレビュー
-if [ -n "$base_branch" ] && git merge-base --is-ancestor origin/${base_branch} HEAD 2>/dev/null; then
-  current_branch=$(git branch --show-current 2>/dev/null)
+if [ "$IS_GIT_REPO" = true ]; then
+  # ===== Git リポジトリ: ブランチベースレビュー =====
+  # base ブランチを検出（main, master, develop など）
+  base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  if [ -z "$base_branch" ]; then
+    # フォールバック: よくある base ブランチ名を試す
+    for candidate in main master develop; do
+      if git show-ref --verify --quiet refs/remotes/origin/${candidate}; then
+        base_branch="$candidate"
+        break
+      fi
+    done
+  fi
 
-  # base ブランチで直接作業していない場合のみブランチベースレビュー
-  if [ -n "$current_branch" ] && [ "$current_branch" != "$base_branch" ]; then
-    branch_diff=$(git diff origin/${base_branch}...HEAD 2>/dev/null)
+  # ブランチが base から分岐している場合、ブランチ全体の変更をレビュー
+  if [ -n "$base_branch" ] && git merge-base --is-ancestor origin/${base_branch} HEAD 2>/dev/null; then
+    current_branch=$(git branch --show-current 2>/dev/null)
 
-    # ブランチに実際にコミットがある場合のみブランチベースレビュー
-    if [ -n "$branch_diff" ]; then
-      echo "Info: Branch-based review (${base_branch}...${current_branch})" >&2
-      DIFF_CONTENT="$branch_diff"
+    # base ブランチで直接作業していない場合のみブランチベースレビュー
+    if [ -n "$current_branch" ] && [ "$current_branch" != "$base_branch" ]; then
+      branch_diff=$(git diff origin/${base_branch}...HEAD 2>/dev/null)
+
+      # ブランチに実際にコミットがある場合のみブランチベースレビュー
+      if [ -n "$branch_diff" ]; then
+        echo "Info: Branch-based review (${base_branch}...${current_branch})" >&2
+        DIFF_CONTENT="$branch_diff"
+      fi
     fi
   fi
-fi
 
-# フォールバック: base ブランチで作業中、ブランチにコミットがない、または検出できない場合は HEAD との差分
-if [ -z "$DIFF_CONTENT" ]; then
-  echo "Info: Working tree review (diff HEAD)" >&2
-  DIFF_CONTENT=$(git diff HEAD 2>/dev/null)
-fi
+  # フォールバック: base ブランチで作業中、ブランチにコミットがない、または検出できない場合は HEAD との差分
+  if [ -z "$DIFF_CONTENT" ]; then
+    echo "Info: Working tree review (diff HEAD)" >&2
+    DIFF_CONTENT=$(git diff HEAD 2>/dev/null)
+  fi
 
-# untracked ファイルも diff に含める（新規作成ファイルのレビュー）
-untracked_files=$(git ls-files --others --exclude-standard 2>/dev/null)
-if [ -n "$untracked_files" ]; then
-  while IFS= read -r file; do
-    if [ -f "$file" ]; then
-      # untracked ファイルを diff 形式で追加
-      DIFF_CONTENT="${DIFF_CONTENT}
+  # untracked ファイルも diff に含める（新規作成ファイルのレビュー）
+  untracked_files=$(git ls-files --others --exclude-standard 2>/dev/null)
+  if [ -n "$untracked_files" ]; then
+    while IFS= read -r file; do
+      if [ -f "$file" ]; then
+        # サイズチェック
+        file_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+        if [ "$file_size" -gt "$MAX_FILE_SIZE" ]; then
+          continue
+        fi
+        # バイナリチェック
+        if is_binary_file "$file"; then
+          continue
+        fi
+        # untracked ファイルを diff 形式で追加
+        DIFF_CONTENT="${DIFF_CONTENT}
 diff --git a/$file b/$file
 new file mode 100644
 index 0000000..0000000
 --- /dev/null
 +++ b/$file
 $(cat "$file" 2>/dev/null | sed 's/^/+/')"
-    fi
-  done <<< "$untracked_files"
+      fi
+    done <<< "$untracked_files"
+  fi
+else
+  # ===== 非 Git: ディレクトリ全体をレビュー =====
+  echo "Info: Non-Git directory review (scanning all files)" >&2
+  DIFF_CONTENT=$(generate_directory_diff "$(pwd)")
 fi
 
 # 差分がない場合はスキップ
@@ -371,12 +485,10 @@ run_codex_review() {
   local prompt_file
   prompt_file=$(mktemp)
 
-  local prompt
-  prompt=$(create_review_prompt "$DIFF_CONTENT")
+  # プロンプトを直接ファイルに保存（stdout 漏れ防止のためコマンド置換を使わない）
+  create_review_prompt "$DIFF_CONTENT" > "$prompt_file"
 
-  # プロンプトをファイルに保存（パイプを使わない）
-  echo "$prompt" > "$prompt_file"
-
+  # stderr をログに記録（認証エラー等のトラブルシューティングのため）
   if [ -n "$DEVIN_API_KEY" ]; then
     timeout 300 codex exec \
       --sandbox read-only \
@@ -403,19 +515,12 @@ run_codex_review() {
 
   rm -f "$prompt_file"
 
-  echo "Codex temp file: $temp_file" >&2
-  if [ -f "$temp_file" ]; then
-    echo "Codex temp file exists, size: $(wc -c < "$temp_file") bytes" >&2
-    if [ -s "$temp_file" ]; then
-      local evaluation
-      evaluation=$(cat "$temp_file")
-      echo "Codex evaluation extracted, length: ${#evaluation}" >&2
-      save_review_result "codex" "$evaluation"
-    else
-      echo "Error: Codex temp file is empty" >&2
-    fi
+  if [ -f "$temp_file" ] && [ -s "$temp_file" ]; then
+    local evaluation
+    evaluation=$(cat "$temp_file")
+    save_review_result "codex" "$evaluation"
   else
-    echo "Error: Codex temp file not found" >&2
+    echo "Error: Codex review failed or produced no output" >&2
   fi
 
   rm -f "$temp_file"
@@ -425,11 +530,9 @@ run_codex_review() {
 run_claude_review() {
   local prompt_file
   prompt_file=$(mktemp)
-  local prompt
-  prompt=$(create_review_prompt "$DIFF_CONTENT")
 
-  # プロンプトをファイルに保存（パイプを使わない）
-  echo "$prompt" > "$prompt_file"
+  # プロンプトを直接ファイルに保存（stdout 漏れ防止のためコマンド置換を使わない）
+  create_review_prompt "$DIFF_CONTENT" > "$prompt_file"
 
   local mcp_config
   mcp_config=$(build_mcp_config | jq -c .)
@@ -438,6 +541,7 @@ run_claude_review() {
   temp_file=$(mktemp)
 
   # stdout を一時ファイルにリダイレクトして完全に隔離
+  # stderr をログに記録（認証エラー等のトラブルシューティングのため）
   # --settings '{"hooks":{}}' で Stop hook を無効化（無限ループ防止）
   timeout 300 claude -p \
     --model "$CLAUDE_MODEL" \
@@ -624,11 +728,11 @@ EOF
         '{($proj): {($eng): .}}' >"$score_file"
     fi
 
+    # 1週間以上古いレコードをクリーンアップ（ロック内で実行）
+    cleanup_old_reviews "$score_file"
+
     # ロック解放
     rmdir "$lock_dir" 2>/dev/null
-
-    # 1週間以上古いレコードをクリーンアップ
-    cleanup_old_reviews "$score_file"
   else
     # jq がない場合は個別ファイルとして保存
     local safe_filename
@@ -654,9 +758,10 @@ main() {
     (run_codex_review) &
   fi
 
-  if [ "$CLAUDE_AVAILABLE" = true ]; then
-    (run_claude_review) &
-  fi
+  # TODO: Claude レビュー一時無効化（手動で戻すこと）
+  # if [ "$CLAUDE_AVAILABLE" = true ]; then
+  #   (run_claude_review) &
+  # fi
 
   # バックグラウンドで実行するため、即座に終了
   printf "%bCode review with Codex and Claude started in background%b\n" "$WHITE" "$RESET" >&2

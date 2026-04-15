@@ -68,7 +68,8 @@
 [pull]
   rebase = false
 [fetch]
-  prune = true
+	prune = true
+	parallel = 4
 [github]
   user = wasabeef
 [alias]
@@ -114,3 +115,13 @@
 	process = git-lfs filter-process
 [init]
 	defaultBranch = main
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[protocol]
+	version = 2
+[feature]
+	manyFiles = true

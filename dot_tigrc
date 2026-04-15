@@ -1,3 +1,5 @@
+set show-notes = yes
+
 # --- delta で diff を表示するカスタムバインド ---
 bind diff   D >sh -c "git show %(commit) | delta --paging always"
 bind diff   S >sh -c "git show %(commit) | delta --paging always --side-by-side"

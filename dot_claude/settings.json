@@ -1,34 +1,37 @@
 {
-  "model": "opus",
-  "outputStyle": "Token Efficiency",
+  "respectGitignore": true,
   "cleanupPeriodDays": 30,
-
   "env": {
-    "CLAUDE_LANGUAGE": "ja",
     "SHELL": "/opt/homebrew/bin/zsh",
     "BASH_DEFAULT_TIMEOUT_MS": "600000",
     "BASH_MAX_TIMEOUT_MS": "600000",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
     "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}",
-    "DEVIN_API_KEY": "${DEVIN_API_KEY}"
+    "DEVIN_API_KEY": "${DEVIN_API_KEY}",
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
   },
-
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash",
-      "Edit(**)",
-      "Glob(**)",
-      "GlobTool(**)",
-      "Grep(**)",
-      "GrepTool(**)",
-      "LS(**)",
-      "MultiEdit(**)",
-      "Read(**)",
-      "TodoRead",
-      "TodoWrite(**)",
-      "WebFetch(domain:*)",
+      "Edit",
+      "Glob",
+      "Grep",
+      "LS",
+      "MultiEdit",
+      "Read",
+      "TaskGet",
+      "TaskList",
+      "TaskCreate",
+      "TaskUpdate",
+      "WebFetch",
       "WebSearch",
-      "Write(**)"
+      "Write"
     ],
     "deny": [
       "Bash(bash:*)",
@@ -36,26 +39,29 @@
       "Bash(sudo:*)",
       "Bash(dd:*)",
       "Bash(mkfs:*)",
-      "Bash(format:*)",
-      "Bash(> /dev/sda:*)",
-      "Bash(rm -rf /)",
-      "Bash(rm -rf /*)",
-      "Bash(rm -rf ~/*)",
-      "Bash(rm -rf ../*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Bash(rm -Rf:*)",
+      "Bash(rm -fR:*)",
+      "Bash(rm -r -f:*)",
+      "Bash(rm -f -r:*)",
       "Bash(chmod 777:*)",
       "Bash(chmod -R 777:*)",
       "Bash(chown -R:*)",
-      "Bash(apt-get install:*)",
       "Bash(brew install:*)",
       "Bash(bundle install:*)",
       "Bash(gem install:*)",
       "Bash(npm install -g:*)",
       "Bash(pip install:*)",
-      "Bash(yum install:*)",
       "Bash(git checkout:*)",
       "Bash(git config:*)",
       "Bash(git rebase:*)",
       "Bash(git clean:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git restore:*)",
+      "Bash(git branch -D:*)",
       "Bash(gh api --method DELETE:*)",
       "Bash(gh auth logout:*)",
       "Bash(gh auth refresh:*)",
@@ -83,27 +89,32 @@
       "Bash(gh workflow disable:*)",
       "Bash(gh workflow enable:*)",
       "Bash(gh workflow run:*)"
-    ]
+    ],
+    "defaultMode": "dontAsk"
   },
-
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "~/.claude/scripts/deny-check.sh" },
-          { "type": "command", "command": "~/.claude/scripts/check-ai-commit.sh" }
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/deny-check.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/check-ai-commit.sh"
+          }
         ]
       },
       {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "~/.claude/scripts/preserve-file-permissions.sh" }
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/preserve-file-permissions.sh"
+          }
         ]
       }
     ],
@@ -111,14 +122,23 @@
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "~/.claude/scripts/ja-space-format.sh" },
-          { "type": "command", "command": "~/.claude/scripts/auto-comment.sh" }
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/ja-space-format.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/auto-comment.sh"
+          }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "~/.claude/scripts/preserve-file-permissions.sh" }
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/preserve-file-permissions.sh"
+          }
         ]
       }
     ],
@@ -126,7 +146,10 @@
       {
         "matcher": "*",
         "hooks": [
-          { "type": "command", "command": "osascript -e 'display notification \"Awaiting confirmation\" with title \"Claude Code\"' && afplay -v 0.3 ~/.claude/assets/confirm.mp3" }
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Awaiting confirmation\" with title \"Claude Code\"' && afplay -v 0.3 ~/.claude/assets/confirm.mp3"
+          }
         ]
       }
     ],
@@ -134,29 +157,57 @@
       {
         "matcher": "*",
         "hooks": [
-          { "type": "command", "command": "~/.claude/scripts/code-review-hook.sh" }
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Task completed\" with title \"Claude Code\"' && afplay -v 0.3 ~/.claude/assets/perfect.mp3"
+          }
         ]
       }
     ]
   },
-
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/scripts/statusline.sh"
+    "command": "~/.claude/scripts/statusline.sh",
+    "refreshInterval": 30
   },
-
   "enabledPlugins": {
     "common@applibot-claude-code-plugins": true,
-    "react@applibot-claude-code-plugins": true,
-    "unity@applibot-claude-code-plugins": true
+    "frontend@applibot-claude-code-plugins": true,
+    "go@applibot-claude-code-plugins": true,
+    "design@applibot-claude-code-plugins": true,
+    "nextjs@applibot-claude-code-plugins": true,
+    "flutter@applibot-claude-code-plugins": true,
+    "rust@applibot-claude-code-plugins": true,
+    "apb@applibot-claude-code-plugins": true,
+    "codex@openai-codex": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "cook@claude-code-cookbook": true
   },
-
   "extraKnownMarketplaces": {
-    "applibot-claude-code-plugins": {
+    "openai-codex": {
       "source": {
-        "source": "git",
-        "url": "https://github.com/applibot-inc/claude-code-plugins.git"
-      }
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      },
+      "autoUpdate": true
+    },
+    "claude-code-cookbook": {
+      "source": {
+        "source": "github",
+        "repo": "wasabeef/claude-code-cookbook"
+      },
+      "autoUpdate": true
     }
-  }
+  },
+  "outputStyle": "Token Efficiency",
+  "language": "Japanese",
+  "spinnerTipsEnabled": false,
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "advisorModel": "opus",
+  "promptSuggestionEnabled": true,
+  "autoUpdatesChannel": "latest",
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true,
+  "useAutoModeDuringPlan": true
 }

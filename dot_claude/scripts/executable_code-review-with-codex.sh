@@ -3,13 +3,93 @@
 # Codex を使用して Git diff のコードレビューを行うスクリプト (Devin MCP 統合版)
 # hook モード専用 - JSON にスコアを保存
 
-# Git リポジトリでない場合はスキップ
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-  exit 0
+# 除外パターン（Git/非Git共通）
+EXCLUDE_DIRS="node_modules|\.git|\.claude|dist|build|vendor|__pycache__|\.venv|coverage|\.next|\.nuxt|\.cache|\.turbo"
+MAX_FILE_SIZE=1048576  # 1MB
+
+# バイナリファイル判定
+is_binary_file() {
+  local file="$1"
+  local file_type
+  file_type=$(file -b "$file" 2>/dev/null)
+  # テキスト系は明示的に許可
+  if echo "$file_type" | grep -qiE 'text|script|source|json|xml|html|css|markdown'; then
+    return 1
+  fi
+  # バイナリ系は除外
+  if echo "$file_type" | grep -qiE 'executable|binary|data|image|audio|video|archive|compressed|ELF|Mach-O'; then
+    return 0
+  fi
+  # NUL バイト検出（最初の8KB）
+  if head -c 8192 "$file" 2>/dev/null | LC_ALL=C grep -q "$(printf '\x00')"; then
+    return 0
+  fi
+  return 1
+}
+
+# 非 Git 環境用: ディレクトリ全体を diff 形式で生成
+generate_directory_diff() {
+  local dir="${1:-.}"
+  local diff_output=""
+
+  while IFS= read -r -d '' file; do
+    local file_size
+    file_size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+    if [ "$file_size" -gt "$MAX_FILE_SIZE" ]; then
+      continue
+    fi
+    if is_binary_file "$file"; then
+      continue
+    fi
+    local rel_path="${file#$dir/}"
+    diff_output="${diff_output}
+diff --git a/$rel_path b/$rel_path
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/$rel_path
+$(cat "$file" 2>/dev/null | sed 's/^/+/')"
+  done < <(find "$dir" -type f \
+    ! -path "*/.git/*" \
+    ! -path "*/.claude/*" \
+    ! -path "*/node_modules/*" \
+    ! -path "*/dist/*" \
+    ! -path "*/build/*" \
+    ! -path "*/vendor/*" \
+    ! -path "*/__pycache__/*" \
+    ! -path "*/.venv/*" \
+    ! -path "*/coverage/*" \
+    ! -path "*/.next/*" \
+    ! -path "*/.nuxt/*" \
+    ! -path "*/.cache/*" \
+    ! -path "*/.turbo/*" \
+    -print0 2>/dev/null)
+
+  echo "$diff_output"
+}
+
+# Git リポジトリ判定
+IS_GIT_REPO=false
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  IS_GIT_REPO=true
 fi
 
-# git diff を取得（ステージされた変更と作業ディレクトリの変更の両方）
-DIFF_CONTENT=$(git diff HEAD 2>/dev/null)
+# 現在のディレクトリ名が除外対象の場合はスキップ（非 Git の場合のみ）
+if [ "$IS_GIT_REPO" = false ]; then
+  current_dir_name=$(basename "$(pwd)")
+  if echo "$current_dir_name" | grep -qE "^(\.claude|\.git|node_modules|dist|build|vendor|__pycache__|\.venv|coverage|\.next|\.nuxt|\.cache|\.turbo)$"; then
+    echo "Info: Skipping excluded directory: $current_dir_name" >&2
+    exit 0
+  fi
+fi
+
+# diff 取得
+if [ "$IS_GIT_REPO" = true ]; then
+  DIFF_CONTENT=$(git diff HEAD 2>/dev/null)
+else
+  echo "Info: Non-Git directory review (scanning all files)" >&2
+  DIFF_CONTENT=$(generate_directory_diff "$(pwd)")
+fi
 
 # 差分がない場合はスキップ
 if [ -z "$DIFF_CONTENT" ]; then

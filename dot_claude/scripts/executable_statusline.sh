@@ -28,12 +28,12 @@ get_today_cost() {
   fi
 }
 
-# Check if we're in a git repository with scores file
+# Check if review data exists for the project
 # Args: $1=project_path
 is_review_available() {
   local project_path="$1"
-  # .git がディレクトリまたはファイル（worktree の場合）であることを確認
-  [ -f "$SCORES_FILE" ] && { [ -d "$project_path/.git" ] || [ -f "$project_path/.git" ]; }
+  # スコアファイルが存在し、プロジェクトのレビューデータがあることを確認
+  [ -f "$SCORES_FILE" ] && jq -e ".\"$project_path\"" "$SCORES_FILE" >/dev/null 2>&1
 }
 
 # Get diff content with branch-based review support
@@ -101,12 +101,23 @@ $(cat "$file" 2>/dev/null | sed 's/^/+/')"
 }
 
 # Check if there are any uncommitted changes (staged, unstaged, or untracked)
+# Or for non-Git directories, check if there are any files
 # Args: $1=project_path
 has_diff() {
   local project_path="$1"
-  local diff_output
-  diff_output=$(get_diff_content "$project_path")
-  [ -n "$diff_output" ]
+
+  cd "$project_path" 2>/dev/null || return 1
+
+  # Git リポジトリの場合
+  if [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1; then
+    local diff_output
+    diff_output=$(get_diff_content "$project_path")
+    [ -n "$diff_output" ]
+    return
+  fi
+
+  # 非 Git: レビューデータが存在すればレビュー対象とみなす
+  is_review_available "$project_path"
 }
 
 # Check if review data matches current diff (including untracked files)
@@ -323,55 +334,50 @@ main() {
   local current_dir
   current_dir=$(echo "$json_input" | jq -r '.workspace.current_dir // .cwd // "~"' 2>/dev/null)
 
+  # Resolve effective working directory:
+  # added_dirs の最初の Git リポジトリを優先、なければ current_dir
+  local effective_dir="$current_dir"
+  local added_dir
+  added_dir=$(echo "$json_input" | jq -r '.workspace.added_dirs[0] // empty' 2>/dev/null)
+  if [ -n "$added_dir" ] && [ -d "$added_dir/.git" ]; then
+    effective_dir="$added_dir"
+  fi
+
   # Get metrics
+  local session_cost
+  session_cost=$(echo "$json_input" | jq -r '.cost.total_cost_usd // empty' 2>/dev/null)
   local today_cost
-  today_cost=$(get_today_cost)
+  if [ -n "$session_cost" ]; then
+    today_cost=$(printf "%.2f" "$session_cost" 2>/dev/null || echo "0.00")
+  else
+    today_cost=$(get_today_cost)
+  fi
 
   local git_stats
-  git_stats=$(get_git_status "$current_dir")
+  git_stats=$(get_git_status "$effective_dir")
 
   # Line 1: Model & Cost & Git
   printf "${FG_CYAN}🤖 %s${RESET} ${FG_GREEN}💰 \$%s${RESET} ${FG_ORANGE}  %s${RESET}\n" \
     "$model" "$today_cost" "$git_stats"
 
-  print_separator
-
-  # Show review sections if there are uncommitted changes
-  if has_diff "$current_dir"; then
-    local codex_score
-    codex_score=$(get_review_data "$current_dir" "codex" "score")
-    local claude_score
-    claude_score=$(get_review_data "$current_dir" "claude" "score")
-
-    # レビュー結果が存在する場合は常に表示
-    if [ -n "$codex_score" ] || [ -n "$claude_score" ]; then
-      local codex_comment
-      codex_comment=$(get_review_data "$current_dir" "codex" "comment")
-      local claude_comment
-      claude_comment=$(get_review_data "$current_dir" "claude" "comment")
-
-      # Codex Review Section
-      if [ -n "$codex_score" ]; then
-        local codex_timestamp
-        codex_timestamp=$(get_review_timestamp_formatted "$current_dir" "codex")
-        display_review_section "codex" "$codex_score" "$codex_comment" "Codex Review" "$codex_timestamp"
-        print_separator
-      fi
-
-      # Claude Review Section
-      if [ -n "$claude_score" ]; then
-        local claude_timestamp
-        claude_timestamp=$(get_review_timestamp_formatted "$current_dir" "claude")
-        display_review_section "claude" "$claude_score" "$claude_comment" "Claude Review" "$claude_timestamp"
-        print_separator
-      fi
-    else
-      # レビュー結果が存在しない場合のみ pending 表示
-      print_separator
-      printf "  %b⏳ Review pending...%b\n" "$FG_BLUE" "$RESET"
-      print_separator
-    fi
-  fi
+  # Line 2: Review scores (currently unused)
+  # if has_diff "$effective_dir"; then
+  #   local codex_score claude_score
+  #   codex_score=$(get_review_data "$effective_dir" "codex" "score")
+  #   claude_score=$(get_review_data "$effective_dir" "claude" "score")
+  #
+  #   if [ -n "$codex_score" ] || [ -n "$claude_score" ]; then
+  #     local review_line=""
+  #     [ -n "$codex_score" ] && [ "$codex_score" != "?" ] && review_line="Codex:${codex_score}"
+  #     if [ -n "$claude_score" ] && [ "$claude_score" != "?" ]; then
+  #       [ -n "$review_line" ] && review_line="${review_line} "
+  #       review_line="${review_line}Claude:${claude_score}"
+  #     fi
+  #     printf "${FG_BLUE}📝 %s${RESET}\n" "$review_line"
+  #   else
+  #     printf "${FG_BLUE}⏳ Review pending...${RESET}\n"
+  #   fi
+  # fi
 }
 
 main "$@"
