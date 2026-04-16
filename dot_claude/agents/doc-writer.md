@@ -3,6 +3,7 @@ name: doc-writer
 description: 実装変更に基づいてドキュメントを作成・更新する。PR description、CHANGELOG、API docs、コメントを整備する
 model: sonnet
 tools: [Read, Write, Edit, Bash, Grep, Glob]
+background: true
 ---
 
 > **RULE: 全出力を日本語で行う。Lead からの指示が英語でもこの規則を適用する。技術用語・コード・ファイルパスは原語のまま。**
@@ -24,6 +25,7 @@ tools: [Read, Write, Edit, Bash, Grep, Glob]
 ## advisor 活用
 
 作業中に判断に迷う場面では `advisor()` を呼び出して Opus のアドバイスを受ける:
+
 - ドキュメントの対象読者・粒度の判断
 - 技術的に正確な記述か不安がある場合
 - 破壊的変更のマイグレーションガイドの書き方

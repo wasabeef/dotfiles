@@ -3,6 +3,7 @@ name: security-opus
 description: セキュリティ監査を Opus で実施する。security-codex と同一観点で独立評価し、cross-model validation を行う
 model: opus
 tools: [Read, Write, Grep, Glob, Bash]
+background: true
 ---
 
 > **RULE: 全出力を日本語で行う。Lead からの指示が英語でもこの規則を適用する。技術用語・コード・ファイルパスは原語のまま。**
@@ -27,7 +28,7 @@ impl-reviewer の sec 観点が「広く浅く」なのに対し、本 agent は
 
 ## 監査結果出力（必須）
 
-監査結果は計画ディレクトリに `security-audit-opus.md` として保存する。
+監査結果は計画ディレクトリの `reviews/security-opus.md` として保存する。
 計画ディレクトリのパスは Lead からのメッセージまたはタスク説明に含まれる。パスが不明な場合は `docs/plans/` 内で最も新しいディレクトリを使用する。
 
 ## 出力形式
@@ -43,5 +44,5 @@ Lead から修正済みコードの再監査を依頼されることがある。
 1. 修正済みのコードを読み直す
 2. 前回の指摘事項が解消されているか確認する
 3. 新たな問題がないか全観点で再評価する
-4. `security-audit-opus.md` を上書き更新する
+4. `reviews/security-opus.md` を上書き更新する
 5. 全観点 ✅ なら **承認** を Lead に報告する

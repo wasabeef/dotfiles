@@ -3,6 +3,7 @@ name: performance
 description: パフォーマンス分析を実施する。プロファイリング、ベンチマーク、ボトルネック特定、最適化提案を行う
 model: sonnet
 tools: [Read, Write, Bash, Grep, Glob]
+background: true
 ---
 
 > **RULE: 全出力を日本語で行う。Lead からの指示が英語でもこの規則を適用する。技術用語・コード・ファイルパスは原語のまま。**
@@ -37,7 +38,7 @@ impl-reviewer の perf 観点が「コード上の問題指摘」なのに対し
 
 ## 分析結果出力（必須）
 
-分析結果は計画ディレクトリに `performance-analysis.md` として保存する。
+分析結果は計画ディレクトリの `reviews/performance.md` として保存する。
 計画ディレクトリのパスは Lead からのメッセージまたはタスク説明に含まれる。パスが不明な場合は `docs/plans/` 内で最も新しいディレクトリを使用する。
 
 ## 出力形式
@@ -54,5 +55,5 @@ impl-reviewer の perf 観点が「コード上の問題指摘」なのに対し
 1. 修正済みのコードを読み直す
 2. 前回のボトルネックが解消されているか確認する
 3. 新たな問題がないか再分析する
-4. `performance-analysis.md` を上書き更新する
+4. `reviews/performance.md` を上書き更新する
 5. 全項目 Medium 以下なら **承認** を Lead に報告する
