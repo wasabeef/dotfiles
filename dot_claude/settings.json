@@ -92,7 +92,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "opus[1m]",
+  "model": "sonnet[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -208,6 +208,9 @@
   "promptSuggestionEnabled": true,
   "autoUpdatesChannel": "latest",
   "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true,
-  "useAutoModeDuringPlan": true
+  "theme": "dark-daltonized",
+  "teammateMode": "auto",
+  "remoteControlAtStartup": false,
+  "useAutoModeDuringPlan": true,
+  "skipAutoPermissionPrompt": true
 }
