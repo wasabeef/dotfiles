@@ -92,7 +92,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "sonnet[1m]",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -203,7 +203,7 @@
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "advisorModel": "opus",
   "promptSuggestionEnabled": true,
   "autoUpdatesChannel": "latest",
@@ -211,6 +211,6 @@
   "theme": "dark-daltonized",
   "teammateMode": "auto",
   "remoteControlAtStartup": false,
-  "useAutoModeDuringPlan": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "useAutoModeDuringPlan": true
 }

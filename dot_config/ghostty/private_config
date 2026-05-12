@@ -1,0 +1,60 @@
+# Font
+font-family = Cascadia Code
+font-family = Cascadia Mono
+font-family = JetBrains Mono
+font-family = Noto Sans JP
+font-size = 12
+
+# Cursor(wezterm: BlinkingUnderline, force_reverse_video_cursor)
+cursor-style = underline
+cursor-style-blink = true
+cursor-invert-fg-bg = true
+
+# Colors(wezterm: config.colors)
+background = #282c34
+foreground = #b9c0cb
+selection-background = #b9c0ca
+selection-foreground = #272b33
+
+# ANSI palette(wezterm: ansi + brights)
+palette = 0=#41444d
+palette = 1=#fc2f52
+palette = 2=#25a45c
+palette = 3=#ff936a
+palette = 4=#3476ff
+palette = 5=#7a82da
+palette = 6=#4483aa
+palette = 7=#cdd4e0
+palette = 8=#8f9aae
+palette = 9=#ff6480
+palette = 10=#3fc56b
+palette = 11=#f9c859
+palette = 12=#10b1fe
+palette = 13=#ff78f8
+palette = 14=#5fb9bc
+palette = 15=#ffffff
+
+# Window padding(wezterm: 0.5cell ≈ 4px at font-size 12)
+window-padding-x = 4
+window-padding-y = 4
+
+# Performance
+max-frame-rate = 120
+
+# macOS
+macos-option-as-alt = true
+scrollbar = never
+
+# Clipboard
+clipboard-paste-protection = true
+link-url = true
+
+# Pane splitting(wezterm: LEADER+s/v, LEADER = Ctrl+Space)
+keybind = ctrl+space>s=new_split:down
+keybind = ctrl+space>v=new_split:right
+
+# Pane navigation(wezterm: LEADER+h/j/k/l)
+keybind = ctrl+space>h=goto_split:left
+keybind = ctrl+space>j=goto_split:bottom
+keybind = ctrl+space>k=goto_split:top
+keybind = ctrl+space>l=goto_split:right
